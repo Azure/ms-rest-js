@@ -401,7 +401,7 @@ function dispatchRequest(options) {
                         }
                     }
                     else {
-                        if (options.body == null) {
+                        if (options.body === null) {
                             options.body = undefined;
                         }
                     }
