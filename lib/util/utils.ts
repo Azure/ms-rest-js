@@ -291,7 +291,7 @@ export async function dispatchRequest(options: WebResource): Promise<HttpOperati
         }
       }
     }
-    
+
     options.body = requestForm;
     options.formData = undefined;
     if (options.headers && options.headers["Content-Type"] &&
@@ -299,7 +299,7 @@ export async function dispatchRequest(options: WebResource): Promise<HttpOperati
       options.headers["Content-Type"] = `multipart/form-data; boundary=${requestForm.getBoundary()}`;
     }
   } else {
-    if(options.body == null){
+    if (options.body === null) {
       options.body = undefined;
     }
   }
