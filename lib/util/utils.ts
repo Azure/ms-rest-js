@@ -291,12 +291,16 @@ export async function dispatchRequest(options: WebResource): Promise<HttpOperati
         }
       }
     }
-
+    
     options.body = requestForm;
     options.formData = undefined;
     if (options.headers && options.headers["Content-Type"] &&
       options.headers["Content-Type"].indexOf("multipart/form-data") > -1 && typeof requestForm.getBoundary === "function") {
       options.headers["Content-Type"] = `multipart/form-data; boundary=${requestForm.getBoundary()}`;
+    }
+  } else {
+    if(options.body == null){
+      options.body = undefined;
     }
   }
   let res: Response;
