@@ -329,6 +329,11 @@ function dispatchRequest(options) {
                             options.headers["Content-Type"] = "multipart/form-data; boundary=" + requestForm_1.getBoundary();
                         }
                     }
+                    else {
+                        if (options.body === null) {
+                            options.body = undefined;
+                        }
+                    }
                     _b.label = 1;
                 case 1:
                     _b.trys.push([1, 3, , 4]);
