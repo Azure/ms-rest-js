@@ -4,4 +4,4 @@
 /**
  * A collection of HttpHeaders that can be sent with a HTTP request.
  */
-export type HttpHeaders = { [headerName: string]: string };
+export type HttpHeaders = { [headerName: string]: string | number };

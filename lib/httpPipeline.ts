@@ -12,6 +12,13 @@ import { RequestPolicyOptions } from "./requestPolicyOptions";
 
 let defaultHttpClient: HttpClient;
 
+function getDefaultHttpClient(): HttpClient {
+    if (!defaultHttpClient) {
+        defaultHttpClient = new FetchHttpClient();
+    }
+    return defaultHttpClient;
+}
+
 /**
  * A collection of RequestPolicies that will be applied to a HTTP request before it is sent and will
  * be applied to a HTTP response when it is received.
@@ -26,10 +33,7 @@ export class HttpPipeline {
         }
 
         if (!this._options.httpClient) {
-            if (!defaultHttpClient) {
-                defaultHttpClient = new FetchHttpClient();
-            }
-            this._options.httpClient = defaultHttpClient;
+            this._options.httpClient = getDefaultHttpClient();
         }
 
         this._httpClient = this._options.httpClient;

@@ -19,7 +19,7 @@ export class RequestPolicyOptions {
     public shouldLog(logLevel: HttpPipelineLogLevel): boolean {
         return !!this._logger &&
             logLevel !== HttpPipelineLogLevel.OFF &&
-            logLevel <= this._logger.minimumLogLevel();
+            logLevel <= this._logger.minimumLogLevel;
     }
 
     /**
@@ -29,7 +29,7 @@ export class RequestPolicyOptions {
      * @param message The message of this log.
      */
     public log(logLevel: HttpPipelineLogLevel, message: string): void {
-        if (this._logger) {
+        if (this._logger && this.shouldLog(logLevel)) {
             this._logger.log(logLevel, message);
         }
     }

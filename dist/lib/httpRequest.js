@@ -11,6 +11,10 @@ var HttpRequest = /** @class */ (function () {
         this._url = _url;
         this._headers = _headers;
         this._body = _body;
+        if (!this._url) {
+            var urlString = (this._url === undefined || this._url === null ? this._url : "\"" + this._url + "\"");
+            throw new Error(urlString + " is not a valid URL for a HttpRequest.");
+        }
     }
     Object.defineProperty(HttpRequest.prototype, "httpMethod", {
         /**
@@ -24,8 +28,8 @@ var HttpRequest = /** @class */ (function () {
     });
     Object.defineProperty(HttpRequest.prototype, "url", {
         /**
-        * Get the URL that this request will be sent to.
-        */
+         * Get the URL that this request will be sent to.
+         */
         get: function () {
             return this._url;
         },
@@ -52,21 +56,6 @@ var HttpRequest = /** @class */ (function () {
         enumerable: true,
         configurable: true
     });
-    /**
-     * Get the details of the service's operation that this request will be sent for.
-     */
-    // public get operationDetails(): OperationDetails {
-    //     return this._operationDetails;
-    // }
-    /**
-     * Create a new HTTP GET request with the provided properties.
-     * @param url The URL that the created GET request will be sent to.
-     * @param headers The HTTP headers that will be sent with the created GET request.
-     * @param operationDetails The details of the operation that this GET request is being sent for.
-     */
-    HttpRequest.get = function (url, headers) {
-        return !url ? undefined : new HttpRequest("GET", url, headers);
-    };
     return HttpRequest;
 }());
 exports.HttpRequest = HttpRequest;

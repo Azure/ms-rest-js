@@ -11,25 +11,25 @@ export interface HttpResponse {
     /**
      * The request that was the cause of this HttpResponse.
      */
-    request: HttpRequest,
+    request: HttpRequest;
 
     /**
      * The status code number of this response.
      */
-    statusCode: number,
+    statusCode: number;
 
     /**
      * The HTTP headers of this response.
      */
-    headers: HttpHeaders,
+    headers: HttpHeaders;
 
     /**
      * Get the body of this HttpResponse as a string.
      */
-    bodyAsText(): Promise<string>;
+    bodyAsText(): Promise<string | undefined>;
 
     /**
      * Get the body of this HttpResponse as a JSON object.
      */
-    bodyAsJson(): Promise<{}>;
+    bodyAsJson(): Promise<{} | any[] | undefined>;
 }

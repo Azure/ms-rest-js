@@ -12,10 +12,10 @@ export interface HttpPipelineOptions {
      * The HttpClient that will be used for the created HttpPipeline. If no HttpClient is provided
      * here, then a default HttpClient implementation will be used.
      */
-    httpClient?: HttpClient,
+    httpClient?: HttpClient;
 
     /**
      * The Logger that will be used for each RequestPolicy within the created HttpPipeline.
      */
-    pipelineLogger?: HttpPipelineLogger
+    pipelineLogger?: HttpPipelineLogger;
 }

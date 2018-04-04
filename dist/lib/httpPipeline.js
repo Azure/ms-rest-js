@@ -5,6 +5,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var fetchHttpClient_1 = require("./fetchHttpClient");
 var requestPolicyOptions_1 = require("./requestPolicyOptions");
 var defaultHttpClient;
+function getDefaultHttpClient() {
+    if (!defaultHttpClient) {
+        defaultHttpClient = new fetchHttpClient_1.FetchHttpClient();
+    }
+    return defaultHttpClient;
+}
 /**
  * A collection of RequestPolicies that will be applied to a HTTP request before it is sent and will
  * be applied to a HTTP response when it is received.
@@ -17,10 +23,7 @@ var HttpPipeline = /** @class */ (function () {
             this._options = {};
         }
         if (!this._options.httpClient) {
-            if (!defaultHttpClient) {
-                defaultHttpClient = new fetchHttpClient_1.FetchHttpClient();
-            }
-            this._options.httpClient = defaultHttpClient;
+            this._options.httpClient = getDefaultHttpClient();
         }
         this._httpClient = this._options.httpClient;
         this._requestPolicyOptions = new requestPolicyOptions_1.RequestPolicyOptions(this._options.pipelineLogger);

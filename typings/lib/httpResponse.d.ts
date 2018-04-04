@@ -19,9 +19,9 @@ export interface HttpResponse {
     /**
      * Get the body of this HttpResponse as a string.
      */
-    bodyAsText(): Promise<string>;
+    bodyAsText(): Promise<string | undefined>;
     /**
      * Get the body of this HttpResponse as a JSON object.
      */
-    bodyAsJson(): Promise<{}>;
+    bodyAsJson(): Promise<{} | any[] | undefined>;
 }

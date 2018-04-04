@@ -18,7 +18,7 @@ var RequestPolicyOptions = /** @class */ (function () {
     RequestPolicyOptions.prototype.shouldLog = function (logLevel) {
         return !!this._logger &&
             logLevel !== httpPipelineLogLevel_1.HttpPipelineLogLevel.OFF &&
-            logLevel <= this._logger.minimumLogLevel();
+            logLevel <= this._logger.minimumLogLevel;
     };
     /**
      * Attempt to log the provided message to the provided logger. If no logger was provided or if
@@ -27,7 +27,7 @@ var RequestPolicyOptions = /** @class */ (function () {
      * @param message The message of this log.
      */
     RequestPolicyOptions.prototype.log = function (logLevel, message) {
-        if (this._logger) {
+        if (this._logger && this.shouldLog(logLevel)) {
             this._logger.log(logLevel, message);
         }
     };

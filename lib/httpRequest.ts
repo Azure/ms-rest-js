@@ -8,7 +8,11 @@ import { HttpMethod } from "./httpMethod";
  * An individual HTTP request that can be sent with a HttpClient.
  */
 export class HttpRequest {
-    private constructor(private _httpMethod: HttpMethod, private _url: string, private _headers: HttpHeaders, private _body?: string) {
+    constructor(private _httpMethod: HttpMethod, private _url: string, private _headers: HttpHeaders, private _body?: string) {
+        if (!this._url) {
+            const urlString: string = (this._url === undefined || this._url === null ? this._url : `"${this._url}"`);
+            throw new Error(`${urlString} is not a valid URL for a HttpRequest.`);
+        }
     }
 
     /**
@@ -37,15 +41,5 @@ export class HttpRequest {
      */
     public get body(): string | undefined {
         return this._body;
-    }
-
-    /**
-     * Create a new HTTP GET request with the provided properties.
-     * @param url The URL that the created GET request will be sent to.
-     * @param headers The HTTP headers that will be sent with the created GET request.
-     * @param operationDetails The details of the operation that this GET request is being sent for.
-     */
-    public static get(url: string, headers: HttpHeaders): HttpRequest | undefined {
-        return !url ? undefined : new HttpRequest("GET", url, headers);
     }
 }

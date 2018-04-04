@@ -48,11 +48,12 @@
     "@types/should": "^8.1.30",
     "mocha": "^3.5.3",
     "should": "5.2.0",
+    "source-map-support": "^0.5.4",
     "ts-loader": "^2.3.7",
     "tslint": "^5.7.0",
     "typescript": "^2.7.2",
-    "webpack": "^3.6.0",
-    "uglify-es": "^3.1.0"
+    "uglify-es": "^3.1.0",
+    "webpack": "^3.6.0"
   },
   "homepage": "https://github.com/Azure/ms-rest-js",
   "repository": {
@@ -64,8 +65,8 @@
   },
   "scripts": {
     "tsc": "tsc -p tsconfig.json",
-    "test": "npm -s run-script tslint && npm -s run-script unit",
-    "unit": "mocha -t 50000 ./dist/test",
+    "test": "npm run tsc && npm -s run-script tslint && npm -s run-script unit",
+    "unit": "mocha --require source-map-support/register -t 50000 ./dist/test",
     "uglify": "node node_modules/uglify-es/bin/uglifyjs --source-map -c -m -o msRestBundle.min.js msRestBundle.js",
     "build": "npm -s run-script tsc && webpack && npm -s run-script uglify",
     "tslint": "tslint -p . -c tslint.json --exclude test/**/*.ts"
