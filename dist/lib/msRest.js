@@ -45,11 +45,15 @@ exports.isValidUuid = utils_1.isValidUuid;
 exports.dispatchRequest = utils_1.dispatchRequest;
 exports.applyMixins = utils_1.applyMixins;
 exports.isNode = utils_1.isNode;
+exports.stringifyXML = utils_1.stringifyXML;
+exports.prepareXMLRootList = utils_1.prepareXMLRootList;
 // Credentials
 var tokenCredentials_1 = require("./credentials/tokenCredentials");
 exports.TokenCredentials = tokenCredentials_1.TokenCredentials;
 var basicAuthenticationCredentials_1 = require("./credentials/basicAuthenticationCredentials");
 exports.BasicAuthenticationCredentials = basicAuthenticationCredentials_1.BasicAuthenticationCredentials;
+var apiKeyCredentials_1 = require("./credentials/apiKeyCredentials");
+exports.ApiKeyCredentials = apiKeyCredentials_1.ApiKeyCredentials;
 var isStream = require("is-stream");
 exports.isStream = isStream;
 //# sourceMappingURL=msRest.js.map
