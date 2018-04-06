@@ -22,17 +22,12 @@ export interface HttpPipelineLogger {
  * A HttpPipelineLogger that will send its logs to the console.
  */
 export declare class ConsoleHttpPipelineLogger implements HttpPipelineLogger {
-    private _minimumLogLevel;
-    constructor(_minimumLogLevel: HttpPipelineLogLevel);
-    /**
-     * The log level threshold for what logs will be logged.
-     * @return The log level threshold for what logs will be logged.
-     */
-    /**
-     * Set the log level threshold for what logs will be logged.
-     * @param The new minimum log level.
-     */
     minimumLogLevel: HttpPipelineLogLevel;
+    /**
+     * Create a new ConsoleHttpPipelineLogger.
+     * @param minimumLogLevel The log level threshold for what logs will be logged.
+     */
+    constructor(minimumLogLevel: HttpPipelineLogLevel);
     /**
      * Log the provided message.
      * @param logLevel The HttpLogDetailLevel associated with this message.

@@ -23,17 +23,10 @@ export interface RequestPolicy {
  * A base class implementation of RequestPolicy.
  */
 export abstract class BaseRequestPolicy implements RequestPolicy {
-    constructor(private _nextPolicy: RequestPolicy, private _options: RequestPolicyOptions) {
+    constructor(protected readonly nextPolicy: RequestPolicy, private readonly options: RequestPolicyOptions) {
     }
 
     public abstract send(request: HttpRequest): Promise<HttpResponse>;
-
-    /**
-     * The next RequestPolicy in the HttpPipeline.
-     */
-    protected get nextPolicy(): RequestPolicy {
-        return this._nextPolicy;
-    }
 
     /**
      * Get whether or not a log with the provided log level should be logged.
@@ -41,7 +34,7 @@ export abstract class BaseRequestPolicy implements RequestPolicy {
      * @returns Whether or not a log with the provided log level should be logged.
      */
     protected shouldLog(logLevel: HttpPipelineLogLevel): boolean {
-        return this._options.shouldLog(logLevel);
+        return this.options.shouldLog(logLevel);
     }
 
     /**
@@ -51,6 +44,6 @@ export abstract class BaseRequestPolicy implements RequestPolicy {
      * @param message The message of this log.
      */
     protected log(logLevel: HttpPipelineLogLevel, message: string): void {
-        this._options.log(logLevel, message);
+        this.options.log(logLevel, message);
     }
 }

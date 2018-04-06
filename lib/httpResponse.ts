@@ -26,10 +26,10 @@ export interface HttpResponse {
     /**
      * Get the body of this HttpResponse as a string.
      */
-    bodyAsText(): Promise<string | undefined>;
+    textBody(): Promise<string | undefined>;
 
     /**
-     * Get the body of this HttpResponse as a JSON object.
+     * Get the body of this HttpResponse after it has been deserialized.
      */
-    bodyAsJson(): Promise<{} | any[] | undefined>;
+    deserializedBody(): Promise<any>;
 }

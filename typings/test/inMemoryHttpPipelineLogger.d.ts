@@ -1,5 +1,5 @@
-import { HttpPipelineLogger } from "../lib/httpPipelineLogger";
 import { HttpPipelineLogLevel } from "../lib/httpPipelineLogLevel";
+import { HttpPipelineLogger } from "../lib/httpPipelineLogger";
 /**
  * An in-memory HttpPipelineLogger that can be used for testing.
  */

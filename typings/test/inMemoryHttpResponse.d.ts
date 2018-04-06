@@ -1,6 +1,6 @@
-import { HttpResponse } from "../lib/httpResponse";
-import { HttpRequest } from "../lib/httpRequest";
 import { HttpHeaders, RawHttpHeaders } from "../lib/httpHeaders";
+import { HttpRequest } from "../lib/httpRequest";
+import { HttpResponse } from "../lib/httpResponse";
 export declare class InMemoryHttpResponse implements HttpResponse {
     private _request;
     private _statusCode;
@@ -10,6 +10,6 @@ export declare class InMemoryHttpResponse implements HttpResponse {
     readonly request: HttpRequest;
     readonly statusCode: number;
     readonly headers: HttpHeaders;
-    bodyAsText(): Promise<string | undefined>;
-    bodyAsJson(): Promise<{} | any[] | undefined>;
+    textBody(): Promise<string | undefined>;
+    deserializedBody(): Promise<{} | any[] | undefined>;
 }

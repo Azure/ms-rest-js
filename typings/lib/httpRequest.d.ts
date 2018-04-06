@@ -25,4 +25,8 @@ export declare class HttpRequest {
      * Get the body that will be sent with this request.
      */
     readonly body: string | undefined;
+    /**
+     * Create a deep clone/copy of this HttpRequest.
+     */
+    clone(): HttpRequest;
 }

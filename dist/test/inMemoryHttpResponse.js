@@ -1,7 +1,7 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
-Object.defineProperty(exports, "__esModule", { value: true });
 var httpHeaders_1 = require("../lib/httpHeaders");
 var InMemoryHttpResponse = /** @class */ (function () {
     function InMemoryHttpResponse(_request, _statusCode, headers, _bodyText) {
@@ -31,10 +31,10 @@ var InMemoryHttpResponse = /** @class */ (function () {
         enumerable: true,
         configurable: true
     });
-    InMemoryHttpResponse.prototype.bodyAsText = function () {
+    InMemoryHttpResponse.prototype.textBody = function () {
         return Promise.resolve(this._bodyText);
     };
-    InMemoryHttpResponse.prototype.bodyAsJson = function () {
+    InMemoryHttpResponse.prototype.deserializedBody = function () {
         return Promise.resolve(this._bodyText ? JSON.parse(this._bodyText) : undefined);
     };
     return InMemoryHttpResponse;

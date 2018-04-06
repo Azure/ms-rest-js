@@ -1,7 +1,7 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
-Object.defineProperty(exports, "__esModule", { value: true });
 var httpPipelineLogLevel_1 = require("../lib/httpPipelineLogLevel");
 /**
  * An in-memory HttpPipelineLogger that can be used for testing.
@@ -33,8 +33,7 @@ var InMemoryHttpPipelineLogger = /** @class */ (function () {
         configurable: true
     });
     InMemoryHttpPipelineLogger.prototype.log = function (logLevel, message) {
-        var logLevelString = httpPipelineLogLevel_1.httpPipelineLogLevelToString(logLevel);
-        this._logs.push(logLevelString + ": " + message);
+        this._logs.push(httpPipelineLogLevel_1.HttpPipelineLogLevel[logLevel] + ": " + message);
     };
     return InMemoryHttpPipelineLogger;
 }());

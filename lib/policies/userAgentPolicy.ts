@@ -11,22 +11,22 @@ import { RequestPolicyOptions } from "../requestPolicyOptions";
  * Get a RequestPolicyFactory that creates UserAgentRequestPolicies.
  * @param userAgent The userAgent string to apply to each outgoing request.
  */
-export function userAgentRequestPolicyFactory(userAgent: string): RequestPolicyFactory {
+export function userAgentPolicy(userAgent: string): RequestPolicyFactory {
     return (nextPolicy: RequestPolicy, options: RequestPolicyOptions) => {
-        return new UserAgentRequestPolicy(userAgent, nextPolicy, options);
+        return new UserAgentPolicy(userAgent, nextPolicy, options);
     };
 }
 
-class UserAgentRequestPolicy extends BaseRequestPolicy {
-    constructor(private _userAgent: string, nextPolicy: RequestPolicy, options: RequestPolicyOptions) {
+class UserAgentPolicy extends BaseRequestPolicy {
+    constructor(private readonly userAgent: string, nextPolicy: RequestPolicy, options: RequestPolicyOptions) {
         super(nextPolicy, options);
     }
 
     send(request: HttpRequest): Promise<HttpResponse> {
         if (this.shouldLog(HttpPipelineLogLevel.INFO)) {
-            this.log(HttpPipelineLogLevel.INFO, `Set "User-Agent" header to "${this._userAgent}".`);
+            this.log(HttpPipelineLogLevel.INFO, `Set "User-Agent" header to "${this.userAgent}".`);
         }
-        request.headers.set("User-Agent", this._userAgent);
+        request.headers.set("User-Agent", this.userAgent);
         return this.nextPolicy.send(request);
     }
 }

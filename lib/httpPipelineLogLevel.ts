@@ -25,33 +25,3 @@ export enum HttpPipelineLogLevel {
      */
     INFO
 }
-
-/**
- * Convert the provided HttpPipelineLogLevel to its string representation.
- * @param logLevel The HttpPipelineLogLevel to convert to a string.
- * @returns The string representation of the provided HttpPipelineLogLevel.
- */
-export function httpPipelineLogLevelToString(logLevel: HttpPipelineLogLevel): string {
-    let result: string;
-    switch (logLevel) {
-        case HttpPipelineLogLevel.ERROR:
-            result = "ERROR";
-            break;
-
-        case HttpPipelineLogLevel.INFO:
-            result = "INFO";
-            break;
-
-        case HttpPipelineLogLevel.OFF:
-            result = "OFF";
-            break;
-
-        case HttpPipelineLogLevel.WARNING:
-            result = "WARNING";
-            break;
-
-        default:
-            throw new Error(`Unrecognized HttpPipelineLogLevel: ${logLevel}`);
-    }
-    return result;
-}

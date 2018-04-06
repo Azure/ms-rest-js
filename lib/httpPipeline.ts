@@ -1,8 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
-import { fetchHttpClient } from "./fetchHttpClient";
+import { FetchHttpClient } from "./fetchHttpClient";
 import { HttpClient } from "./httpClient";
-import { HttpClientToRequestPolicyAdapter } from "./httpClientToRequestPolicyAdapter";
 import { HttpPipelineOptions } from "./httpPipelineOptions";
 import { HttpRequest } from "./httpRequest";
 import { HttpResponse } from "./httpResponse";
@@ -14,7 +13,7 @@ let defaultHttpClient: HttpClient;
 
 function getDefaultHttpClient(): HttpClient {
     if (!defaultHttpClient) {
-        defaultHttpClient = fetchHttpClient;
+        defaultHttpClient = new FetchHttpClient();
     }
     return defaultHttpClient;
 }
@@ -24,20 +23,20 @@ function getDefaultHttpClient(): HttpClient {
  * be applied to a HTTP response when it is received.
  */
 export class HttpPipeline {
-    private readonly _httpClient: HttpClient;
-    private readonly _requestPolicyOptions: RequestPolicyOptions;
+    private readonly httpClient: HttpClient;
+    private readonly requestPolicyOptions: RequestPolicyOptions;
 
-    constructor(private _requestPolicyFactories: RequestPolicyFactory[], private _options: HttpPipelineOptions) {
-        if (!this._options) {
-            this._options = {};
+    constructor(private readonly requestPolicyFactories: RequestPolicyFactory[], private readonly options: HttpPipelineOptions) {
+        if (!this.options) {
+            this.options = {};
         }
 
-        if (!this._options.httpClient) {
-            this._options.httpClient = getDefaultHttpClient();
+        if (!this.options.httpClient) {
+            this.options.httpClient = getDefaultHttpClient();
         }
 
-        this._httpClient = this._options.httpClient;
-        this._requestPolicyOptions = new RequestPolicyOptions(this._options.pipelineLogger);
+        this.httpClient = this.options.httpClient;
+        this.requestPolicyOptions = new RequestPolicyOptions(this.options.pipelineLogger);
     }
 
     /**
@@ -46,12 +45,12 @@ export class HttpPipeline {
      * @return A Promise that resolves to the HttpResponse from the targeted server.
      */
     public send(request: HttpRequest): Promise<HttpResponse> {
-        let requestPolicyChainHead: RequestPolicy = new HttpClientToRequestPolicyAdapter(this._httpClient);
-        if (this._requestPolicyFactories) {
-            const requestPolicyFactoriesLength: number = this._requestPolicyFactories.length;
+        let requestPolicyChainHead: RequestPolicy = this.httpClient;
+        if (this.requestPolicyFactories) {
+            const requestPolicyFactoriesLength: number = this.requestPolicyFactories.length;
             for (let i = requestPolicyFactoriesLength - 1; i >= 0; --i) {
-                const requestPolicyFactory: RequestPolicyFactory = this._requestPolicyFactories[i];
-                requestPolicyChainHead = requestPolicyFactory(requestPolicyChainHead, this._requestPolicyOptions);
+                const requestPolicyFactory: RequestPolicyFactory = this.requestPolicyFactories[i];
+                requestPolicyChainHead = requestPolicyFactory(requestPolicyChainHead, this.requestPolicyOptions);
             }
         }
         return requestPolicyChainHead.send(request);

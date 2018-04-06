@@ -1,7 +1,7 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
-Object.defineProperty(exports, "__esModule", { value: true });
 var httpHeaders_1 = require("./httpHeaders");
 /**
  * An individual HTTP request that can be sent with a HttpClient.
@@ -57,6 +57,12 @@ var HttpRequest = /** @class */ (function () {
         enumerable: true,
         configurable: true
     });
+    /**
+     * Create a deep clone/copy of this HttpRequest.
+     */
+    HttpRequest.prototype.clone = function () {
+        return JSON.parse(JSON.stringify(this));
+    };
     return HttpRequest;
 }());
 exports.HttpRequest = HttpRequest;

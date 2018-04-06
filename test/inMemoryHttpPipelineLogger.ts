@@ -1,8 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
-
+import { HttpPipelineLogLevel } from "../lib/httpPipelineLogLevel";
 import { HttpPipelineLogger } from "../lib/httpPipelineLogger";
-import { HttpPipelineLogLevel, httpPipelineLogLevelToString } from "../lib/httpPipelineLogLevel";
 
 /**
  * An in-memory HttpPipelineLogger that can be used for testing.
@@ -30,7 +29,6 @@ export class InMemoryHttpPipelineLogger implements HttpPipelineLogger {
     }
 
     public log(logLevel: HttpPipelineLogLevel, message: string): void {
-        const logLevelString: string = httpPipelineLogLevelToString(logLevel);
-        this._logs.push(`${logLevelString}: ${message}`);
+        this._logs.push(`${HttpPipelineLogLevel[logLevel]}: ${message}`);
     }
 }

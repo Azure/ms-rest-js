@@ -1,31 +1,28 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 import * as assert from "assert";
-import { fetchHttpClient } from "../lib/fetchHttpClient";
+import { FetchHttpClient } from "../lib/fetchHttpClient";
+import { HttpMethod } from "../lib/httpMethod";
 import { HttpRequest } from "../lib/httpRequest";
 import { HttpResponse } from "../lib/httpResponse";
 
 describe("fetchHttpClient", () => {
-    it("should send HTTP requests", () => {
-        const request = new HttpRequest("GET", "http://www.example.com", {});
-        return fetchHttpClient(request)
-            .then((response: HttpResponse) => {
-                assert.deepStrictEqual(response.request, request);
-                assert.strictEqual(response.statusCode, 200);
-                assert(response.headers);
-                assert.strictEqual(response.headers.get("accept-ranges"), "bytes");
-                assert.strictEqual(response.headers.get("connection"), "close");
-                assert.strictEqual(response.headers.get("content-encoding"), "gzip");
-                assert.strictEqual(response.headers.get("content-length"), "606");
-                assert.strictEqual(response.headers.get("content-type"), "text/html");
-                assert.strictEqual(response.headers.get("vary"), "Accept-Encoding");
+    it("should send HTTP requests", async () => {
+        const request = new HttpRequest(HttpMethod.GET, "http://www.example.com", {});
+        const httpClient = new FetchHttpClient();
 
-                return response.bodyAsText();
-            })
-            .then((responseBody?: string) => {
-                assert(responseBody);
-                
-                const expectedResponseBody: string =
+        const response: HttpResponse = await httpClient.send(request)
+        assert.deepStrictEqual(response.request, request);
+        assert.strictEqual(response.statusCode, 200);
+        assert(response.headers);
+        assert.strictEqual(response.headers.get("accept-ranges"), "bytes");
+        assert.strictEqual(response.headers.get("connection"), "close");
+        assert.strictEqual(response.headers.get("content-encoding"), "gzip");
+        assert.strictEqual(response.headers.get("content-length"), "606");
+        assert.strictEqual(response.headers.get("content-type"), "text/html");
+        assert.strictEqual(response.headers.get("vary"), "Accept-Encoding");
+        const responseBody: string | undefined = await response.textBody();
+        const expectedResponseBody: string =
 `<!doctype html>
 <html>
 <head>
@@ -77,7 +74,6 @@ describe("fetchHttpClient", () => {
 </body>
 </html>
 `;
-                assert.strictEqual(responseBody, expectedResponseBody);
-            });
+        assert.strictEqual(responseBody, expectedResponseBody);
     });
 });

@@ -23,10 +23,10 @@ export class InMemoryHttpResponse implements HttpResponse {
         return this._headers;
     }
     
-    bodyAsText(): Promise<string | undefined> {
+    textBody(): Promise<string | undefined> {
         return Promise.resolve(this._bodyText);
     }
-    bodyAsJson(): Promise<{} | any[] | undefined> {
+    deserializedBody(): Promise<{} | any[] | undefined> {
         return Promise.resolve(this._bodyText ? JSON.parse(this._bodyText) : undefined);
     }
 }

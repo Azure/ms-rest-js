@@ -19,9 +19,3 @@ export declare enum HttpPipelineLogLevel {
      */
     INFO = 3,
 }
-/**
- * Convert the provided HttpPipelineLogLevel to its string representation.
- * @param logLevel The HttpPipelineLogLevel to convert to a string.
- * @returns The string representation of the provided HttpPipelineLogLevel.
- */
-export declare function httpPipelineLogLevelToString(logLevel: HttpPipelineLogLevel): string;

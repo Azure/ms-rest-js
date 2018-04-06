@@ -45,4 +45,11 @@ export class HttpRequest {
     public get body(): string | undefined {
         return this._body;
     }
+
+    /**
+     * Create a deep clone/copy of this HttpRequest.
+     */
+    public clone(): HttpRequest {
+        return JSON.parse(JSON.stringify(this));
+    }
 }
