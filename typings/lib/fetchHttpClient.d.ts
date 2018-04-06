@@ -1,10 +1,7 @@
-import { HttpClient } from "./httpClient";
 import { HttpRequest } from "./httpRequest";
 import { HttpResponse } from "./httpResponse";
 /**
  * A HttpClient implementation that uses fetch to send HTTP requests.
+ * @param request The request to send.
  */
-export declare class FetchHttpClient implements HttpClient {
-    constructor();
-    send(request: HttpRequest): Promise<HttpResponse>;
-}
+export declare function fetchHttpClient(request: HttpRequest): Promise<HttpResponse>;

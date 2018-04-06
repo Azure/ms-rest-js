@@ -1,69 +1,60 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
-
-import { HttpClient } from "./httpClient";
+import { HttpHeaders } from "./httpHeaders";
 import { HttpRequest } from "./httpRequest";
 import { HttpResponse } from "./httpResponse";
-import { HttpHeaders } from "./httpHeaders";
 
-type FetchMethod = (url: string, options: any) => Response;
+type FetchMethod = (url: string, options: RequestInit) => Response;
 
 /**
  * Provides the fetch() method based on the environment.
  * @returns {fetch} fetch - The fetch() method available in the environment to make requests
  */
 function getFetch(): FetchMethod {
-    // using window.Fetch in Edge gives a TypeMismatchError
-    // (https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/8546263/).
-    // Hence we will be using the fetch-ponyfill for Edge.
-    return (window && window.fetch && window.navigator && window.navigator.userAgent && window.navigator.userAgent.indexOf("Edge/") === -1)
-        ? window.fetch.bind(window)
-        : require("fetch-ponyfill")({ useCookie: true }).fetch;
+    return require("fetch-ponyfill")({ useCookie: true }).fetch;
 }
 
 /**
  * The cached fetch method that will be used to send HTTP requests.
  */
-let myFetch: FetchMethod;
+let fetch: FetchMethod;
 
 /**
  * A HttpClient implementation that uses fetch to send HTTP requests.
+ * @param request The request to send.
  */
-export class FetchHttpClient implements HttpClient {
-    constructor() {
-        if (!myFetch) {
-            myFetch = getFetch();
-        }
+export async function fetchHttpClient(request: HttpRequest): Promise<HttpResponse> {
+    if (!fetch) {
+        fetch = getFetch();
     }
 
-    async send(request: HttpRequest): Promise<HttpResponse> {
-        let result: Promise<HttpResponse>;
+    let result: Promise<HttpResponse>;
 
-        try {
-            const fetchResponse: Response = await myFetch(request.url.toString(), request);
+    try {
+        const fetchRequestOptions: RequestInit = {
+            method: request.httpMethod,
+            headers: request.headers.toJson(),
+            body: request.body
+        };
 
-            const fetchResponseHeaders: Headers = fetchResponse.headers;
-            const responseHeaders: HttpHeaders = {};
-            for (const headerName in fetchResponseHeaders.keys()) {
-                const headerValue: string | null = fetchResponseHeaders.get(headerName);
-                if (headerValue) {
-                    responseHeaders[headerName] = headerValue;
-                }
-            }
+        const fetchResponse: Response = await fetch(request.url, fetchRequestOptions);
 
-            const response: HttpResponse = {
-                request: request,
-                statusCode: fetchResponse.status,
-                headers: responseHeaders,
-                bodyAsText: () => fetchResponse.text(),
-                bodyAsJson: () => fetchResponse.json()
-            };
+        const responseHeaders = new HttpHeaders();
+        const fetchResponseHeaders: Headers = fetchResponse.headers;
+        fetchResponseHeaders.forEach((headerValue: string, headerName: string) => { responseHeaders.set(headerName, headerValue); });
 
-            result = Promise.resolve(response);
-        } catch (err) {
-            result = Promise.reject(err);
-        }
+        const response: HttpResponse = {
+            request: request,
+            statusCode: fetchResponse.status,
+            headers: responseHeaders,
+            bodyAsText: () => fetchResponse.text(),
+            bodyAsJson: () => fetchResponse.json()
+        };
 
-        return result;
+        result = Promise.resolve(response);
+    } catch (err) {
+        result = Promise.reject(err);
     }
+
+    return result;
 }

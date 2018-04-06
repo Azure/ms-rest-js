@@ -1,8 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
-
-import { HttpRequest } from "../lib/httpRequest";
 import * as assert from "assert";
+import { HttpRequest } from "../lib/httpRequest";
 
 describe("HttpRequest", () => {
     describe("constructor", () => {
@@ -20,7 +19,7 @@ describe("HttpRequest", () => {
             const httpRequest: HttpRequest = new HttpRequest("GET", "www.example.com", {});
             assert.strictEqual(httpRequest.httpMethod, "GET");
             assert.strictEqual(httpRequest.url, "www.example.com");
-            assert.deepStrictEqual(httpRequest.headers, {});
+            assert.deepStrictEqual(httpRequest.headers.toJson(), {});
             assert.strictEqual(httpRequest.body, undefined);
         });
 
@@ -28,7 +27,7 @@ describe("HttpRequest", () => {
             const httpRequest: HttpRequest = new HttpRequest("POST", "www.example.com", {});
             assert.strictEqual(httpRequest.httpMethod, "POST");
             assert.strictEqual(httpRequest.url, "www.example.com");
-            assert.deepStrictEqual(httpRequest.headers, {});
+            assert.deepStrictEqual(httpRequest.headers.toJson(), {});
             assert.strictEqual(httpRequest.body, undefined);
         });
 
@@ -36,15 +35,15 @@ describe("HttpRequest", () => {
             const httpRequest: HttpRequest = new HttpRequest("POST", "www.example.com", {}, "");
             assert.strictEqual(httpRequest.httpMethod, "POST");
             assert.strictEqual(httpRequest.url, "www.example.com");
-            assert.deepStrictEqual(httpRequest.headers, {});
+            assert.deepStrictEqual(httpRequest.headers.toJson(), {});
             assert.strictEqual(httpRequest.body, "");
         });
 
         it(`should return a valid POST HttpRequest when the body is "hello"`, () => {
-            const httpRequest: HttpRequest = new HttpRequest("POST", "www.example.com", {"Content-Length": 5}, "hello");
+            const httpRequest: HttpRequest = new HttpRequest("POST", "www.example.com", {"Content-Length": "5"}, "hello");
             assert.strictEqual(httpRequest.httpMethod, "POST");
             assert.strictEqual(httpRequest.url, "www.example.com");
-            assert.deepStrictEqual(httpRequest.headers, {"Content-Length": 5});
+            assert.deepStrictEqual(httpRequest.headers.toJson(), {"Content-Length": "5"});
             assert.strictEqual(httpRequest.body, "hello");
         });
     });

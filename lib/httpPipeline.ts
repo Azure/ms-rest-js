@@ -1,20 +1,20 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
-
+import { fetchHttpClient } from "./fetchHttpClient";
+import { HttpClient } from "./httpClient";
+import { HttpClientToRequestPolicyAdapter } from "./httpClientToRequestPolicyAdapter";
 import { HttpPipelineOptions } from "./httpPipelineOptions";
-import { RequestPolicy } from "./requestPolicy";
-import { RequestPolicyFactory } from "./requestPolicyFactory";
 import { HttpRequest } from "./httpRequest";
 import { HttpResponse } from "./httpResponse";
-import { HttpClient } from "./httpClient";
-import { FetchHttpClient } from "./fetchHttpClient";
+import { RequestPolicy } from "./requestPolicy";
+import { RequestPolicyFactory } from "./requestPolicyFactory";
 import { RequestPolicyOptions } from "./requestPolicyOptions";
 
 let defaultHttpClient: HttpClient;
 
 function getDefaultHttpClient(): HttpClient {
     if (!defaultHttpClient) {
-        defaultHttpClient = new FetchHttpClient();
+        defaultHttpClient = fetchHttpClient;
     }
     return defaultHttpClient;
 }
@@ -46,14 +46,14 @@ export class HttpPipeline {
      * @return A Promise that resolves to the HttpResponse from the targeted server.
      */
     public send(request: HttpRequest): Promise<HttpResponse> {
-        let firstRequestPolicy: RequestPolicy = this._httpClient;
+        let requestPolicyChainHead: RequestPolicy = new HttpClientToRequestPolicyAdapter(this._httpClient);
         if (this._requestPolicyFactories) {
             const requestPolicyFactoriesLength: number = this._requestPolicyFactories.length;
             for (let i = requestPolicyFactoriesLength - 1; i >= 0; --i) {
                 const requestPolicyFactory: RequestPolicyFactory = this._requestPolicyFactories[i];
-                firstRequestPolicy = requestPolicyFactory.create(firstRequestPolicy, this._requestPolicyOptions);
+                requestPolicyChainHead = requestPolicyFactory(requestPolicyChainHead, this._requestPolicyOptions);
             }
         }
-        return firstRequestPolicy.send(request);
+        return requestPolicyChainHead.send(request);
     }
 }

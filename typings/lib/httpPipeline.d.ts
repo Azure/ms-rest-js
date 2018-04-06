@@ -1,7 +1,7 @@
 import { HttpPipelineOptions } from "./httpPipelineOptions";
-import { RequestPolicyFactory } from "./requestPolicyFactory";
 import { HttpRequest } from "./httpRequest";
 import { HttpResponse } from "./httpResponse";
+import { RequestPolicyFactory } from "./requestPolicyFactory";
 /**
  * A collection of RequestPolicies that will be applied to a HTTP request before it is sent and will
  * be applied to a HTTP response when it is received.

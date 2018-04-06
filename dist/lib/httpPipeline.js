@@ -3,11 +3,12 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 Object.defineProperty(exports, "__esModule", { value: true });
 var fetchHttpClient_1 = require("./fetchHttpClient");
+var httpClientToRequestPolicyAdapter_1 = require("./httpClientToRequestPolicyAdapter");
 var requestPolicyOptions_1 = require("./requestPolicyOptions");
 var defaultHttpClient;
 function getDefaultHttpClient() {
     if (!defaultHttpClient) {
-        defaultHttpClient = new fetchHttpClient_1.FetchHttpClient();
+        defaultHttpClient = fetchHttpClient_1.fetchHttpClient;
     }
     return defaultHttpClient;
 }
@@ -34,15 +35,15 @@ var HttpPipeline = /** @class */ (function () {
      * @return A Promise that resolves to the HttpResponse from the targeted server.
      */
     HttpPipeline.prototype.send = function (request) {
-        var firstRequestPolicy = this._httpClient;
+        var requestPolicyChainHead = new httpClientToRequestPolicyAdapter_1.HttpClientToRequestPolicyAdapter(this._httpClient);
         if (this._requestPolicyFactories) {
             var requestPolicyFactoriesLength = this._requestPolicyFactories.length;
             for (var i = requestPolicyFactoriesLength - 1; i >= 0; --i) {
                 var requestPolicyFactory = this._requestPolicyFactories[i];
-                firstRequestPolicy = requestPolicyFactory.create(firstRequestPolicy, this._requestPolicyOptions);
+                requestPolicyChainHead = requestPolicyFactory(requestPolicyChainHead, this._requestPolicyOptions);
             }
         }
-        return firstRequestPolicy.send(request);
+        return requestPolicyChainHead.send(request);
     };
     return HttpPipeline;
 }());

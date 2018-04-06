@@ -37,68 +37,62 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+var httpHeaders_1 = require("./httpHeaders");
 /**
  * Provides the fetch() method based on the environment.
  * @returns {fetch} fetch - The fetch() method available in the environment to make requests
  */
 function getFetch() {
-    // using window.Fetch in Edge gives a TypeMismatchError
-    // (https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/8546263/).
-    // Hence we will be using the fetch-ponyfill for Edge.
-    return (window && window.fetch && window.navigator && window.navigator.userAgent && window.navigator.userAgent.indexOf("Edge/") === -1)
-        ? window.fetch.bind(window)
-        : require("fetch-ponyfill")({ useCookie: true }).fetch;
+    return require("fetch-ponyfill")({ useCookie: true }).fetch;
 }
 /**
  * The cached fetch method that will be used to send HTTP requests.
  */
-var myFetch;
+var fetch;
 /**
  * A HttpClient implementation that uses fetch to send HTTP requests.
+ * @param request The request to send.
  */
-var FetchHttpClient = /** @class */ (function () {
-    function FetchHttpClient() {
-        if (!myFetch) {
-            myFetch = getFetch();
-        }
-    }
-    FetchHttpClient.prototype.send = function (request) {
-        return __awaiter(this, void 0, void 0, function () {
-            var result, fetchResponse_1, fetchResponseHeaders, responseHeaders, headerName, headerValue, response, err_1;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        _a.trys.push([0, 2, , 3]);
-                        return [4 /*yield*/, myFetch(request.url.toString(), request)];
-                    case 1:
-                        fetchResponse_1 = _a.sent();
-                        fetchResponseHeaders = fetchResponse_1.headers;
-                        responseHeaders = {};
-                        for (headerName in fetchResponseHeaders.keys()) {
-                            headerValue = fetchResponseHeaders.get(headerName);
-                            if (headerValue) {
-                                responseHeaders[headerName] = headerValue;
-                            }
-                        }
-                        response = {
-                            request: request,
-                            statusCode: fetchResponse_1.status,
-                            headers: responseHeaders,
-                            bodyAsText: function () { return fetchResponse_1.text(); },
-                            bodyAsJson: function () { return fetchResponse_1.json(); }
-                        };
-                        result = Promise.resolve(response);
-                        return [3 /*break*/, 3];
-                    case 2:
-                        err_1 = _a.sent();
-                        result = Promise.reject(err_1);
-                        return [3 /*break*/, 3];
-                    case 3: return [2 /*return*/, result];
-                }
-            });
+function fetchHttpClient(request) {
+    return __awaiter(this, void 0, void 0, function () {
+        var result, fetchRequestOptions, fetchResponse_1, responseHeaders_1, fetchResponseHeaders, response, err_1;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    if (!fetch) {
+                        fetch = getFetch();
+                    }
+                    _a.label = 1;
+                case 1:
+                    _a.trys.push([1, 3, , 4]);
+                    fetchRequestOptions = {
+                        method: request.httpMethod,
+                        headers: request.headers.toJson(),
+                        body: request.body
+                    };
+                    return [4 /*yield*/, fetch(request.url, fetchRequestOptions)];
+                case 2:
+                    fetchResponse_1 = _a.sent();
+                    responseHeaders_1 = new httpHeaders_1.HttpHeaders();
+                    fetchResponseHeaders = fetchResponse_1.headers;
+                    fetchResponseHeaders.forEach(function (headerValue, headerName) { responseHeaders_1.set(headerName, headerValue); });
+                    response = {
+                        request: request,
+                        statusCode: fetchResponse_1.status,
+                        headers: responseHeaders_1,
+                        bodyAsText: function () { return fetchResponse_1.text(); },
+                        bodyAsJson: function () { return fetchResponse_1.json(); }
+                    };
+                    result = Promise.resolve(response);
+                    return [3 /*break*/, 4];
+                case 3:
+                    err_1 = _a.sent();
+                    result = Promise.reject(err_1);
+                    return [3 /*break*/, 4];
+                case 4: return [2 /*return*/, result];
+            }
         });
-    };
-    return FetchHttpClient;
-}());
-exports.FetchHttpClient = FetchHttpClient;
+    });
+}
+exports.fetchHttpClient = fetchHttpClient;
 //# sourceMappingURL=fetchHttpClient.js.map

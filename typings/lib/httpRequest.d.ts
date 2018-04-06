@@ -1,4 +1,4 @@
-import { HttpHeaders } from "./httpHeaders";
+import { HttpHeaders, RawHttpHeaders } from "./httpHeaders";
 import { HttpMethod } from "./httpMethod";
 /**
  * An individual HTTP request that can be sent with a HttpClient.
@@ -6,9 +6,9 @@ import { HttpMethod } from "./httpMethod";
 export declare class HttpRequest {
     private _httpMethod;
     private _url;
-    private _headers;
     private _body;
-    constructor(_httpMethod: HttpMethod, _url: string, _headers: HttpHeaders, _body?: string | undefined);
+    private readonly _headers;
+    constructor(_httpMethod: HttpMethod, _url: string, headers: HttpHeaders | RawHttpHeaders, _body?: string | undefined);
     /**
      * Get the HTTP method that this request will use.
      */

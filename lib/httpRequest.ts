@@ -1,18 +1,21 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
-
-import { HttpHeaders } from "./httpHeaders";
+import { HttpHeaders, RawHttpHeaders } from "./httpHeaders";
 import { HttpMethod } from "./httpMethod";
 
 /**
  * An individual HTTP request that can be sent with a HttpClient.
  */
 export class HttpRequest {
-    constructor(private _httpMethod: HttpMethod, private _url: string, private _headers: HttpHeaders, private _body?: string) {
+    private readonly _headers: HttpHeaders;
+
+    constructor(private _httpMethod: HttpMethod, private _url: string, headers: HttpHeaders | RawHttpHeaders, private _body?: string) {
         if (!this._url) {
             const urlString: string = (this._url === undefined || this._url === null ? this._url : `"${this._url}"`);
             throw new Error(`${urlString} is not a valid URL for a HttpRequest.`);
         }
+
+        this._headers = (headers instanceof HttpHeaders ? headers : new HttpHeaders(headers));
     }
 
     /**

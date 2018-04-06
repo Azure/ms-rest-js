@@ -1,22 +1,20 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
-
-import { RequestPolicy, BaseRequestPolicy } from "../requestPolicy";
-import { RequestPolicyFactory } from "../requestPolicyFactory";
-import { RequestPolicyOptions } from "../requestPolicyOptions";
+import { HttpPipelineLogLevel } from "../httpPipelineLogLevel";
 import { HttpRequest } from "../httpRequest";
 import { HttpResponse } from "../httpResponse";
-import { HttpPipelineLogLevel } from "../httpPipelineLogLevel";
+import { BaseRequestPolicy, RequestPolicy } from "../requestPolicy";
+import { RequestPolicyFactory } from "../requestPolicyFactory";
+import { RequestPolicyOptions } from "../requestPolicyOptions";
 
-// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License. See License.txt in the project root for license information.
-export class UserAgentRequestPolicyFactory implements RequestPolicyFactory {
-    constructor(private _userAgent: string) {
-    }
-
-    public create(nextPolicy: RequestPolicy, options: RequestPolicyOptions): RequestPolicy {
-        return new UserAgentRequestPolicy(this._userAgent, nextPolicy, options);
-    }
+/**
+ * Get a RequestPolicyFactory that creates UserAgentRequestPolicies.
+ * @param userAgent The userAgent string to apply to each outgoing request.
+ */
+export function userAgentRequestPolicyFactory(userAgent: string): RequestPolicyFactory {
+    return (nextPolicy: RequestPolicy, options: RequestPolicyOptions) => {
+        return new UserAgentRequestPolicy(userAgent, nextPolicy, options);
+    };
 }
 
 class UserAgentRequestPolicy extends BaseRequestPolicy {
@@ -25,8 +23,10 @@ class UserAgentRequestPolicy extends BaseRequestPolicy {
     }
 
     send(request: HttpRequest): Promise<HttpResponse> {
-        this.log(HttpPipelineLogLevel.INFO, `Set "User-Agent" header to "${this._userAgent}".`)
-        request.headers['User-Agent'] = this._userAgent;
+        if (this.shouldLog(HttpPipelineLogLevel.INFO)) {
+            this.log(HttpPipelineLogLevel.INFO, `Set "User-Agent" header to "${this._userAgent}".`);
+        }
+        request.headers.set("User-Agent", this._userAgent);
         return this.nextPolicy.send(request);
     }
 }

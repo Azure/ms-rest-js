@@ -2,12 +2,13 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 Object.defineProperty(exports, "__esModule", { value: true });
+var httpHeaders_1 = require("../lib/httpHeaders");
 var InMemoryHttpResponse = /** @class */ (function () {
-    function InMemoryHttpResponse(_request, _statusCode, _headers, _bodyText) {
+    function InMemoryHttpResponse(_request, _statusCode, headers, _bodyText) {
         this._request = _request;
         this._statusCode = _statusCode;
-        this._headers = _headers;
         this._bodyText = _bodyText;
+        this._headers = (headers instanceof httpHeaders_1.HttpHeaders ? headers : new httpHeaders_1.HttpHeaders(headers));
     }
     Object.defineProperty(InMemoryHttpResponse.prototype, "request", {
         get: function () {

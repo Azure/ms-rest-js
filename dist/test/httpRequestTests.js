@@ -20,28 +20,28 @@ describe("HttpRequest", function () {
             var httpRequest = new httpRequest_1.HttpRequest("GET", "www.example.com", {});
             assert.strictEqual(httpRequest.httpMethod, "GET");
             assert.strictEqual(httpRequest.url, "www.example.com");
-            assert.deepStrictEqual(httpRequest.headers, {});
+            assert.deepStrictEqual(httpRequest.headers.toJson(), {});
             assert.strictEqual(httpRequest.body, undefined);
         });
         it("should return a valid POST HttpRequest when the body is undefined", function () {
             var httpRequest = new httpRequest_1.HttpRequest("POST", "www.example.com", {});
             assert.strictEqual(httpRequest.httpMethod, "POST");
             assert.strictEqual(httpRequest.url, "www.example.com");
-            assert.deepStrictEqual(httpRequest.headers, {});
+            assert.deepStrictEqual(httpRequest.headers.toJson(), {});
             assert.strictEqual(httpRequest.body, undefined);
         });
         it("should return a valid POST HttpRequest when the body is \"\"", function () {
             var httpRequest = new httpRequest_1.HttpRequest("POST", "www.example.com", {}, "");
             assert.strictEqual(httpRequest.httpMethod, "POST");
             assert.strictEqual(httpRequest.url, "www.example.com");
-            assert.deepStrictEqual(httpRequest.headers, {});
+            assert.deepStrictEqual(httpRequest.headers.toJson(), {});
             assert.strictEqual(httpRequest.body, "");
         });
         it("should return a valid POST HttpRequest when the body is \"hello\"", function () {
-            var httpRequest = new httpRequest_1.HttpRequest("POST", "www.example.com", { "Content-Length": 5 }, "hello");
+            var httpRequest = new httpRequest_1.HttpRequest("POST", "www.example.com", { "Content-Length": "5" }, "hello");
             assert.strictEqual(httpRequest.httpMethod, "POST");
             assert.strictEqual(httpRequest.url, "www.example.com");
-            assert.deepStrictEqual(httpRequest.headers, { "Content-Length": 5 });
+            assert.deepStrictEqual(httpRequest.headers.toJson(), { "Content-Length": "5" });
             assert.strictEqual(httpRequest.body, "hello");
         });
     });

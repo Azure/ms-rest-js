@@ -1,12 +1,14 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
-
-import { HttpResponse } from "../lib/httpResponse";
+import { HttpHeaders, RawHttpHeaders } from "../lib/httpHeaders";
 import { HttpRequest } from "../lib/httpRequest";
-import { HttpHeaders } from "../lib/httpHeaders";
+import { HttpResponse } from "../lib/httpResponse";
 
 export class InMemoryHttpResponse implements HttpResponse {
-    constructor(private _request: HttpRequest, private _statusCode: number, private _headers: HttpHeaders, private _bodyText?: string) {
+    private readonly _headers: HttpHeaders;
+
+    constructor(private _request: HttpRequest, private _statusCode: number, headers: HttpHeaders | RawHttpHeaders, private _bodyText?: string) {
+        this._headers = (headers instanceof HttpHeaders ? headers : new HttpHeaders(headers));
     }
 
     public get request(): HttpRequest {

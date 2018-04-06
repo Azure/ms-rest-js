@@ -2,19 +2,20 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 Object.defineProperty(exports, "__esModule", { value: true });
+var httpHeaders_1 = require("./httpHeaders");
 /**
  * An individual HTTP request that can be sent with a HttpClient.
  */
 var HttpRequest = /** @class */ (function () {
-    function HttpRequest(_httpMethod, _url, _headers, _body) {
+    function HttpRequest(_httpMethod, _url, headers, _body) {
         this._httpMethod = _httpMethod;
         this._url = _url;
-        this._headers = _headers;
         this._body = _body;
         if (!this._url) {
             var urlString = (this._url === undefined || this._url === null ? this._url : "\"" + this._url + "\"");
             throw new Error(urlString + " is not a valid URL for a HttpRequest.");
         }
+        this._headers = (headers instanceof httpHeaders_1.HttpHeaders ? headers : new httpHeaders_1.HttpHeaders(headers));
     }
     Object.defineProperty(HttpRequest.prototype, "httpMethod", {
         /**
