@@ -8,7 +8,7 @@ import { RequestPolicyFactory } from "../requestPolicyFactory";
 import { RequestPolicyOptions } from "../requestPolicyOptions";
 
 /**
- * Get a RequestPolicyFactory that creates UserAgentRequestPolicies.
+ * Get a RequestPolicyFactory that creates UserAgentPolicies.
  * @param userAgent The userAgent string to apply to each outgoing request.
  */
 export function userAgentPolicy(userAgent: string): RequestPolicyFactory {
