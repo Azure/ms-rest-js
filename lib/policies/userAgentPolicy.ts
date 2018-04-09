@@ -18,15 +18,15 @@ export function userAgentPolicy(userAgent: string): RequestPolicyFactory {
 }
 
 class UserAgentPolicy extends BaseRequestPolicy {
-    constructor(private readonly userAgent: string, nextPolicy: RequestPolicy, options: RequestPolicyOptions) {
+    constructor(private readonly _userAgent: string, nextPolicy: RequestPolicy, options: RequestPolicyOptions) {
         super(nextPolicy, options);
     }
 
     send(request: HttpRequest): Promise<HttpResponse> {
         if (this.shouldLog(HttpPipelineLogLevel.INFO)) {
-            this.log(HttpPipelineLogLevel.INFO, `Set "User-Agent" header to "${this.userAgent}".`);
+            this.log(HttpPipelineLogLevel.INFO, `Set "User-Agent" header to "${this._userAgent}".`);
         }
-        request.headers.set("User-Agent", this.userAgent);
-        return this.nextPolicy.send(request);
+        request.headers.set("User-Agent", this._userAgent);
+        return this._nextPolicy.send(request);
     }
 }

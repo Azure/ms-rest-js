@@ -32,10 +32,10 @@ export type RawHttpHeaders = { [headerName: string]: string };
  * A collection of HTTP header key/value pairs.
  */
 export class HttpHeaders {
-    private readonly headersMap: { [headerKey: string]: HttpHeader };
+    private readonly _headersMap: { [headerKey: string]: HttpHeader };
 
     constructor(rawHeaders?: RawHttpHeaders) {
-        this.headersMap = {};
+        this._headersMap = {};
         if (rawHeaders) {
             for (const headerName in rawHeaders) {
                 this.set(headerName, rawHeaders[headerName]);
@@ -50,7 +50,7 @@ export class HttpHeaders {
      * @param headerValue The value of the header to set.
      */
     public set(headerName: string, headerValue: string | number): void {
-        this.headersMap[getHeaderKey(headerName)] = { name: headerName, value: headerValue.toString() };
+        this._headersMap[getHeaderKey(headerName)] = { name: headerName, value: headerValue.toString() };
     }
 
     /**
@@ -59,7 +59,7 @@ export class HttpHeaders {
      * @param headerName The name of the header.
      */
     public get(headerName: string): string | undefined {
-        const header: HttpHeader = this.headersMap[getHeaderKey(headerName)];
+        const header: HttpHeader = this._headersMap[getHeaderKey(headerName)];
         return !header ? undefined : header.value;
     }
 
@@ -68,8 +68,8 @@ export class HttpHeaders {
      */
     public headers(): HttpHeader[] {
         const headers: HttpHeader[] = [];
-        for (const headerKey in this.headersMap) {
-            headers.push(this.headersMap[headerKey]);
+        for (const headerKey in this._headersMap) {
+            headers.push(this._headersMap[headerKey]);
         }
         return headers;
     }

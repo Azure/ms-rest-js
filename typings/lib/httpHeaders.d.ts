@@ -21,7 +21,7 @@ export declare type RawHttpHeaders = {
  * A collection of HTTP header key/value pairs.
  */
 export declare class HttpHeaders {
-    private readonly headersMap;
+    private readonly _headersMap;
     constructor(rawHeaders?: RawHttpHeaders);
     /**
      * Set a header in this collection with the provided name and value. The name is

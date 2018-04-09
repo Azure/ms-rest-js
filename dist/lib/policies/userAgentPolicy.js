@@ -26,17 +26,17 @@ function userAgentPolicy(userAgent) {
 exports.userAgentPolicy = userAgentPolicy;
 var UserAgentPolicy = /** @class */ (function (_super) {
     __extends(UserAgentPolicy, _super);
-    function UserAgentPolicy(userAgent, nextPolicy, options) {
+    function UserAgentPolicy(_userAgent, nextPolicy, options) {
         var _this = _super.call(this, nextPolicy, options) || this;
-        _this.userAgent = userAgent;
+        _this._userAgent = _userAgent;
         return _this;
     }
     UserAgentPolicy.prototype.send = function (request) {
         if (this.shouldLog(httpPipelineLogLevel_1.HttpPipelineLogLevel.INFO)) {
-            this.log(httpPipelineLogLevel_1.HttpPipelineLogLevel.INFO, "Set \"User-Agent\" header to \"" + this.userAgent + "\".");
+            this.log(httpPipelineLogLevel_1.HttpPipelineLogLevel.INFO, "Set \"User-Agent\" header to \"" + this._userAgent + "\".");
         }
-        request.headers.set("User-Agent", this.userAgent);
-        return this.nextPolicy.send(request);
+        request.headers.set("User-Agent", this._userAgent);
+        return this._nextPolicy.send(request);
     };
     return UserAgentPolicy;
 }(requestPolicy_1.BaseRequestPolicy));

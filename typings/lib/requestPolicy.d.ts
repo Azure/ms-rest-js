@@ -18,9 +18,9 @@ export interface RequestPolicy {
  * A base class implementation of RequestPolicy.
  */
 export declare abstract class BaseRequestPolicy implements RequestPolicy {
-    protected readonly nextPolicy: RequestPolicy;
-    private readonly options;
-    constructor(nextPolicy: RequestPolicy, options: RequestPolicyOptions);
+    protected readonly _nextPolicy: RequestPolicy;
+    private readonly _options;
+    constructor(_nextPolicy: RequestPolicy, _options: RequestPolicyOptions);
     abstract send(request: HttpRequest): Promise<HttpResponse>;
     /**
      * Get whether or not a log with the provided log level should be logged.

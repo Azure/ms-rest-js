@@ -56,7 +56,6 @@ describe("fetchHttpClient", function () {
                     assert.deepStrictEqual(response.request, request);
                     assert.strictEqual(response.statusCode, 200);
                     assert(response.headers);
-                    assert.strictEqual(response.headers.get("accept-ranges"), "bytes");
                     assert.strictEqual(response.headers.get("connection"), "close");
                     assert.strictEqual(response.headers.get("content-encoding"), "gzip");
                     assert.strictEqual(response.headers.get("content-length"), "606");
@@ -69,6 +68,47 @@ describe("fetchHttpClient", function () {
                     assert.strictEqual(responseBody, expectedResponseBody);
                     return [2 /*return*/];
             }
+        });
+    }); });
+    it("should throw for awaited 404", function () { return __awaiter(_this, void 0, void 0, function () {
+        var request, httpClient, error_1;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    request = new httpRequest_1.HttpRequest(httpMethod_1.HttpMethod.GET, "http://www.notanexample.coms", {});
+                    httpClient = new fetchHttpClient_1.FetchHttpClient();
+                    _a.label = 1;
+                case 1:
+                    _a.trys.push([1, 3, , 4]);
+                    return [4 /*yield*/, httpClient.send(request)];
+                case 2:
+                    _a.sent();
+                    assert.fail("Expected error to be thrown.");
+                    return [3 /*break*/, 4];
+                case 3:
+                    error_1 = _a.sent();
+                    assert.strictEqual(error_1.name, "FetchError");
+                    assert.strictEqual(error_1.code, "ENOTFOUND");
+                    assert.strictEqual(error_1.message, "request to http://www.notanexample.coms failed, reason: getaddrinfo ENOTFOUND www.notanexample.coms www.notanexample.coms:80");
+                    return [3 /*break*/, 4];
+                case 4: return [2 /*return*/];
+            }
+        });
+    }); });
+    it("should reject for promised 404", function () { return __awaiter(_this, void 0, void 0, function () {
+        var request, httpClient;
+        return __generator(this, function (_a) {
+            request = new httpRequest_1.HttpRequest(httpMethod_1.HttpMethod.GET, "http://www.notanexample.coms", {});
+            httpClient = new fetchHttpClient_1.FetchHttpClient();
+            return [2 /*return*/, httpClient.send(request)
+                    .then(function () {
+                    assert.fail("Expected error to be thrown.");
+                })
+                    .catch(function (error) {
+                    assert.strictEqual(error.name, "FetchError");
+                    assert.strictEqual(error.code, "ENOTFOUND");
+                    assert.strictEqual(error.message, "request to http://www.notanexample.coms failed, reason: getaddrinfo ENOTFOUND www.notanexample.coms www.notanexample.coms:80");
+                })];
         });
     }); });
 });
