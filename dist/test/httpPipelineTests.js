@@ -126,7 +126,7 @@ describe("HttpPipeline", function () {
                                 var response;
                                 return __generator(this, function (_a) {
                                     switch (_a.label) {
-                                        case 0: return [4 /*yield*/, this.nextPolicy.send(request)];
+                                        case 0: return [4 /*yield*/, this._nextPolicy.send(request)];
                                         case 1:
                                             response = _a.sent();
                                             response.headers.set("My-Header", "My-Value");

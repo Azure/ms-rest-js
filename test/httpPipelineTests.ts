@@ -57,7 +57,7 @@ describe("HttpPipeline", () => {
 
         class ResponseModifyingRequestPolicy extends BaseRequestPolicy {
             public async send(request: HttpRequest): Promise<HttpResponse> {
-                const response: HttpResponse = await this.nextPolicy.send(request);
+                const response: HttpResponse = await this._nextPolicy.send(request);
                 response.headers.set("My-Header", "My-Value");
                 return response;
             }

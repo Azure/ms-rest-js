@@ -7,11 +7,11 @@ import { RequestPolicyFactory } from "./requestPolicyFactory";
  * be applied to a HTTP response when it is received.
  */
 export declare class HttpPipeline {
-    private readonly requestPolicyFactories;
-    private readonly options;
-    private readonly httpClient;
-    private readonly requestPolicyOptions;
-    constructor(requestPolicyFactories: RequestPolicyFactory[], options: HttpPipelineOptions);
+    private readonly _requestPolicyFactories;
+    private readonly _httpPipelineOptions;
+    private readonly _httpClient;
+    private readonly _requestPolicyOptions;
+    constructor(_requestPolicyFactories: RequestPolicyFactory[], _httpPipelineOptions: HttpPipelineOptions);
     /**
      * Send the provided HttpRequest request.
      * @param request The HTTP request to send.

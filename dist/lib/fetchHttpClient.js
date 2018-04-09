@@ -48,11 +48,11 @@ var FetchHttpClient = /** @class */ (function () {
     }
     FetchHttpClient.prototype.send = function (request) {
         return __awaiter(this, void 0, void 0, function () {
-            var result, fetchRequestOptions, fetchResponse_1, responseHeaders_1, fetchResponseHeaders, response, err_1;
+            var _this = this;
+            var fetchRequestOptions, fetchResponse, responseHeaders, fetchResponseHeaders;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        _a.trys.push([0, 2, , 3]);
                         fetchRequestOptions = {
                             method: request.httpMethod,
                             headers: request.headers.toJson(),
@@ -60,24 +60,27 @@ var FetchHttpClient = /** @class */ (function () {
                         };
                         return [4 /*yield*/, fetch(request.url, fetchRequestOptions)];
                     case 1:
-                        fetchResponse_1 = _a.sent();
-                        responseHeaders_1 = new httpHeaders_1.HttpHeaders();
-                        fetchResponseHeaders = fetchResponse_1.headers;
-                        fetchResponseHeaders.forEach(function (headerValue, headerName) { responseHeaders_1.set(headerName, headerValue); });
-                        response = {
-                            request: request,
-                            statusCode: fetchResponse_1.status,
-                            headers: responseHeaders_1,
-                            textBody: function () { return fetchResponse_1.text(); },
-                            deserializedBody: function () { return fetchResponse_1.json(); }
-                        };
-                        result = Promise.resolve(response);
-                        return [3 /*break*/, 3];
-                    case 2:
-                        err_1 = _a.sent();
-                        result = Promise.reject(err_1);
-                        return [3 /*break*/, 3];
-                    case 3: return [2 /*return*/, result];
+                        fetchResponse = _a.sent();
+                        responseHeaders = new httpHeaders_1.HttpHeaders();
+                        fetchResponseHeaders = fetchResponse.headers;
+                        fetchResponseHeaders.forEach(function (headerValue, headerName) { responseHeaders.set(headerName, headerValue); });
+                        return [2 /*return*/, {
+                                request: request,
+                                statusCode: fetchResponse.status,
+                                headers: responseHeaders,
+                                textBody: function () { return __awaiter(_this, void 0, void 0, function () { return __generator(this, function (_a) {
+                                    switch (_a.label) {
+                                        case 0: return [4 /*yield*/, fetchResponse.text()];
+                                        case 1: return [2 /*return*/, _a.sent()];
+                                    }
+                                }); }); },
+                                deserializedBody: function () { return __awaiter(_this, void 0, void 0, function () { return __generator(this, function (_a) {
+                                    switch (_a.label) {
+                                        case 0: return [4 /*yield*/, fetchResponse.json()];
+                                        case 1: return [2 /*return*/, _a.sent()];
+                                    }
+                                }); }); }
+                            }];
                 }
             });
         });

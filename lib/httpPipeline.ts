@@ -23,20 +23,20 @@ function getDefaultHttpClient(): HttpClient {
  * be applied to a HTTP response when it is received.
  */
 export class HttpPipeline {
-    private readonly httpClient: HttpClient;
-    private readonly requestPolicyOptions: RequestPolicyOptions;
+    private readonly _httpClient: HttpClient;
+    private readonly _requestPolicyOptions: RequestPolicyOptions;
 
-    constructor(private readonly requestPolicyFactories: RequestPolicyFactory[], private readonly options: HttpPipelineOptions) {
-        if (!this.options) {
-            this.options = {};
+    constructor(private readonly _requestPolicyFactories: RequestPolicyFactory[], private readonly _httpPipelineOptions: HttpPipelineOptions) {
+        if (!this._httpPipelineOptions) {
+            this._httpPipelineOptions = {};
         }
 
-        if (!this.options.httpClient) {
-            this.options.httpClient = getDefaultHttpClient();
+        if (!this._httpPipelineOptions.httpClient) {
+            this._httpPipelineOptions.httpClient = getDefaultHttpClient();
         }
 
-        this.httpClient = this.options.httpClient;
-        this.requestPolicyOptions = new RequestPolicyOptions(this.options.pipelineLogger);
+        this._httpClient = this._httpPipelineOptions.httpClient;
+        this._requestPolicyOptions = new RequestPolicyOptions(this._httpPipelineOptions.pipelineLogger);
     }
 
     /**
@@ -45,12 +45,12 @@ export class HttpPipeline {
      * @return A Promise that resolves to the HttpResponse from the targeted server.
      */
     public send(request: HttpRequest): Promise<HttpResponse> {
-        let requestPolicyChainHead: RequestPolicy = this.httpClient;
-        if (this.requestPolicyFactories) {
-            const requestPolicyFactoriesLength: number = this.requestPolicyFactories.length;
+        let requestPolicyChainHead: RequestPolicy = this._httpClient;
+        if (this._requestPolicyFactories) {
+            const requestPolicyFactoriesLength: number = this._requestPolicyFactories.length;
             for (let i = requestPolicyFactoriesLength - 1; i >= 0; --i) {
-                const requestPolicyFactory: RequestPolicyFactory = this.requestPolicyFactories[i];
-                requestPolicyChainHead = requestPolicyFactory(requestPolicyChainHead, this.requestPolicyOptions);
+                const requestPolicyFactory: RequestPolicyFactory = this._requestPolicyFactories[i];
+                requestPolicyChainHead = requestPolicyFactory(requestPolicyChainHead, this._requestPolicyOptions);
             }
         }
         return requestPolicyChainHead.send(request);

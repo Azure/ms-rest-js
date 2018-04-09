@@ -13,7 +13,7 @@ function getHeaderKey(headerName) {
  */
 var HttpHeaders = /** @class */ (function () {
     function HttpHeaders(rawHeaders) {
-        this.headersMap = {};
+        this._headersMap = {};
         if (rawHeaders) {
             for (var headerName in rawHeaders) {
                 this.set(headerName, rawHeaders[headerName]);
@@ -27,7 +27,7 @@ var HttpHeaders = /** @class */ (function () {
      * @param headerValue The value of the header to set.
      */
     HttpHeaders.prototype.set = function (headerName, headerValue) {
-        this.headersMap[getHeaderKey(headerName)] = { name: headerName, value: headerValue.toString() };
+        this._headersMap[getHeaderKey(headerName)] = { name: headerName, value: headerValue.toString() };
     };
     /**
      * Get the header value for the provided header name, or undefined if no header exists in this
@@ -35,7 +35,7 @@ var HttpHeaders = /** @class */ (function () {
      * @param headerName The name of the header.
      */
     HttpHeaders.prototype.get = function (headerName) {
-        var header = this.headersMap[getHeaderKey(headerName)];
+        var header = this._headersMap[getHeaderKey(headerName)];
         return !header ? undefined : header.value;
     };
     /**
@@ -43,8 +43,8 @@ var HttpHeaders = /** @class */ (function () {
      */
     HttpHeaders.prototype.headers = function () {
         var headers = [];
-        for (var headerKey in this.headersMap) {
-            headers.push(this.headersMap[headerKey]);
+        for (var headerKey in this._headersMap) {
+            headers.push(this._headersMap[headerKey]);
         }
         return headers;
     };

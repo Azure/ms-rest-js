@@ -2,6 +2,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 Object.defineProperty(exports, "__esModule", { value: true });
+var httpPipelineLogLevel_1 = require("./httpPipelineLogLevel");
 /**
  * A HttpPipelineLogger that will send its logs to the console.
  */
@@ -21,7 +22,7 @@ var ConsoleHttpPipelineLogger = /** @class */ (function () {
      *                           provided message.
      */
     ConsoleHttpPipelineLogger.prototype.log = function (logLevel, message) {
-        console.log(logLevel + ": " + message);
+        console.log(httpPipelineLogLevel_1.HttpPipelineLogLevel[logLevel] + ": " + message);
     };
     return ConsoleHttpPipelineLogger;
 }());

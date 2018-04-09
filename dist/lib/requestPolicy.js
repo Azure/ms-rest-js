@@ -6,9 +6,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * A base class implementation of RequestPolicy.
  */
 var BaseRequestPolicy = /** @class */ (function () {
-    function BaseRequestPolicy(nextPolicy, options) {
-        this.nextPolicy = nextPolicy;
-        this.options = options;
+    function BaseRequestPolicy(_nextPolicy, _options) {
+        this._nextPolicy = _nextPolicy;
+        this._options = _options;
     }
     /**
      * Get whether or not a log with the provided log level should be logged.
@@ -16,7 +16,7 @@ var BaseRequestPolicy = /** @class */ (function () {
      * @returns Whether or not a log with the provided log level should be logged.
      */
     BaseRequestPolicy.prototype.shouldLog = function (logLevel) {
-        return this.options.shouldLog(logLevel);
+        return this._options.shouldLog(logLevel);
     };
     /**
      * Attempt to log the provided message to the provided logger. If no logger was provided or if
@@ -25,7 +25,7 @@ var BaseRequestPolicy = /** @class */ (function () {
      * @param message The message of this log.
      */
     BaseRequestPolicy.prototype.log = function (logLevel, message) {
-        this.options.log(logLevel, message);
+        this._options.log(logLevel, message);
     };
     return BaseRequestPolicy;
 }());
