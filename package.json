@@ -52,6 +52,7 @@
     "mocha": "^3.5.3",
     "should": "5.2.0",
     "ts-loader": "^2.3.7",
+    "ts-node": "^5.0.1",
     "tslint": "^5.7.0",
     "typescript": "^2.7.2",
     "uglify-es": "^3.1.0",
@@ -67,10 +68,9 @@
   },
   "scripts": {
     "tsc": "tsc -p tsconfig.json",
-    "test": "npm -s run-script tslint && npm -s run-script unit",
-    "unit": "mocha -t 50000 ./dist/test",
+    "test": "mocha -r ts-node/register -t 50000 ./test/**/*.ts",
     "uglify": "node node_modules/uglify-es/bin/uglifyjs --source-map -c -m -o msRestBundle.min.js msRestBundle.js",
-    "build": "npm -s run-script tsc && webpack && npm -s run-script uglify",
+    "build": "npm run tsc && npm run tslint && webpack && npm run uglify",
     "tslint": "tslint -p . -c tslint.json --exclude test/**/*.ts"
   }
 }
