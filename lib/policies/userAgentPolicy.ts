@@ -6,6 +6,7 @@ import { HttpResponse } from "../httpResponse";
 import { BaseRequestPolicy, RequestPolicy } from "../requestPolicy";
 import { RequestPolicyFactory } from "../requestPolicyFactory";
 import { RequestPolicyOptions } from "../requestPolicyOptions";
+import { Constants } from "../util/constants";
 
 /**
  * Get a RequestPolicyFactory that creates UserAgentPolicies.
@@ -24,9 +25,9 @@ class UserAgentPolicy extends BaseRequestPolicy {
 
     send(request: HttpRequest): Promise<HttpResponse> {
         if (this.shouldLog(HttpPipelineLogLevel.INFO)) {
-            this.log(HttpPipelineLogLevel.INFO, `Set "User-Agent" header to "${this._userAgent}".`);
+            this.log(HttpPipelineLogLevel.INFO, `Set "${Constants.HeaderConstants.USER_AGENT}" header to "${this._userAgent}".`);
         }
-        request.headers.set("User-Agent", this._userAgent);
+        request.headers.set(Constants.HeaderConstants.USER_AGENT, this._userAgent);
         return this._nextPolicy.send(request);
     }
 }
