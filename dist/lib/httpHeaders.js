@@ -39,9 +39,20 @@ var HttpHeaders = /** @class */ (function () {
         return !header ? undefined : header.value;
     };
     /**
-     * Get the headers that are contained in this collection.
+     * Get the headers that are contained this collection as an object.
      */
-    HttpHeaders.prototype.headers = function () {
+    HttpHeaders.prototype.rawHeaders = function () {
+        var result = {};
+        for (var headerKey in this._headersMap) {
+            var header = this._headersMap[headerKey];
+            result[header.name] = header.value;
+        }
+        return result;
+    };
+    /**
+     * Get the headers that are contained in this collection as an array.
+     */
+    HttpHeaders.prototype.headersArray = function () {
         var headers = [];
         for (var headerKey in this._headersMap) {
             headers.push(this._headersMap[headerKey]);
@@ -53,7 +64,7 @@ var HttpHeaders = /** @class */ (function () {
      */
     HttpHeaders.prototype.headerNames = function () {
         var headerNames = [];
-        var headers = this.headers();
+        var headers = this.headersArray();
         for (var i = 0; i < headers.length; ++i) {
             headerNames.push(headers[i].name);
         }
@@ -64,7 +75,7 @@ var HttpHeaders = /** @class */ (function () {
      */
     HttpHeaders.prototype.headerValues = function () {
         var headerValues = [];
-        var headers = this.headers();
+        var headers = this.headersArray();
         for (var i = 0; i < headers.length; ++i) {
             headerValues.push(headers[i].value);
         }
@@ -75,11 +86,17 @@ var HttpHeaders = /** @class */ (function () {
      */
     HttpHeaders.prototype.toJson = function () {
         var result = {};
-        var headers = this.headers();
+        var headers = this.headersArray();
         for (var i = 0; i < headers.length; ++i) {
             result[headers[i].name] = headers[i].value;
         }
         return result;
+    };
+    /**
+     * Create a deep clone/copy of this HttpHeaders collection.
+     */
+    HttpHeaders.prototype.clone = function () {
+        return new HttpHeaders(this.rawHeaders());
     };
     return HttpHeaders;
 }());

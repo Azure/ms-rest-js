@@ -42,6 +42,10 @@ export interface RetryOptions {
      * The maximum number of milliseconds to wait before retrying.
      */
     maximumRetryIntervalInMilliseconds?: number;
+    /**
+     * The function to use to delay before sending a retry attempt.
+     */
+    delayFunction?: (delayInMilliseconds: number) => Promise<void>;
 }
 
 /**
@@ -49,33 +53,35 @@ export interface RetryOptions {
  */
 export function exponentialRetryPolicy(retryOptions?: RetryOptions): RequestPolicyFactory {
     return (nextPolicy: RequestPolicy, options: RequestPolicyOptions) => {
-        return new ExponentialRetryPolicy(retryOptions || {}, nextPolicy, options, utils.delay);
+        return new ExponentialRetryPolicy(retryOptions || {}, nextPolicy, options);
     };
 }
 
 class ExponentialRetryPolicy extends BaseRequestPolicy {
-    private readonly maximumAttempts: number;
-    private readonly initialRetryDelayInMilliseconds: number;
-    private readonly maximumRetryDelayInMilliseconds: number;
+    private readonly _maximumAttempts: number;
+    private readonly _initialRetryDelayInMilliseconds: number;
+    private readonly _maximumRetryDelayInMilliseconds: number;
+    private readonly _delayFunction: (delayInMilliseconds: number) => Promise<void>;
 
-    constructor(retryOptions: RetryOptions, nextPolicy: RequestPolicy, options: RequestPolicyOptions, private readonly delayFunction: (delay: number) => Promise<never>) {
+    constructor(retryOptions: RetryOptions, nextPolicy: RequestPolicy, options: RequestPolicyOptions) {
         super(nextPolicy, options);
 
-        this.maximumAttempts = retryOptions.maximumAttempts || 3;
-        this.initialRetryDelayInMilliseconds = retryOptions.initialRetryDelayInMilliseconds || 30 * 1000;
-        this.maximumRetryDelayInMilliseconds = retryOptions.maximumRetryIntervalInMilliseconds || 90 * 1000;
+        this._maximumAttempts = retryOptions.maximumAttempts || 3;
+        this._initialRetryDelayInMilliseconds = retryOptions.initialRetryDelayInMilliseconds || 30 * 1000;
+        this._maximumRetryDelayInMilliseconds = retryOptions.maximumRetryIntervalInMilliseconds || 90 * 1000;
+        this._delayFunction = retryOptions.delayFunction || utils.delay;
     }
 
     public async send(request: HttpRequest): Promise<HttpResponse> {
         let response: HttpResponse | undefined;
-        let shouldAttempt: boolean = true;
-        let attemptNumber: number = 0;
-        let attemptDelayInMilliseconds: number = this.initialRetryDelayInMilliseconds;
+        let shouldAttempt = true;
+        let attemptNumber = 0;
+        let attemptDelayInMilliseconds: number = this._initialRetryDelayInMilliseconds;
         let responseError: RetryError | undefined;
         while (shouldAttempt) {
             try {
                 ++attemptNumber;
-                response = await this.nextPolicy.send(request.clone());
+                response = await this._nextPolicy.send(request.clone());
 
                 if (response) {
                     const statusCode: number = response.statusCode;
@@ -91,17 +97,17 @@ class ExponentialRetryPolicy extends BaseRequestPolicy {
                 responseError = error;
             }
 
-            shouldAttempt = shouldAttempt && attemptNumber < this.maximumAttempts;
+            shouldAttempt = shouldAttempt && attemptNumber < this._maximumAttempts;
             if (shouldAttempt) {
                 response = undefined;
 
                 if (attemptNumber >= 2) {
                     const boundedRandomDelta: number = (attemptDelayInMilliseconds * 0.8) + Math.floor(Math.random() * attemptDelayInMilliseconds * 0.4);
                     const incrementDelta: number = (Math.pow(2, attemptNumber) - 1) * boundedRandomDelta;
-                    attemptDelayInMilliseconds = Math.min(attemptDelayInMilliseconds + incrementDelta, this.maximumRetryDelayInMilliseconds);
+                    attemptDelayInMilliseconds = Math.min(attemptDelayInMilliseconds + incrementDelta, this._maximumRetryDelayInMilliseconds);
                 }
 
-                await this.delayFunction(attemptDelayInMilliseconds);
+                await this._delayFunction(attemptDelayInMilliseconds);
             }
         }
         return response ? Promise.resolve(response) : Promise.reject(responseError);

@@ -64,9 +64,21 @@ export class HttpHeaders {
     }
 
     /**
-     * Get the headers that are contained in this collection.
+     * Get the headers that are contained this collection as an object.
      */
-    public headers(): HttpHeader[] {
+    public rawHeaders(): RawHttpHeaders {
+        const result: RawHttpHeaders = {};
+        for (const headerKey in this._headersMap) {
+            const header: HttpHeader = this._headersMap[headerKey];
+            result[header.name] = header.value;
+        }
+        return result;
+    }
+
+    /**
+     * Get the headers that are contained in this collection as an array.
+     */
+    public headersArray(): HttpHeader[] {
         const headers: HttpHeader[] = [];
         for (const headerKey in this._headersMap) {
             headers.push(this._headersMap[headerKey]);
@@ -79,7 +91,7 @@ export class HttpHeaders {
      */
     public headerNames(): string[] {
         const headerNames: string[] = [];
-        const headers: HttpHeader[] = this.headers();
+        const headers: HttpHeader[] = this.headersArray();
         for (let i = 0; i < headers.length; ++i) {
             headerNames.push(headers[i].name);
         }
@@ -91,7 +103,7 @@ export class HttpHeaders {
      */
     public headerValues(): string[] {
         const headerValues: string[] = [];
-        const headers: HttpHeader[] = this.headers();
+        const headers: HttpHeader[] = this.headersArray();
         for (let i = 0; i < headers.length; ++i) {
             headerValues.push(headers[i].value);
         }
@@ -104,11 +116,18 @@ export class HttpHeaders {
     public toJson(): RawHttpHeaders {
         const result: RawHttpHeaders = {};
 
-        const headers: HttpHeader[] = this.headers();
+        const headers: HttpHeader[] = this.headersArray();
         for (let i = 0; i < headers.length; ++i) {
             result[headers[i].name] = headers[i].value;
         }
 
         return result;
+    }
+
+    /**
+     * Create a deep clone/copy of this HttpHeaders collection.
+     */
+    public clone(): HttpHeaders {
+        return new HttpHeaders(this.rawHeaders());
     }
 }

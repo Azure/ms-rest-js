@@ -37,9 +37,13 @@ export declare class HttpHeaders {
      */
     get(headerName: string): string | undefined;
     /**
-     * Get the headers that are contained in this collection.
+     * Get the headers that are contained this collection as an object.
      */
-    headers(): HttpHeader[];
+    rawHeaders(): RawHttpHeaders;
+    /**
+     * Get the headers that are contained in this collection as an array.
+     */
+    headersArray(): HttpHeader[];
     /**
      * Get the header names that are contained in this collection.
      */
@@ -52,4 +56,8 @@ export declare class HttpHeaders {
      * Get the JSON object representation of this HTTP header collection.
      */
     toJson(): RawHttpHeaders;
+    /**
+     * Create a deep clone/copy of this HttpHeaders collection.
+     */
+    clone(): HttpHeaders;
 }

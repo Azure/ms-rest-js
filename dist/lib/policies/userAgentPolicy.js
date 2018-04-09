@@ -15,7 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var httpPipelineLogLevel_1 = require("../httpPipelineLogLevel");
 var requestPolicy_1 = require("../requestPolicy");
 /**
- * Get a RequestPolicyFactory that creates UserAgentRequestPolicies.
+ * Get a RequestPolicyFactory that creates UserAgentPolicies.
  * @param userAgent The userAgent string to apply to each outgoing request.
  */
 function userAgentPolicy(userAgent) {
