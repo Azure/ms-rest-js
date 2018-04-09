@@ -22,7 +22,7 @@ export class InMemoryHttpResponse implements HttpResponse {
     public get headers(): HttpHeaders {
         return this._headers;
     }
-    
+
     textBody(): Promise<string | undefined> {
         return Promise.resolve(this._bodyText);
     }

@@ -41,9 +41,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var assert = require("assert");
 var httpMethod_1 = require("../../lib/httpMethod");
 var httpRequest_1 = require("../../lib/httpRequest");
+var inMemoryHttpResponse_1 = require("../../lib/inMemoryHttpResponse");
 var exponentialRetryPolicy_1 = require("../../lib/policies/exponentialRetryPolicy");
 var requestPolicyOptions_1 = require("../../lib/requestPolicyOptions");
-var inMemoryHttpResponse_1 = require("../inMemoryHttpResponse");
 describe("exponentialRetryPolicy", function () {
     it("should do nothing if no error occurs", function () { return __awaiter(_this, void 0, void 0, function () {
         var policyFactory, nextPolicy, policy, request, response;

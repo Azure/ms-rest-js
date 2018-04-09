@@ -6,10 +6,10 @@ import { HttpMethod } from "../lib/httpMethod";
 import { HttpPipeline } from "../lib/httpPipeline";
 import { HttpRequest } from "../lib/httpRequest";
 import { HttpResponse } from "../lib/httpResponse";
+import { InMemoryHttpResponse } from "../lib/inMemoryHttpResponse";
 import { userAgentPolicy } from "../lib/policies/userAgentPolicy";
 import { BaseRequestPolicy } from "../lib/requestPolicy";
 import { FakeHttpClient } from "./fakeHttpClient";
-import { InMemoryHttpResponse } from "./inMemoryHttpResponse";
 
 describe("HttpPipeline", () => {
     it("should send requests when no request policies are assigned", async () => {
@@ -24,7 +24,7 @@ describe("HttpPipeline", () => {
         assert.deepStrictEqual(response.request, httpRequest);
         assert.strictEqual(response.statusCode, 200);
         assert.deepStrictEqual(response.headers.toJson(), {});
-        
+
         const responseBodyAsText: string | undefined = await response.textBody();
         assert.strictEqual("hello", responseBodyAsText);
     });

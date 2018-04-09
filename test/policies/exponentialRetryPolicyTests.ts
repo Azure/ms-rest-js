@@ -4,11 +4,11 @@ import * as assert from "assert";
 import { HttpMethod } from "../../lib/httpMethod";
 import { HttpRequest } from "../../lib/httpRequest";
 import { HttpResponse } from "../../lib/httpResponse";
+import { InMemoryHttpResponse } from "../../lib/inMemoryHttpResponse";
 import { exponentialRetryPolicy } from "../../lib/policies/exponentialRetryPolicy";
 import { RequestPolicy } from "../../lib/requestPolicy";
 import { RequestPolicyFactory } from "../../lib/requestPolicyFactory";
 import { RequestPolicyOptions } from "../../lib/requestPolicyOptions";
-import { InMemoryHttpResponse } from "../inMemoryHttpResponse";
 
 describe("exponentialRetryPolicy", () => {
     it("should do nothing if no error occurs", async () => {
@@ -23,7 +23,7 @@ describe("exponentialRetryPolicy", () => {
                 request.headers.set("A", "B");
                 return Promise.resolve(new InMemoryHttpResponse(request, 200, {}));
             }
-        }
+        };
 
         const policy: RequestPolicy = policyFactory(nextPolicy, new RequestPolicyOptions());
         const request = new HttpRequest(HttpMethod.GET, "https://spam.com", {});
@@ -34,7 +34,7 @@ describe("exponentialRetryPolicy", () => {
     });
 
     it("should retry if an undefined HttpResponse is returned", async () => {
-        let millisecondsDelayed: number = 0;
+        let millisecondsDelayed = 0;
 
         const policyFactory: RequestPolicyFactory = exponentialRetryPolicy({
             maximumAttempts: 3,
@@ -54,7 +54,7 @@ describe("exponentialRetryPolicy", () => {
                 request.headers.set("A", attempt);
                 return Promise.resolve(attempt === 1 ? <any>undefined : new InMemoryHttpResponse(request, 200, {}));
             }
-        }
+        };
 
         const policy: RequestPolicy = policyFactory(nextPolicy, new RequestPolicyOptions());
         const request = new HttpRequest(HttpMethod.GET, "https://spam.com", {});

@@ -1,4 +1,14 @@
 "use strict";
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -34,38 +44,48 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var _this = this;
 Object.defineProperty(exports, "__esModule", { value: true });
+var requestPolicy_1 = require("../requestPolicy");
+var inMemoryHttpResponse_1 = require("../inMemoryHttpResponse");
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
-var assert = require("assert");
-var httpMethod_1 = require("../../lib/httpMethod");
-var httpRequest_1 = require("../../lib/httpRequest");
-var inMemoryHttpResponse_1 = require("../../lib/inMemoryHttpResponse");
-var userAgentPolicy_1 = require("../../lib/policies/userAgentPolicy");
-var requestPolicyOptions_1 = require("../../lib/requestPolicyOptions");
-describe("userAgentPolicy", function () {
-    it("assigns the 'User-Agent' header to requests and does nothing to responses", function () { return __awaiter(_this, void 0, void 0, function () {
-        var policyFactory, nextPolicy, policy, request, response;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    policyFactory = userAgentPolicy_1.userAgentPolicy("my-user-agent-string");
-                    nextPolicy = {
-                        send: function (request) {
-                            return Promise.resolve(new inMemoryHttpResponse_1.InMemoryHttpResponse(request, 200, {}));
-                        }
-                    };
-                    policy = policyFactory(nextPolicy, new requestPolicyOptions_1.RequestPolicyOptions());
-                    request = new httpRequest_1.HttpRequest(httpMethod_1.HttpMethod.GET, "https://spam.com", {});
-                    return [4 /*yield*/, policy.send(request)];
-                case 1:
-                    response = _a.sent();
-                    assert.deepStrictEqual(request, new httpRequest_1.HttpRequest(httpMethod_1.HttpMethod.GET, "https://spam.com", { "User-Agent": "my-user-agent-string" }));
-                    assert.deepStrictEqual(response.request, new httpRequest_1.HttpRequest(httpMethod_1.HttpMethod.GET, "https://spam.com", { "User-Agent": "my-user-agent-string" }));
-                    return [2 /*return*/];
-            }
+/**
+ * Get a RequestPolicyFactory that creates UserAgentPolicies.
+ * @param userAgent The userAgent string to apply to each outgoing request.
+ */
+function logPolicy(logFunction) {
+    return function (nextPolicy, options) {
+        return new LogPolicy(logFunction, nextPolicy, options);
+    };
+}
+exports.logPolicy = logPolicy;
+var LogPolicy = /** @class */ (function (_super) {
+    __extends(LogPolicy, _super);
+    function LogPolicy(_logFunction, nextPolicy, options) {
+        var _this = _super.call(this, nextPolicy, options) || this;
+        _this._logFunction = _logFunction;
+        return _this;
+    }
+    LogPolicy.prototype.send = function (request) {
+        return __awaiter(this, void 0, void 0, function () {
+            var response, responseBodyText;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        this._logFunction(">> Request: " + JSON.stringify(request, undefined, 2));
+                        return [4 /*yield*/, this._nextPolicy.send(request)];
+                    case 1:
+                        response = _a.sent();
+                        return [4 /*yield*/, response.textBody()];
+                    case 2:
+                        responseBodyText = _a.sent();
+                        this._logFunction(">> Response Status Code: " + response.statusCode);
+                        this._logFunction(">> Response Body: " + responseBodyText);
+                        return [2 /*return*/, new inMemoryHttpResponse_1.InMemoryHttpResponse(response.request, response.statusCode, response.headers, responseBodyText)];
+                }
+            });
         });
-    }); });
-});
-//# sourceMappingURL=userAgentPolicyTests.js.map
+    };
+    return LogPolicy;
+}(requestPolicy_1.BaseRequestPolicy));
+//# sourceMappingURL=logPolicy.js.map

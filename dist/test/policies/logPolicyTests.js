@@ -42,15 +42,17 @@ var assert = require("assert");
 var httpMethod_1 = require("../../lib/httpMethod");
 var httpRequest_1 = require("../../lib/httpRequest");
 var inMemoryHttpResponse_1 = require("../../lib/inMemoryHttpResponse");
-var userAgentPolicy_1 = require("../../lib/policies/userAgentPolicy");
+var logPolicy_1 = require("../../lib/policies/logPolicy");
 var requestPolicyOptions_1 = require("../../lib/requestPolicyOptions");
-describe("userAgentPolicy", function () {
-    it("assigns the 'User-Agent' header to requests and does nothing to responses", function () { return __awaiter(_this, void 0, void 0, function () {
-        var policyFactory, nextPolicy, policy, request, response;
+var httpHeaders_1 = require("../../lib/httpHeaders");
+describe("logPolicy", function () {
+    it("logs requests and responses with no body", function () { return __awaiter(_this, void 0, void 0, function () {
+        var logs, policyFactory, nextPolicy, policy, request, response;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    policyFactory = userAgentPolicy_1.userAgentPolicy("my-user-agent-string");
+                    logs = [];
+                    policyFactory = logPolicy_1.logPolicy(function (message) { return logs.push(message); });
                     nextPolicy = {
                         send: function (request) {
                             return Promise.resolve(new inMemoryHttpResponse_1.InMemoryHttpResponse(request, 200, {}));
@@ -61,11 +63,18 @@ describe("userAgentPolicy", function () {
                     return [4 /*yield*/, policy.send(request)];
                 case 1:
                     response = _a.sent();
-                    assert.deepStrictEqual(request, new httpRequest_1.HttpRequest(httpMethod_1.HttpMethod.GET, "https://spam.com", { "User-Agent": "my-user-agent-string" }));
-                    assert.deepStrictEqual(response.request, new httpRequest_1.HttpRequest(httpMethod_1.HttpMethod.GET, "https://spam.com", { "User-Agent": "my-user-agent-string" }));
+                    assert.deepStrictEqual(request, new httpRequest_1.HttpRequest(httpMethod_1.HttpMethod.GET, "https://spam.com", {}));
+                    assert.deepStrictEqual(response.request, new httpRequest_1.HttpRequest(httpMethod_1.HttpMethod.GET, "https://spam.com", {}));
+                    assert.deepStrictEqual(response.statusCode, 200);
+                    assert.deepStrictEqual(response.headers, new httpHeaders_1.HttpHeaders());
+                    assert.deepStrictEqual(logs, [
+                        ">> Request: {\n  \"_httpMethod\": \"GET\",\n  \"_url\": \"https://spam.com\",\n  \"_headers\": {\n    \"_headersMap\": {}\n  }\n}",
+                        ">> Response Status Code: 200",
+                        ">> Response Body: undefined"
+                    ]);
                     return [2 /*return*/];
             }
         });
     }); });
 });
-//# sourceMappingURL=userAgentPolicyTests.js.map
+//# sourceMappingURL=logPolicyTests.js.map

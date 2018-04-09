@@ -52,10 +52,10 @@ var assert = require("assert");
 var httpMethod_1 = require("../lib/httpMethod");
 var httpPipeline_1 = require("../lib/httpPipeline");
 var httpRequest_1 = require("../lib/httpRequest");
+var inMemoryHttpResponse_1 = require("../lib/inMemoryHttpResponse");
 var userAgentPolicy_1 = require("../lib/policies/userAgentPolicy");
 var requestPolicy_1 = require("../lib/requestPolicy");
 var fakeHttpClient_1 = require("./fakeHttpClient");
-var inMemoryHttpResponse_1 = require("./inMemoryHttpResponse");
 describe("HttpPipeline", function () {
     it("should send requests when no request policies are assigned", function () { return __awaiter(_this, void 0, void 0, function () {
         var httpClient, httpPipeline, httpRequest, response, responseBodyAsText;
