@@ -12,10 +12,10 @@ import { RequestPolicyOptions } from "./requestPolicyOptions";
 let defaultHttpClient: HttpClient;
 
 function getDefaultHttpClient(): HttpClient {
-    if (!defaultHttpClient) {
-        defaultHttpClient = new FetchHttpClient();
-    }
-    return defaultHttpClient;
+  if (!defaultHttpClient) {
+    defaultHttpClient = new FetchHttpClient();
+  }
+  return defaultHttpClient;
 }
 
 /**
@@ -23,36 +23,36 @@ function getDefaultHttpClient(): HttpClient {
  * be applied to a HTTP response when it is received.
  */
 export class HttpPipeline {
-    private readonly _httpClient: HttpClient;
-    private readonly _requestPolicyOptions: RequestPolicyOptions;
+  private readonly _httpClient: HttpClient;
+  private readonly _requestPolicyOptions: RequestPolicyOptions;
 
-    constructor(private readonly _requestPolicyFactories: RequestPolicyFactory[], private readonly _httpPipelineOptions: HttpPipelineOptions) {
-        if (!this._httpPipelineOptions) {
-            this._httpPipelineOptions = {};
-        }
-
-        if (!this._httpPipelineOptions.httpClient) {
-            this._httpPipelineOptions.httpClient = getDefaultHttpClient();
-        }
-
-        this._httpClient = this._httpPipelineOptions.httpClient;
-        this._requestPolicyOptions = new RequestPolicyOptions(this._httpPipelineOptions.pipelineLogger);
+  constructor(private readonly _requestPolicyFactories: RequestPolicyFactory[], private readonly _httpPipelineOptions: HttpPipelineOptions) {
+    if (!this._httpPipelineOptions) {
+      this._httpPipelineOptions = {};
     }
 
-    /**
-     * Send the provided HttpRequest request.
-     * @param request The HTTP request to send.
-     * @return A Promise that resolves to the HttpResponse from the targeted server.
-     */
-    public send(request: HttpRequest): Promise<HttpResponse> {
-        let requestPolicyChainHead: RequestPolicy = this._httpClient;
-        if (this._requestPolicyFactories) {
-            const requestPolicyFactoriesLength: number = this._requestPolicyFactories.length;
-            for (let i = requestPolicyFactoriesLength - 1; i >= 0; --i) {
-                const requestPolicyFactory: RequestPolicyFactory = this._requestPolicyFactories[i];
-                requestPolicyChainHead = requestPolicyFactory(requestPolicyChainHead, this._requestPolicyOptions);
-            }
-        }
-        return requestPolicyChainHead.send(request);
+    if (!this._httpPipelineOptions.httpClient) {
+      this._httpPipelineOptions.httpClient = getDefaultHttpClient();
     }
+
+    this._httpClient = this._httpPipelineOptions.httpClient;
+    this._requestPolicyOptions = new RequestPolicyOptions(this._httpPipelineOptions.pipelineLogger);
+  }
+
+  /**
+   * Send the provided HttpRequest request.
+   * @param request The HTTP request to send.
+   * @return A Promise that resolves to the HttpResponse from the targeted server.
+   */
+  public send(request: HttpRequest): Promise<HttpResponse> {
+    let requestPolicyChainHead: RequestPolicy = this._httpClient;
+    if (this._requestPolicyFactories) {
+      const requestPolicyFactoriesLength: number = this._requestPolicyFactories.length;
+      for (let i = requestPolicyFactoriesLength - 1; i >= 0; --i) {
+        const requestPolicyFactory: RequestPolicyFactory = this._requestPolicyFactories[i];
+        requestPolicyChainHead = requestPolicyFactory(requestPolicyChainHead, this._requestPolicyOptions);
+      }
+    }
+    return requestPolicyChainHead.send(request);
+  }
 }

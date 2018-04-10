@@ -41,6 +41,18 @@ var BasicAuthenticationCredentials = /** @class */ (function () {
         webResource.headers[HeaderConstants.AUTHORIZATION] = encodedCredentials;
         return Promise.resolve(webResource);
     };
+    /**
+     * Signs a request with the Authentication header.
+     *
+     * @param httpRequest The request to be signed.
+     * @returns The signed request.
+     */
+    BasicAuthenticationCredentials.prototype.signHttpRequest = function (httpRequest) {
+        var credentials = this.userName + ":" + this.password;
+        var encodedCredentials = this.authorizationScheme + " " + Buffer.from(credentials).toString("base64");
+        httpRequest.headers.set(HeaderConstants.AUTHORIZATION, encodedCredentials);
+        return Promise.resolve(httpRequest);
+    };
     return BasicAuthenticationCredentials;
 }());
 exports.BasicAuthenticationCredentials = BasicAuthenticationCredentials;

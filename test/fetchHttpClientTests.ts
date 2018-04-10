@@ -7,22 +7,22 @@ import { HttpRequest } from "../lib/httpRequest";
 import { HttpResponse } from "../lib/httpResponse";
 
 describe("fetchHttpClient", () => {
-    it("should send HTTP requests", async () => {
-        const request = new HttpRequest(HttpMethod.GET, "http://www.example.com", {});
-        const httpClient = new FetchHttpClient();
+  it("should send HTTP requests", async () => {
+    const request = new HttpRequest(HttpMethod.GET, "http://www.example.com", {});
+    const httpClient = new FetchHttpClient();
 
-        const response: HttpResponse = await httpClient.send(request)
-        assert.deepStrictEqual(response.request, request);
-        assert.strictEqual(response.statusCode, 200);
-        assert(response.headers);
-        assert.strictEqual(response.headers.get("connection"), "close");
-        assert.strictEqual(response.headers.get("content-encoding"), "gzip");
-        assert.strictEqual(response.headers.get("content-length"), "606");
-        assert.strictEqual(response.headers.get("content-type"), "text/html");
-        assert.strictEqual(response.headers.get("vary"), "Accept-Encoding");
-        const responseBody: string | undefined = await response.textBody();
-        const expectedResponseBody: string =
-`<!doctype html>
+    const response: HttpResponse = await httpClient.send(request);
+    assert.deepStrictEqual(response.request, request);
+    assert.strictEqual(response.statusCode, 200);
+    assert(response.headers);
+    assert.strictEqual(response.headers.get("connection"), "close");
+    assert.strictEqual(response.headers.get("content-encoding"), "gzip");
+    assert.strictEqual(response.headers.get("content-length"), "606");
+    assert.strictEqual(response.headers.get("content-type"), "text/html");
+    assert.strictEqual(response.headers.get("vary"), "Accept-Encoding");
+    const responseBody: string | undefined = await response.textBody();
+    const expectedResponseBody =
+      `<!doctype html>
 <html>
 <head>
     <title>Example Domain</title>
@@ -73,35 +73,35 @@ describe("fetchHttpClient", () => {
 </body>
 </html>
 `;
-        assert.strictEqual(responseBody, expectedResponseBody);
-    });
+    assert.strictEqual(responseBody, expectedResponseBody);
+  });
 
-    it("should throw for awaited 404", async () => {
-        const request = new HttpRequest(HttpMethod.GET, "http://www.notanexample.coms", {});
-        const httpClient = new FetchHttpClient();
+  it("should throw for awaited 404", async () => {
+    const request = new HttpRequest(HttpMethod.GET, "http://www.notanexample.coms", {});
+    const httpClient = new FetchHttpClient();
 
-        try {
-            await httpClient.send(request)
-            assert.fail("Expected error to be thrown.");
-        } catch (error) {
-            assert.strictEqual(error.name, "FetchError");
-            assert.strictEqual(error.code, "ENOTFOUND");
-            assert.strictEqual(error.message, "request to http://www.notanexample.coms failed, reason: getaddrinfo ENOTFOUND www.notanexample.coms www.notanexample.coms:80");
-        }
-    });
+    try {
+      await httpClient.send(request);
+      assert.fail("Expected error to be thrown.");
+    } catch (error) {
+      assert.strictEqual(error.name, "FetchError");
+      assert.strictEqual(error.code, "ENOTFOUND");
+      assert.strictEqual(error.message, "request to http://www.notanexample.coms failed, reason: getaddrinfo ENOTFOUND www.notanexample.coms www.notanexample.coms:80");
+    }
+  });
 
-    it("should reject for promised 404", async () => {
-        const request = new HttpRequest(HttpMethod.GET, "http://www.notanexample.coms", {});
-        const httpClient = new FetchHttpClient();
+  it("should reject for promised 404", async () => {
+    const request = new HttpRequest(HttpMethod.GET, "http://www.notanexample.coms", {});
+    const httpClient = new FetchHttpClient();
 
-        return httpClient.send(request)
-            .then(() => {
-                assert.fail("Expected error to be thrown.");
-            })
-            .catch((error: any) => {
-                assert.strictEqual(error.name, "FetchError");
-                assert.strictEqual(error.code, "ENOTFOUND");
-                assert.strictEqual(error.message, "request to http://www.notanexample.coms failed, reason: getaddrinfo ENOTFOUND www.notanexample.coms www.notanexample.coms:80");
-            });
-    });
+    return httpClient.send(request)
+      .then(() => {
+        assert.fail("Expected error to be thrown.");
+      })
+      .catch((error: any) => {
+        assert.strictEqual(error.name, "FetchError");
+        assert.strictEqual(error.code, "ENOTFOUND");
+        assert.strictEqual(error.message, "request to http://www.notanexample.coms failed, reason: getaddrinfo ENOTFOUND www.notanexample.coms www.notanexample.coms:80");
+      });
+  });
 });

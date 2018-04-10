@@ -29,7 +29,6 @@ exports.SigningFilter = signingFilter_1.SigningFilter;
 var msRestUserAgentFilter_1 = require("./filters/msRestUserAgentFilter");
 exports.MsRestUserAgentFilter = msRestUserAgentFilter_1.MsRestUserAgentFilter;
 var serializer_1 = require("./serializer");
-exports.MapperType = serializer_1.MapperType;
 exports.Serializer = serializer_1.Serializer;
 exports.serializeObject = serializer_1.serializeObject;
 var utils_1 = require("./util/utils");

@@ -238,18 +238,6 @@ function delay(t, value) {
 }
 exports.delay = delay;
 /**
- * Utility function to create a K:V from a list of strings
- */
-function strEnum(o) {
-    /* tslint:disable:no-null-keyword */
-    return o.reduce(function (res, key) {
-        res[key] = key;
-        return res;
-    }, Object.create(null));
-    /* tslint:enable:no-null-keyword */
-}
-exports.strEnum = strEnum;
-/**
  * Converts a Promise to a callback.
  * @param {Promise<any>} promise - The Promise to be converted to a callback
  * @returns {Function} fn - A function that takes the callback (cb: Function): void

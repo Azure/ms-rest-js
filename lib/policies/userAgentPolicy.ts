@@ -6,27 +6,28 @@ import { HttpResponse } from "../httpResponse";
 import { BaseRequestPolicy, RequestPolicy } from "../requestPolicy";
 import { RequestPolicyFactory } from "../requestPolicyFactory";
 import { RequestPolicyOptions } from "../requestPolicyOptions";
+import { Constants } from "../util/constants";
 
 /**
- * Get a RequestPolicyFactory that creates UserAgentRequestPolicies.
+ * Get a RequestPolicyFactory that creates UserAgentPolicies.
  * @param userAgent The userAgent string to apply to each outgoing request.
  */
 export function userAgentPolicy(userAgent: string): RequestPolicyFactory {
-    return (nextPolicy: RequestPolicy, options: RequestPolicyOptions) => {
-        return new UserAgentPolicy(userAgent, nextPolicy, options);
-    };
+  return (nextPolicy: RequestPolicy, options: RequestPolicyOptions) => {
+    return new UserAgentPolicy(userAgent, nextPolicy, options);
+  };
 }
 
 class UserAgentPolicy extends BaseRequestPolicy {
-    constructor(private readonly _userAgent: string, nextPolicy: RequestPolicy, options: RequestPolicyOptions) {
-        super(nextPolicy, options);
-    }
+  constructor(private readonly _userAgent: string, nextPolicy: RequestPolicy, options: RequestPolicyOptions) {
+    super(nextPolicy, options);
+  }
 
-    send(request: HttpRequest): Promise<HttpResponse> {
-        if (this.shouldLog(HttpPipelineLogLevel.INFO)) {
-            this.log(HttpPipelineLogLevel.INFO, `Set "User-Agent" header to "${this._userAgent}".`);
-        }
-        request.headers.set("User-Agent", this._userAgent);
-        return this._nextPolicy.send(request);
+  send(request: HttpRequest): Promise<HttpResponse> {
+    if (this.shouldLog(HttpPipelineLogLevel.INFO)) {
+      this.log(HttpPipelineLogLevel.INFO, `Set "${Constants.HeaderConstants.USER_AGENT}" header to "${this._userAgent}".`);
     }
+    request.headers.set(Constants.HeaderConstants.USER_AGENT, this._userAgent);
+    return this._nextPolicy.send(request);
+  }
 }

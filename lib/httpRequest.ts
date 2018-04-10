@@ -7,49 +7,42 @@ import { HttpMethod } from "./httpMethod";
  * An individual HTTP request that can be sent with a HttpClient.
  */
 export class HttpRequest {
-    private readonly _headers: HttpHeaders;
+  private readonly _headers: HttpHeaders;
 
-    constructor(private _httpMethod: HttpMethod, private _url: string, headers: HttpHeaders | RawHttpHeaders, private _body?: string) {
-        if (!this._url) {
-            const urlString: string = (this._url === undefined || this._url === null ? this._url : `"${this._url}"`);
-            throw new Error(`${urlString} is not a valid URL for a HttpRequest.`);
-        }
-
-        this._headers = (headers instanceof HttpHeaders ? headers : new HttpHeaders(headers));
+  /**
+   * Create a new HTTP request using the provided properties.
+   * @param httpMethod The HTTP method that will be used to send this request.
+   * @param url The URL that this request will be sent to.
+   * @param headers The HTTP headers to include in this request.
+   * @param _body The body of this HTTP request.
+   */
+  constructor(public httpMethod: HttpMethod, public url: string, headers: HttpHeaders | RawHttpHeaders, private _body?: string) {
+    if (!this.url) {
+      const urlString: string = (this.url == undefined ? this.url : `"${this.url}"`);
+      throw new Error(`${urlString} is not a valid URL for a HttpRequest.`);
     }
 
-    /**
-     * Get the HTTP method that this request will use.
-     */
-    public get httpMethod(): HttpMethod {
-        return this._httpMethod;
-    }
+    this._headers = (headers instanceof HttpHeaders ? headers : new HttpHeaders(headers));
+  }
 
-    /**
-     * Get the URL that this request will be sent to.
-     */
-    public get url(): string {
-        return this._url;
-    }
+  /**
+   * Get the HTTP headers that will be sent with this request.
+   */
+  public get headers(): HttpHeaders {
+    return this._headers;
+  }
 
-    /**
-     * Get the HTTP headers that will be sent with this request.
-     */
-    public get headers(): HttpHeaders {
-        return this._headers;
-    }
+  /**
+   * Get the body that will be sent with this request.
+   */
+  public get body(): string | undefined {
+    return this._body;
+  }
 
-    /**
-     * Get the body that will be sent with this request.
-     */
-    public get body(): string | undefined {
-        return this._body;
-    }
-
-    /**
-     * Create a deep clone/copy of this HttpRequest.
-     */
-    public clone(): HttpRequest {
-        return JSON.parse(JSON.stringify(this));
-    }
+  /**
+   * Create a deep clone/copy of this HttpRequest.
+   */
+  public clone(): HttpRequest {
+    return new HttpRequest(this.httpMethod, this.url, this.headers.clone(), this.body);
+  }
 }

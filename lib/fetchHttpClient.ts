@@ -16,25 +16,25 @@ const fetch: FetchMethod = require("fetch-ponyfill")({ useCookie: true }).fetch;
  * A HttpClient implementation that uses fetch to send HTTP requests.
  */
 export class FetchHttpClient implements HttpClient {
-    public async send(request: HttpRequest): Promise<HttpResponse> {
-        const fetchRequestOptions: RequestInit = {
-            method: request.httpMethod,
-            headers: request.headers.toJson(),
-            body: request.body
-        };
+  public async send(request: HttpRequest): Promise<HttpResponse> {
+    const fetchRequestOptions: RequestInit = {
+      method: request.httpMethod,
+      headers: request.headers.toJson(),
+      body: request.body
+    };
 
-        const fetchResponse: Response = await fetch(request.url, fetchRequestOptions);
+    const fetchResponse: Response = await fetch(request.url, fetchRequestOptions);
 
-        const responseHeaders = new HttpHeaders();
-        const fetchResponseHeaders: Headers = fetchResponse.headers;
-        fetchResponseHeaders.forEach((headerValue: string, headerName: string) => { responseHeaders.set(headerName, headerValue); });
+    const responseHeaders = new HttpHeaders();
+    const fetchResponseHeaders: Headers = fetchResponse.headers;
+    fetchResponseHeaders.forEach((headerValue: string, headerName: string) => { responseHeaders.set(headerName, headerValue); });
 
-        return {
-            request: request,
-            statusCode: fetchResponse.status,
-            headers: responseHeaders,
-            textBody: async () => await fetchResponse.text(),
-            deserializedBody: async () => await fetchResponse.json()
-        };
-    }
+    return {
+      request: request,
+      statusCode: fetchResponse.status,
+      headers: responseHeaders,
+      textBody: async () => await fetchResponse.text(),
+      deserializedBody: async () => await fetchResponse.json()
+    };
+  }
 }

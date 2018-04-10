@@ -7,36 +7,23 @@ var httpHeaders_1 = require("./httpHeaders");
  * An individual HTTP request that can be sent with a HttpClient.
  */
 var HttpRequest = /** @class */ (function () {
-    function HttpRequest(_httpMethod, _url, headers, _body) {
-        this._httpMethod = _httpMethod;
-        this._url = _url;
+    /**
+     * Create a new HTTP request using the provided properties.
+     * @param httpMethod The HTTP method that will be used to send this request.
+     * @param url The URL that this request will be sent to.
+     * @param headers The HTTP headers to include in this request.
+     * @param _body The body of this HTTP request.
+     */
+    function HttpRequest(httpMethod, url, headers, _body) {
+        this.httpMethod = httpMethod;
+        this.url = url;
         this._body = _body;
-        if (!this._url) {
-            var urlString = (this._url === undefined || this._url === null ? this._url : "\"" + this._url + "\"");
+        if (!this.url) {
+            var urlString = (this.url == undefined ? this.url : "\"" + this.url + "\"");
             throw new Error(urlString + " is not a valid URL for a HttpRequest.");
         }
         this._headers = (headers instanceof httpHeaders_1.HttpHeaders ? headers : new httpHeaders_1.HttpHeaders(headers));
     }
-    Object.defineProperty(HttpRequest.prototype, "httpMethod", {
-        /**
-         * Get the HTTP method that this request will use.
-         */
-        get: function () {
-            return this._httpMethod;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(HttpRequest.prototype, "url", {
-        /**
-         * Get the URL that this request will be sent to.
-         */
-        get: function () {
-            return this._url;
-        },
-        enumerable: true,
-        configurable: true
-    });
     Object.defineProperty(HttpRequest.prototype, "headers", {
         /**
          * Get the HTTP headers that will be sent with this request.
@@ -61,7 +48,7 @@ var HttpRequest = /** @class */ (function () {
      * Create a deep clone/copy of this HttpRequest.
      */
     HttpRequest.prototype.clone = function () {
-        return JSON.parse(JSON.stringify(this));
+        return new HttpRequest(this.httpMethod, this.url, this.headers.clone(), this.body);
     };
     return HttpRequest;
 }());

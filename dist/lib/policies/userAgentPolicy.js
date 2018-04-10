@@ -14,8 +14,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 // Licensed under the MIT License. See License.txt in the project root for license information.
 var httpPipelineLogLevel_1 = require("../httpPipelineLogLevel");
 var requestPolicy_1 = require("../requestPolicy");
+var constants_1 = require("../util/constants");
 /**
- * Get a RequestPolicyFactory that creates UserAgentRequestPolicies.
+ * Get a RequestPolicyFactory that creates UserAgentPolicies.
  * @param userAgent The userAgent string to apply to each outgoing request.
  */
 function userAgentPolicy(userAgent) {
@@ -33,9 +34,9 @@ var UserAgentPolicy = /** @class */ (function (_super) {
     }
     UserAgentPolicy.prototype.send = function (request) {
         if (this.shouldLog(httpPipelineLogLevel_1.HttpPipelineLogLevel.INFO)) {
-            this.log(httpPipelineLogLevel_1.HttpPipelineLogLevel.INFO, "Set \"User-Agent\" header to \"" + this._userAgent + "\".");
+            this.log(httpPipelineLogLevel_1.HttpPipelineLogLevel.INFO, "Set \"" + constants_1.Constants.HeaderConstants.USER_AGENT + "\" header to \"" + this._userAgent + "\".");
         }
-        request.headers.set("User-Agent", this._userAgent);
+        request.headers.set(constants_1.Constants.HeaderConstants.USER_AGENT, this._userAgent);
         return this._nextPolicy.send(request);
     };
     return UserAgentPolicy;

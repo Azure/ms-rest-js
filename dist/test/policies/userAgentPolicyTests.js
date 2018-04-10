@@ -41,9 +41,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var assert = require("assert");
 var httpMethod_1 = require("../../lib/httpMethod");
 var httpRequest_1 = require("../../lib/httpRequest");
+var inMemoryHttpResponse_1 = require("../../lib/inMemoryHttpResponse");
 var userAgentPolicy_1 = require("../../lib/policies/userAgentPolicy");
 var requestPolicyOptions_1 = require("../../lib/requestPolicyOptions");
-var inMemoryHttpResponse_1 = require("../inMemoryHttpResponse");
 describe("userAgentPolicy", function () {
     it("assigns the 'User-Agent' header to requests and does nothing to responses", function () { return __awaiter(_this, void 0, void 0, function () {
         var policyFactory, nextPolicy, policy, request, response;

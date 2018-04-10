@@ -758,22 +758,4 @@ function serializeObject(toSerialize) {
     return toSerialize;
 }
 exports.serializeObject = serializeObject;
-exports.MapperType = utils.strEnum([
-    "Base64Url",
-    "Boolean",
-    "ByteArray",
-    "Composite",
-    "Date",
-    "DateTime",
-    "DateTimeRfc1123",
-    "Dictionary",
-    "Enum",
-    "Number",
-    "Object",
-    "Sequence",
-    "String",
-    "Stream",
-    "TimeSpan",
-    "UnixTime"
-]);
 //# sourceMappingURL=serializer.js.map

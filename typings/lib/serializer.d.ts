@@ -121,21 +121,4 @@ export interface UrlParameterValue {
     skipUrlEncoding: boolean;
 }
 export declare function serializeObject(toSerialize: any): any;
-export declare const MapperType: {
-    Base64Url: "Base64Url";
-    Boolean: "Boolean";
-    ByteArray: "ByteArray";
-    Composite: "Composite";
-    Date: "Date";
-    DateTime: "DateTime";
-    DateTimeRfc1123: "DateTimeRfc1123";
-    Dictionary: "Dictionary";
-    Enum: "Enum";
-    Number: "Number";
-    Object: "Object";
-    Sequence: "Sequence";
-    String: "String";
-    Stream: "Stream";
-    TimeSpan: "TimeSpan";
-    UnixTime: "UnixTime";
-};
+export declare type MapperType = "Base64Url" | "Boolean" | "ByteArray" | "Composite" | "Date" | "DateTime" | "DateTimeRfc1123" | "Dictionary" | "Enum" | "Number" | "Object" | "Sequence" | "String" | "Stream" | "TimeSpan" | "UnixTime";
