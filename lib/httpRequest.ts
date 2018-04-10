@@ -9,27 +9,20 @@ import { HttpMethod } from "./httpMethod";
 export class HttpRequest {
     private readonly _headers: HttpHeaders;
 
-    constructor(private _httpMethod: HttpMethod, private _url: string, headers: HttpHeaders | RawHttpHeaders, private _body?: string) {
-        if (!this._url) {
-            const urlString: string = (this._url === undefined || this._url === null ? this._url : `"${this._url}"`);
+    /**
+     * Create a new HTTP request using the provided properties.
+     * @param _httpMethod The HTTP method that will be used to send this request.
+     * @param url The URL that this request will be sent to.
+     * @param headers The HTTP headers to include in this request.
+     * @param _body The body of this HTTP request.
+     */
+    constructor(public httpMethod: HttpMethod, public url: string, headers: HttpHeaders | RawHttpHeaders, private _body?: string) {
+        if (!this.url) {
+            const urlString: string = (this.url === undefined || this.url === null ? this.url : `"${this.url}"`);
             throw new Error(`${urlString} is not a valid URL for a HttpRequest.`);
         }
 
         this._headers = (headers instanceof HttpHeaders ? headers : new HttpHeaders(headers));
-    }
-
-    /**
-     * Get the HTTP method that this request will use.
-     */
-    public get httpMethod(): HttpMethod {
-        return this._httpMethod;
-    }
-
-    /**
-     * Get the URL that this request will be sent to.
-     */
-    public get url(): string {
-        return this._url;
     }
 
     /**

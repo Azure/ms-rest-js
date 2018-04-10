@@ -17,7 +17,7 @@ var requestPolicy_1 = require("../requestPolicy");
 var constants_1 = require("../util/constants");
 /**
  * Get a RequestPolicyFactory that creates adds the ms-rest user agent to outgoing requests.
- * @param userAgent The userAgent string to apply to each outgoing request.
+ * @param userAgentInfo The string[] of userAgent details to apply to each outgoing request.
  */
 function msRestNodeJsUserAgentPolicy(userAgentInfo) {
     return function (nextPolicy, options) {

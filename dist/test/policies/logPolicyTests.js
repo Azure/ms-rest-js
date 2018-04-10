@@ -68,7 +68,7 @@ describe("logPolicy", function () {
                     assert.deepStrictEqual(response.statusCode, 200);
                     assert.deepStrictEqual(response.headers, new httpHeaders_1.HttpHeaders());
                     assert.deepStrictEqual(logs, [
-                        ">> Request: {\n  \"_httpMethod\": \"GET\",\n  \"_url\": \"https://spam.com\",\n  \"_headers\": {\n    \"_headersMap\": {}\n  }\n}",
+                        ">> Request: {\n  \"httpMethod\": \"GET\",\n  \"url\": \"https://spam.com\",\n  \"_headers\": {\n    \"_headersMap\": {}\n  }\n}",
                         ">> Response Status Code: 200",
                         ">> Response Body: undefined"
                     ]);

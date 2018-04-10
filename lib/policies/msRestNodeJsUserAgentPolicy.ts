@@ -10,7 +10,7 @@ import { Constants } from "../util/constants";
 
 /**
  * Get a RequestPolicyFactory that creates adds the ms-rest user agent to outgoing requests.
- * @param userAgent The userAgent string to apply to each outgoing request.
+ * @param userAgentInfo The string[] of userAgent details to apply to each outgoing request.
  */
 export function msRestNodeJsUserAgentPolicy(userAgentInfo: string[]): RequestPolicyFactory {
     return (nextPolicy: RequestPolicy, options: RequestPolicyOptions) => {

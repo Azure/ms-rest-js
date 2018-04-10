@@ -45,47 +45,62 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var requestPolicy_1 = require("../requestPolicy");
-var inMemoryHttpResponse_1 = require("../inMemoryHttpResponse");
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
+var parse = require("url-parse");
+var httpMethod_1 = require("../httpMethod");
+var requestPolicy_1 = require("../requestPolicy");
 /**
- * Get a RequestPolicyFactory that creates LogPolicies.
- * @param logFunction The function to use to log messages.
+ * Get a RequestPolicyFactory that creates RedirectPolicies.
+ * @param maximumRedirections The maximum number of redirections to take before failing.
  */
-function logPolicy(logFunction) {
+function redirectPolicy(maximumRedirections) {
     return function (nextPolicy, options) {
-        return new LogPolicy(logFunction, nextPolicy, options);
+        return new RedirectPolicy(maximumRedirections, nextPolicy, options);
     };
 }
-exports.logPolicy = logPolicy;
-var LogPolicy = /** @class */ (function (_super) {
-    __extends(LogPolicy, _super);
-    function LogPolicy(_logFunction, nextPolicy, options) {
+exports.redirectPolicy = redirectPolicy;
+var RedirectPolicy = /** @class */ (function (_super) {
+    __extends(RedirectPolicy, _super);
+    function RedirectPolicy(_maximumRedirections, nextPolicy, options) {
         var _this = _super.call(this, nextPolicy, options) || this;
-        _this._logFunction = _logFunction;
+        _this._maximumRedirections = _maximumRedirections;
         return _this;
     }
-    LogPolicy.prototype.send = function (request) {
+    RedirectPolicy.prototype.send = function (request) {
         return __awaiter(this, void 0, void 0, function () {
-            var response, responseBodyText;
+            var redirections, response;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        this._logFunction(">> Request: " + JSON.stringify(request, undefined, 2));
-                        return [4 /*yield*/, this._nextPolicy.send(request)];
+                        request = request.clone();
+                        redirections = 0;
+                        _a.label = 1;
                     case 1:
-                        response = _a.sent();
-                        return [4 /*yield*/, response.textBody()];
+                        if (!true) return [3 /*break*/, 3];
+                        return [4 /*yield*/, this._nextPolicy.send(request.clone())];
                     case 2:
-                        responseBodyText = _a.sent();
-                        this._logFunction(">> Response Status Code: " + response.statusCode);
-                        this._logFunction(">> Response Body: " + responseBodyText);
-                        return [2 /*return*/, new inMemoryHttpResponse_1.InMemoryHttpResponse(response.request, response.statusCode, response.headers, responseBodyText)];
+                        response = _a.sent();
+                        if (response && response.headers && response.headers.get("location") &&
+                            (response.statusCode === 300 || response.statusCode === 307 || (response.statusCode === 303 && request.httpMethod === httpMethod_1.HttpMethod.POST)) &&
+                            (!this._maximumRedirections || redirections < this._maximumRedirections)) {
+                            ++redirections;
+                            request.url = parse(response.headers.get("location"), parse(request.url)).href;
+                            // POST request with Status code 303 should be converted into a
+                            // redirected GET request if the redirect url is present in the location header
+                            if (response.statusCode === 303) {
+                                request.httpMethod = httpMethod_1.HttpMethod.GET;
+                            }
+                        }
+                        else {
+                            return [3 /*break*/, 3];
+                        }
+                        return [3 /*break*/, 1];
+                    case 3: return [2 /*return*/, response];
                 }
             });
         });
     };
-    return LogPolicy;
+    return RedirectPolicy;
 }(requestPolicy_1.BaseRequestPolicy));
-//# sourceMappingURL=logPolicy.js.map
+//# sourceMappingURL=redirectPolicy.js.map

@@ -4,19 +4,18 @@ import { HttpMethod } from "./httpMethod";
  * An individual HTTP request that can be sent with a HttpClient.
  */
 export declare class HttpRequest {
-    private _httpMethod;
-    private _url;
+    httpMethod: HttpMethod;
+    url: string;
     private _body;
     private readonly _headers;
-    constructor(_httpMethod: HttpMethod, _url: string, headers: HttpHeaders | RawHttpHeaders, _body?: string | undefined);
     /**
-     * Get the HTTP method that this request will use.
+     * Create a new HTTP request using the provided properties.
+     * @param _httpMethod The HTTP method that will be used to send this request.
+     * @param url The URL that this request will be sent to.
+     * @param headers The HTTP headers to include in this request.
+     * @param _body The body of this HTTP request.
      */
-    readonly httpMethod: HttpMethod;
-    /**
-     * Get the URL that this request will be sent to.
-     */
-    readonly url: string;
+    constructor(httpMethod: HttpMethod, url: string, headers: HttpHeaders | RawHttpHeaders, _body?: string | undefined);
     /**
      * Get the HTTP headers that will be sent with this request.
      */

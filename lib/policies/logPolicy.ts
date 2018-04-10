@@ -9,8 +9,8 @@ import { InMemoryHttpResponse } from "../inMemoryHttpResponse";
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 /**
- * Get a RequestPolicyFactory that creates UserAgentPolicies.
- * @param userAgent The userAgent string to apply to each outgoing request.
+ * Get a RequestPolicyFactory that creates LogPolicies.
+ * @param logFunction The function to use to log messages.
  */
 export function logPolicy(logFunction: (message: string) => void): RequestPolicyFactory {
     return (nextPolicy: RequestPolicy, options: RequestPolicyOptions) => {
