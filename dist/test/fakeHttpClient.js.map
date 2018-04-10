@@ -1,1 +1,0 @@
-{"version":3,"file":"fakeHttpClient.js","sourceRoot":"","sources":["../../test/fakeHttpClient.ts"],"names":[],"mappings":";;AAMA;;;;GAIG;AACH;IACE,wBAA6B,YAA6D;QAA7D,iBAAY,GAAZ,YAAY,CAAiD;IAC1F,CAAC;IAED;;;;OAIG;IACI,6BAAI,GAAX,UAAY,OAAoB;QAC9B,OAAO,IAAI,CAAC,YAAY,CAAC,OAAO,CAAC,CAAC;IACpC,CAAC;IACH,qBAAC;AAAD,CAAC,AAZD,IAYC;AAZY,wCAAc"}
