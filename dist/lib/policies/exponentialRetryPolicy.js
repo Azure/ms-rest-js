@@ -66,12 +66,27 @@ var ExponentialRetryPolicy = /** @class */ (function (_super) {
         _this._delayFunction = retryOptions.delayFunction || utils.delay;
         return _this;
     }
+    /**
+     * Get whether or not we should retry the request based on the provided response.
+     * @param response The response to read to determine whether or not we should retry.
+     */
+    ExponentialRetryPolicy.prototype.shouldRetry = function (details) {
+        var result = true;
+        if (details.response) {
+            var statusCode = details.response.statusCode;
+            if ((statusCode < 500 && statusCode !== 408) || statusCode === 501 || statusCode === 505) {
+                result = false;
+            }
+        }
+        return result;
+    };
     ExponentialRetryPolicy.prototype.send = function (request) {
         return __awaiter(this, void 0, void 0, function () {
-            var response, shouldAttempt, attemptNumber, attemptDelayInMilliseconds, responseError, statusCode, error_1, boundedRandomDelta, incrementDelta;
+            var response, shouldAttempt, attemptNumber, attemptDelayInMilliseconds, responseError, error_1, boundedRandomDelta, incrementDelta;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
+                        response = undefined;
                         shouldAttempt = true;
                         attemptNumber = 0;
                         attemptDelayInMilliseconds = this._initialRetryDelayInMilliseconds;
@@ -85,13 +100,7 @@ var ExponentialRetryPolicy = /** @class */ (function (_super) {
                         return [4 /*yield*/, this._nextPolicy.send(request.clone())];
                     case 3:
                         response = _a.sent();
-                        if (response) {
-                            statusCode = response.statusCode;
-                            if ((statusCode < 500 && statusCode !== 408) || statusCode === 501 || statusCode === 505) {
-                                shouldAttempt = false;
-                                responseError = undefined;
-                            }
-                        }
+                        shouldAttempt = this.shouldRetry({ response: response });
                         return [3 /*break*/, 5];
                     case 4:
                         error_1 = _a.sent();
@@ -99,6 +108,7 @@ var ExponentialRetryPolicy = /** @class */ (function (_super) {
                             error_1.innerError = responseError;
                         }
                         responseError = error_1;
+                        shouldAttempt = this.shouldRetry({ responseError: responseError });
                         return [3 /*break*/, 5];
                     case 5:
                         shouldAttempt = shouldAttempt && attemptNumber < this._maximumAttempts;
@@ -121,4 +131,5 @@ var ExponentialRetryPolicy = /** @class */ (function (_super) {
     };
     return ExponentialRetryPolicy;
 }(requestPolicy_1.BaseRequestPolicy));
+exports.ExponentialRetryPolicy = ExponentialRetryPolicy;
 //# sourceMappingURL=exponentialRetryPolicy.js.map

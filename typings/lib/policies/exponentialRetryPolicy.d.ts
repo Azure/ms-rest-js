@@ -1,4 +1,8 @@
+import { HttpRequest } from "../httpRequest";
+import { HttpResponse } from "../httpResponse";
+import { BaseRequestPolicy, RequestPolicy } from "../requestPolicy";
 import { RequestPolicyFactory } from "../requestPolicyFactory";
+import { RequestPolicyOptions } from "../requestPolicyOptions";
 /**
  * An error that can be thrown when the maximum number of attempts have been attempted.
  */
@@ -42,3 +46,19 @@ export interface RetryOptions {
  * Get a RequestPolicyFactory that creates ExponentialRetryPolicies.
  */
 export declare function exponentialRetryPolicy(retryOptions?: RetryOptions): RequestPolicyFactory;
+export declare class ExponentialRetryPolicy extends BaseRequestPolicy {
+    private readonly _maximumAttempts;
+    private readonly _initialRetryDelayInMilliseconds;
+    private readonly _maximumRetryDelayInMilliseconds;
+    private readonly _delayFunction;
+    constructor(retryOptions: RetryOptions, nextPolicy: RequestPolicy, options: RequestPolicyOptions);
+    /**
+     * Get whether or not we should retry the request based on the provided response.
+     * @param response The response to read to determine whether or not we should retry.
+     */
+    protected shouldRetry(details: {
+        response?: HttpResponse;
+        responseError?: RetryError;
+    }): boolean;
+    send(request: HttpRequest): Promise<HttpResponse>;
+}

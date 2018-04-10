@@ -57,7 +57,7 @@ export function exponentialRetryPolicy(retryOptions?: RetryOptions): RequestPoli
     };
 }
 
-class ExponentialRetryPolicy extends BaseRequestPolicy {
+export class ExponentialRetryPolicy extends BaseRequestPolicy {
     private readonly _maximumAttempts: number;
     private readonly _initialRetryDelayInMilliseconds: number;
     private readonly _maximumRetryDelayInMilliseconds: number;
@@ -72,8 +72,25 @@ class ExponentialRetryPolicy extends BaseRequestPolicy {
         this._delayFunction = retryOptions.delayFunction || utils.delay;
     }
 
+    /**
+     * Get whether or not we should retry the request based on the provided response.
+     * @param response The response to read to determine whether or not we should retry.
+     */
+    protected shouldRetry(details: { response?: HttpResponse, responseError?: RetryError}): boolean {
+        let result = true;
+
+        if (details.response) {
+            const statusCode: number = details.response.statusCode;
+            if ((statusCode < 500 && statusCode !== 408) || statusCode === 501 || statusCode === 505) {
+                result = false;
+            }
+        }
+
+        return result;
+    }
+
     public async send(request: HttpRequest): Promise<HttpResponse> {
-        let response: HttpResponse | undefined;
+        let response: HttpResponse | undefined = undefined;
         let shouldAttempt = true;
         let attemptNumber = 0;
         let attemptDelayInMilliseconds: number = this._initialRetryDelayInMilliseconds;
@@ -82,19 +99,13 @@ class ExponentialRetryPolicy extends BaseRequestPolicy {
             try {
                 ++attemptNumber;
                 response = await this._nextPolicy.send(request.clone());
-
-                if (response) {
-                    const statusCode: number = response.statusCode;
-                    if ((statusCode < 500 && statusCode !== 408) || statusCode === 501 || statusCode === 505) {
-                        shouldAttempt = false;
-                        responseError = undefined;
-                    }
-                }
+                shouldAttempt = this.shouldRetry({ response: response });
             } catch (error) {
                 if (responseError) {
                     error.innerError = responseError;
                 }
                 responseError = error;
+                shouldAttempt = this.shouldRetry({ responseError: responseError });
             }
 
             shouldAttempt = shouldAttempt && attemptNumber < this._maximumAttempts;
