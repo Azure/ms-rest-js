@@ -10,7 +10,7 @@ export declare class HttpRequest {
     private readonly _headers;
     /**
      * Create a new HTTP request using the provided properties.
-     * @param _httpMethod The HTTP method that will be used to send this request.
+     * @param httpMethod The HTTP method that will be used to send this request.
      * @param url The URL that this request will be sent to.
      * @param headers The HTTP headers to include in this request.
      * @param _body The body of this HTTP request.

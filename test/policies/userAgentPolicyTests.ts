@@ -11,20 +11,20 @@ import { RequestPolicyFactory } from "../../lib/requestPolicyFactory";
 import { RequestPolicyOptions } from "../../lib/requestPolicyOptions";
 
 describe("userAgentPolicy", () => {
-    it("assigns the 'User-Agent' header to requests and does nothing to responses", async () => {
-        const policyFactory: RequestPolicyFactory = userAgentPolicy("my-user-agent-string");
+  it("assigns the 'User-Agent' header to requests and does nothing to responses", async () => {
+    const policyFactory: RequestPolicyFactory = userAgentPolicy("my-user-agent-string");
 
-        const nextPolicy: RequestPolicy = {
-            send: (request: HttpRequest) => {
-                return Promise.resolve(new InMemoryHttpResponse(request, 200, {}));
-            }
-        }
+    const nextPolicy: RequestPolicy = {
+      send: (request: HttpRequest) => {
+        return Promise.resolve(new InMemoryHttpResponse(request, 200, {}));
+      }
+    };
 
-        const policy: RequestPolicy = policyFactory(nextPolicy, new RequestPolicyOptions());
-        const request = new HttpRequest(HttpMethod.GET, "https://spam.com", {});
-        const response: HttpResponse = await policy.send(request);
+    const policy: RequestPolicy = policyFactory(nextPolicy, new RequestPolicyOptions());
+    const request = new HttpRequest(HttpMethod.GET, "https://spam.com", {});
+    const response: HttpResponse = await policy.send(request);
 
-        assert.deepStrictEqual(request, new HttpRequest(HttpMethod.GET, "https://spam.com", {"User-Agent": "my-user-agent-string"}));
-        assert.deepStrictEqual(response.request, new HttpRequest(HttpMethod.GET, "https://spam.com", {"User-Agent": "my-user-agent-string"}));
-    });
+    assert.deepStrictEqual(request, new HttpRequest(HttpMethod.GET, "https://spam.com", { "User-Agent": "my-user-agent-string" }));
+    assert.deepStrictEqual(response.request, new HttpRequest(HttpMethod.GET, "https://spam.com", { "User-Agent": "my-user-agent-string" }));
+  });
 });

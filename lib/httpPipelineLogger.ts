@@ -8,41 +8,41 @@ import { HttpPipelineLogLevel } from "./httpPipelineLogLevel";
  * that can be used for debugging purposes.
  */
 export interface HttpPipelineLogger {
-    /**
-     * The log level threshold for what logs will be logged.
-     * @return The log level threshold for what logs will be logged.
-     */
-    minimumLogLevel: HttpPipelineLogLevel;
+  /**
+   * The log level threshold for what logs will be logged.
+   * @return The log level threshold for what logs will be logged.
+   */
+  minimumLogLevel: HttpPipelineLogLevel;
 
-    /**
-     * Log the provided message.
-     * @param logLevel The HttpLogDetailLevel associated with this message.
-     * @param message The message to log.
-     * @param formattedArguments A variadic list of arguments that should be formatted into the
-     *                           provided message.
-     */
-    log(logLevel: HttpPipelineLogLevel, message: string): void;
+  /**
+   * Log the provided message.
+   * @param logLevel The HttpLogDetailLevel associated with this message.
+   * @param message The message to log.
+   * @param formattedArguments A variadic list of arguments that should be formatted into the
+   *                           provided message.
+   */
+  log(logLevel: HttpPipelineLogLevel, message: string): void;
 }
 
 /**
  * A HttpPipelineLogger that will send its logs to the console.
  */
 export class ConsoleHttpPipelineLogger implements HttpPipelineLogger {
-    /**
-     * Create a new ConsoleHttpPipelineLogger.
-     * @param minimumLogLevel The log level threshold for what logs will be logged.
-     */
-    constructor(public minimumLogLevel: HttpPipelineLogLevel) {
-    }
+  /**
+   * Create a new ConsoleHttpPipelineLogger.
+   * @param minimumLogLevel The log level threshold for what logs will be logged.
+   */
+  constructor(public minimumLogLevel: HttpPipelineLogLevel) {
+  }
 
-    /**
-     * Log the provided message.
-     * @param logLevel The HttpLogDetailLevel associated with this message.
-     * @param message The message to log.
-     * @param formattedArguments A variadic list of arguments that should be formatted into the
-     *                           provided message.
-     */
-    log(logLevel: HttpPipelineLogLevel, message: string): void {
-        console.log(`${HttpPipelineLogLevel[logLevel]}: ${message}`);
-    }
+  /**
+   * Log the provided message.
+   * @param logLevel The HttpLogDetailLevel associated with this message.
+   * @param message The message to log.
+   * @param formattedArguments A variadic list of arguments that should be formatted into the
+   *                           provided message.
+   */
+  log(logLevel: HttpPipelineLogLevel, message: string): void {
+    console.log(`${HttpPipelineLogLevel[logLevel]}: ${message}`);
+  }
 }

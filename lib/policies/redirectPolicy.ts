@@ -13,42 +13,42 @@ import { RequestPolicyOptions } from "../requestPolicyOptions";
  * @param maximumRedirections The maximum number of redirections to take before failing.
  */
 export function redirectPolicy(maximumRedirections: number): RequestPolicyFactory {
-    return (nextPolicy: RequestPolicy, options: RequestPolicyOptions) => {
-        return new RedirectPolicy(maximumRedirections, nextPolicy, options);
-    };
+  return (nextPolicy: RequestPolicy, options: RequestPolicyOptions) => {
+    return new RedirectPolicy(maximumRedirections, nextPolicy, options);
+  };
 }
 
 class RedirectPolicy extends BaseRequestPolicy {
-    constructor(private readonly _maximumRedirections: number, nextPolicy: RequestPolicy, options: RequestPolicyOptions) {
-        super(nextPolicy, options);
-    }
+  constructor(private readonly _maximumRedirections: number, nextPolicy: RequestPolicy, options: RequestPolicyOptions) {
+    super(nextPolicy, options);
+  }
 
-    async send(request: HttpRequest): Promise<HttpResponse> {
-        request = request.clone();
+  async send(request: HttpRequest): Promise<HttpResponse> {
+    request = request.clone();
 
-        let redirections = 0;
-        let response: HttpResponse;
-        while (true) {
-            response = await this._nextPolicy.send(request.clone());
+    let redirections = 0;
+    let response: HttpResponse;
+    while (true) {
+      response = await this._nextPolicy.send(request.clone());
 
-            if (response && response.headers && response.headers.get("location") &&
-                (response.statusCode === 300 || response.statusCode === 307 || (response.statusCode === 303 && request.httpMethod === HttpMethod.POST)) &&
-                (!this._maximumRedirections || redirections < this._maximumRedirections)) {
+      if (response && response.headers && response.headers.get("location") &&
+        (response.statusCode === 300 || response.statusCode === 307 || (response.statusCode === 303 && request.httpMethod === HttpMethod.POST)) &&
+        (!this._maximumRedirections || redirections < this._maximumRedirections)) {
 
-                ++redirections;
+        ++redirections;
 
-                request.url = parse(response.headers.get("location")!, parse(request.url)).href;
+        request.url = parse(response.headers.get("location")!, parse(request.url)).href;
 
-                // POST request with Status code 303 should be converted into a
-                // redirected GET request if the redirect url is present in the location header
-                if (response.statusCode === 303) {
-                    request.httpMethod = HttpMethod.GET;
-                }
-            } else {
-                break;
-            }
+        // POST request with Status code 303 should be converted into a
+        // redirected GET request if the redirect url is present in the location header
+        if (response.statusCode === 303) {
+          request.httpMethod = HttpMethod.GET;
         }
-
-        return response;
+      } else {
+        break;
+      }
     }
+
+    return response;
+  }
 }
