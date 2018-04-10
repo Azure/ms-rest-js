@@ -810,21 +810,20 @@ export function serializeObject(toSerialize: any): any {
   return toSerialize;
 }
 
-export const MapperType = utils.strEnum([
-  "Base64Url",
-  "Boolean",
-  "ByteArray",
-  "Composite",
-  "Date",
-  "DateTime",
-  "DateTimeRfc1123",
-  "Dictionary",
-  "Enum",
-  "Number",
-  "Object",
-  "Sequence",
-  "String",
-  "Stream",
-  "TimeSpan",
-  "UnixTime"
-]);
+export type MapperType =
+  "Base64Url" |
+  "Boolean" |
+  "ByteArray" |
+  "Composite" |
+  "Date" |
+  "DateTime" |
+  "DateTimeRfc1123" |
+  "Dictionary" |
+  "Enum" |
+  "Number" |
+  "Object" |
+  "Sequence" |
+  "String" |
+  "Stream" |
+  "TimeSpan" |
+  "UnixTime";

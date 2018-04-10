@@ -747,18 +747,6 @@ function delay(t, value) {
 }
 exports.delay = delay;
 /**
- * Utility function to create a K:V from a list of strings
- */
-function strEnum(o) {
-    /* tslint:disable:no-null-keyword */
-    return o.reduce(function (res, key) {
-        res[key] = key;
-        return res;
-    }, Object.create(null));
-    /* tslint:enable:no-null-keyword */
-}
-exports.strEnum = strEnum;
-/**
  * Converts a Promise to a callback.
  * @param {Promise<any>} promise - The Promise to be converted to a callback
  * @returns {Function} fn - A function that takes the callback (cb: Function): void
@@ -7025,24 +7013,6 @@ function serializeObject(toSerialize) {
     return toSerialize;
 }
 exports.serializeObject = serializeObject;
-exports.MapperType = utils.strEnum([
-    "Base64Url",
-    "Boolean",
-    "ByteArray",
-    "Composite",
-    "Date",
-    "DateTime",
-    "DateTimeRfc1123",
-    "Dictionary",
-    "Enum",
-    "Number",
-    "Object",
-    "Sequence",
-    "String",
-    "Stream",
-    "TimeSpan",
-    "UnixTime"
-]);
 
 
 /***/ }),
@@ -7727,7 +7697,6 @@ exports.SigningFilter = signingFilter_1.SigningFilter;
 var msRestUserAgentFilter_1 = __webpack_require__(52);
 exports.MsRestUserAgentFilter = msRestUserAgentFilter_1.MsRestUserAgentFilter;
 var serializer_1 = __webpack_require__(45);
-exports.MapperType = serializer_1.MapperType;
 exports.Serializer = serializer_1.Serializer;
 exports.serializeObject = serializer_1.serializeObject;
 var utils_1 = __webpack_require__(1);

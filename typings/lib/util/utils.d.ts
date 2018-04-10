@@ -96,12 +96,6 @@ export declare function mergeObjects(source: {
  */
 export declare function delay<T>(t: number, value?: T): Promise<T>;
 /**
- * Utility function to create a K:V from a list of strings
- */
-export declare function strEnum<T extends string>(o: Array<T>): {
-    [K in T]: K;
-};
-/**
  * Service callback that is returned for REST requests initiated by the service client.
  *
  * @property {Error|RestError} err         - The error occurred if any, while executing the request; otherwise null
