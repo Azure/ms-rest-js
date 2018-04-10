@@ -12,18 +12,18 @@ import { RequestPolicyOptions } from "../requestPolicyOptions";
  * @param authenticationProvider The provider to use to sign requests.
  */
 export function signingPolicy(authenticationProvider: ServiceClientCredentials): RequestPolicyFactory {
-    return (nextPolicy: RequestPolicy, options: RequestPolicyOptions) => {
-        return new SigningPolicy(authenticationProvider, nextPolicy, options);
-    };
+  return (nextPolicy: RequestPolicy, options: RequestPolicyOptions) => {
+    return new SigningPolicy(authenticationProvider, nextPolicy, options);
+  };
 }
 
 class SigningPolicy extends BaseRequestPolicy {
-    constructor(private readonly _authenticationProvider: ServiceClientCredentials, nextPolicy: RequestPolicy, options: RequestPolicyOptions) {
-        super(nextPolicy, options);
-    }
+  constructor(private readonly _authenticationProvider: ServiceClientCredentials, nextPolicy: RequestPolicy, options: RequestPolicyOptions) {
+    super(nextPolicy, options);
+  }
 
-    public async send(request: HttpRequest): Promise<HttpResponse> {
-        const signedRequest: HttpRequest = await this._authenticationProvider.signHttpRequest(request);
-        return await this._nextPolicy.send(signedRequest);
-    }
+  public async send(request: HttpRequest): Promise<HttpResponse> {
+    const signedRequest: HttpRequest = await this._authenticationProvider.signHttpRequest(request);
+    return await this._nextPolicy.send(signedRequest);
+  }
 }

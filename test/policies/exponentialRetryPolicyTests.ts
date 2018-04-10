@@ -11,57 +11,57 @@ import { RequestPolicyFactory } from "../../lib/requestPolicyFactory";
 import { RequestPolicyOptions } from "../../lib/requestPolicyOptions";
 
 describe("exponentialRetryPolicy", () => {
-    it("should do nothing if no error occurs", async () => {
-        const policyFactory: RequestPolicyFactory = exponentialRetryPolicy({
-            maximumAttempts: 3,
-            initialRetryDelayInMilliseconds: 100,
-            maximumRetryIntervalInMilliseconds: 1000
-        });
-
-        const nextPolicy: RequestPolicy = {
-            send: (request: HttpRequest) => {
-                request.headers.set("A", "B");
-                return Promise.resolve(new InMemoryHttpResponse(request, 200, {}));
-            }
-        };
-
-        const policy: RequestPolicy = policyFactory(nextPolicy, new RequestPolicyOptions());
-        const request = new HttpRequest(HttpMethod.GET, "https://spam.com", {});
-        const response: HttpResponse = await policy.send(request);
-
-        assert.deepStrictEqual(request, new HttpRequest(HttpMethod.GET, "https://spam.com", {}), "The original request should not be modified.");
-        assert.deepStrictEqual(response.request, new HttpRequest(HttpMethod.GET, "https://spam.com", { "A": "B" }), "The request associated with the response should have the modified header.");
+  it("should do nothing if no error occurs", async () => {
+    const policyFactory: RequestPolicyFactory = exponentialRetryPolicy({
+      maximumAttempts: 3,
+      initialRetryDelayInMilliseconds: 100,
+      maximumRetryIntervalInMilliseconds: 1000
     });
 
-    it("should retry if an undefined HttpResponse is returned", async () => {
-        let millisecondsDelayed = 0;
+    const nextPolicy: RequestPolicy = {
+      send: (request: HttpRequest) => {
+        request.headers.set("A", "B");
+        return Promise.resolve(new InMemoryHttpResponse(request, 200, {}));
+      }
+    };
 
-        const policyFactory: RequestPolicyFactory = exponentialRetryPolicy({
-            maximumAttempts: 3,
-            initialRetryDelayInMilliseconds: 30 * 1000,
-            maximumRetryIntervalInMilliseconds: 90 * 1000,
-            delayFunction: (delayInMilliseconds: number) => {
-                millisecondsDelayed += delayInMilliseconds;
-                return Promise.resolve();
-            }
-        });
+    const policy: RequestPolicy = policyFactory(nextPolicy, new RequestPolicyOptions());
+    const request = new HttpRequest(HttpMethod.GET, "https://spam.com", {});
+    const response: HttpResponse = await policy.send(request);
 
-        let attempt = 0;
+    assert.deepStrictEqual(request, new HttpRequest(HttpMethod.GET, "https://spam.com", {}), "The original request should not be modified.");
+    assert.deepStrictEqual(response.request, new HttpRequest(HttpMethod.GET, "https://spam.com", { "A": "B" }), "The request associated with the response should have the modified header.");
+  });
 
-        const nextPolicy: RequestPolicy = {
-            send: (request: HttpRequest) => {
-                ++attempt;
-                request.headers.set("A", attempt);
-                return Promise.resolve(attempt === 1 ? <any>undefined : new InMemoryHttpResponse(request, 200, {}));
-            }
-        };
+  it("should retry if an undefined HttpResponse is returned", async () => {
+    let millisecondsDelayed = 0;
 
-        const policy: RequestPolicy = policyFactory(nextPolicy, new RequestPolicyOptions());
-        const request = new HttpRequest(HttpMethod.GET, "https://spam.com", {});
-        const response: HttpResponse = await policy.send(request);
-
-        assert.deepStrictEqual(request, new HttpRequest(HttpMethod.GET, "https://spam.com", {}), "The original request should not be modified.");
-        assert.deepStrictEqual(response.request, new HttpRequest(HttpMethod.GET, "https://spam.com", { "A": "2" }), "The request associated with the response should have the modified header.");
-        assert.strictEqual(millisecondsDelayed, 30 * 1000);
+    const policyFactory: RequestPolicyFactory = exponentialRetryPolicy({
+      maximumAttempts: 3,
+      initialRetryDelayInMilliseconds: 30 * 1000,
+      maximumRetryIntervalInMilliseconds: 90 * 1000,
+      delayFunction: (delayInMilliseconds: number) => {
+        millisecondsDelayed += delayInMilliseconds;
+        return Promise.resolve();
+      }
     });
+
+    let attempt = 0;
+
+    const nextPolicy: RequestPolicy = {
+      send: (request: HttpRequest) => {
+        ++attempt;
+        request.headers.set("A", attempt);
+        return Promise.resolve(attempt === 1 ? <any>undefined : new InMemoryHttpResponse(request, 200, {}));
+      }
+    };
+
+    const policy: RequestPolicy = policyFactory(nextPolicy, new RequestPolicyOptions());
+    const request = new HttpRequest(HttpMethod.GET, "https://spam.com", {});
+    const response: HttpResponse = await policy.send(request);
+
+    assert.deepStrictEqual(request, new HttpRequest(HttpMethod.GET, "https://spam.com", {}), "The original request should not be modified.");
+    assert.deepStrictEqual(response.request, new HttpRequest(HttpMethod.GET, "https://spam.com", { "A": "2" }), "The request associated with the response should have the modified header.");
+    assert.strictEqual(millisecondsDelayed, 30 * 1000);
+  });
 });

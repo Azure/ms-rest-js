@@ -10,15 +10,15 @@ import { HttpResponse } from "../lib/httpResponse";
  * @returns A Promise that resolves to the HttpResponse from the targeted server.
  */
 export class FakeHttpClient implements HttpClient {
-    constructor(private readonly sendFunction: (request: HttpRequest) => Promise<HttpResponse>) {
-    }
+  constructor(private readonly sendFunction: (request: HttpRequest) => Promise<HttpResponse>) {
+  }
 
-    /**
-     * Send the provided HttpRequest and return a Promise that resolves to the HttpResponse from the
-     * targeted server.
-     * @param request The HttpRequest to send.
-     */
-    public send(request: HttpRequest): Promise<HttpResponse> {
-        return this.sendFunction(request);
-    }
+  /**
+   * Send the provided HttpRequest and return a Promise that resolves to the HttpResponse from the
+   * targeted server.
+   * @param request The HttpRequest to send.
+   */
+  public send(request: HttpRequest): Promise<HttpResponse> {
+    return this.sendFunction(request);
+  }
 }
