@@ -45,45 +45,38 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var inMemoryHttpResponse_1 = require("../inMemoryHttpResponse");
 var requestPolicy_1 = require("../requestPolicy");
 /**
- * Get a RequestPolicyFactory that creates LogPolicies.
- * @param logFunction The function to use to log messages.
+ * Get a RequestPolicyFactory that creates SigningPolicies.
+ * @param authenticationProvider The provider to use to sign requests.
  */
-function logPolicy(logFunction) {
+function signingPolicy(authenticationProvider) {
     return function (nextPolicy, options) {
-        return new LogPolicy(logFunction, nextPolicy, options);
+        return new SigningPolicy(authenticationProvider, nextPolicy, options);
     };
 }
-exports.logPolicy = logPolicy;
-var LogPolicy = /** @class */ (function (_super) {
-    __extends(LogPolicy, _super);
-    function LogPolicy(_logFunction, nextPolicy, options) {
+exports.signingPolicy = signingPolicy;
+var SigningPolicy = /** @class */ (function (_super) {
+    __extends(SigningPolicy, _super);
+    function SigningPolicy(_authenticationProvider, nextPolicy, options) {
         var _this = _super.call(this, nextPolicy, options) || this;
-        _this._logFunction = _logFunction;
+        _this._authenticationProvider = _authenticationProvider;
         return _this;
     }
-    LogPolicy.prototype.send = function (request) {
+    SigningPolicy.prototype.send = function (request) {
         return __awaiter(this, void 0, void 0, function () {
-            var response, responseBodyText;
+            var signedRequest;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0:
-                        this._logFunction(">> Request: " + JSON.stringify(request, undefined, 2));
-                        return [4 /*yield*/, this._nextPolicy.send(request)];
+                    case 0: return [4 /*yield*/, this._authenticationProvider.signHttpRequest(request)];
                     case 1:
-                        response = _a.sent();
-                        return [4 /*yield*/, response.textBody()];
-                    case 2:
-                        responseBodyText = _a.sent();
-                        this._logFunction(">> Response Status Code: " + response.statusCode);
-                        this._logFunction(">> Response Body: " + responseBodyText);
-                        return [2 /*return*/, new inMemoryHttpResponse_1.InMemoryHttpResponse(response.request, response.statusCode, response.headers, responseBodyText)];
+                        signedRequest = _a.sent();
+                        return [4 /*yield*/, this._nextPolicy.send(signedRequest)];
+                    case 2: return [2 /*return*/, _a.sent()];
                 }
             });
         });
     };
-    return LogPolicy;
+    return SigningPolicy;
 }(requestPolicy_1.BaseRequestPolicy));
-//# sourceMappingURL=logPolicy.js.map
+//# sourceMappingURL=signingPolicy.js.map

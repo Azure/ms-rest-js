@@ -4,6 +4,7 @@
 import { Constants } from "../util/constants";
 import { WebResource } from "../webResource";
 import { ServiceClientCredentials } from "./serviceClientCredentials";
+import { HttpRequest } from "../httpRequest";
 
 const HeaderConstants = Constants.HeaderConstants;
 const DEFAULT_AUTHORIZATION_SCHEME = "Bearer";
@@ -37,5 +38,16 @@ export class TokenCredentials implements ServiceClientCredentials {
     if (!webResource.headers) webResource.headers = {};
     webResource.headers[HeaderConstants.AUTHORIZATION] = `${this.authorizationScheme} ${this.token}`;
     return Promise.resolve(webResource);
+  }
+
+  /**
+   * Signs a request with the Authentication header.
+   *
+   * @param httpRequest The HttpRequest to be signed.
+   * @return The signed request.
+   */
+  public signHttpRequest(httpRequest: HttpRequest): Promise<HttpRequest> {
+    httpRequest.headers.set(HeaderConstants.AUTHORIZATION, `${this.authorizationScheme} ${this.token}`);
+    return Promise.resolve(httpRequest);
   }
 }

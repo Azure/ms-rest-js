@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 import { WebResource } from "../webResource";
+import { HttpRequest } from "../httpRequest";
 
 export interface ServiceClientCredentials {
   /**
@@ -11,4 +12,12 @@ export interface ServiceClientCredentials {
    * @returns {Promise<WebResource>} The signed request object;
    */
   signRequest(webResource: WebResource): Promise<WebResource>;
+
+  /**
+   * Signs a request with the Authentication header.
+   *
+   * @param request The HTTP request to be signed.
+   * @returns The signed request;
+   */
+  signHttpRequest(httpRequest: HttpRequest): Promise<HttpRequest>;
 }

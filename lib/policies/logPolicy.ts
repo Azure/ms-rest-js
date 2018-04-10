@@ -1,12 +1,11 @@
-import { RequestPolicyFactory } from "../requestPolicyFactory";
-import { RequestPolicy, BaseRequestPolicy } from "../requestPolicy";
-import { RequestPolicyOptions } from "../requestPolicyOptions";
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 import { HttpRequest } from "../httpRequest";
 import { HttpResponse } from "../httpResponse";
 import { InMemoryHttpResponse } from "../inMemoryHttpResponse";
-
-// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License. See License.txt in the project root for license information.
+import { BaseRequestPolicy, RequestPolicy } from "../requestPolicy";
+import { RequestPolicyFactory } from "../requestPolicyFactory";
+import { RequestPolicyOptions } from "../requestPolicyOptions";
 
 /**
  * Get a RequestPolicyFactory that creates LogPolicies.

@@ -3,6 +3,7 @@
 
 import { WebResource } from "../webResource";
 import { ServiceClientCredentials } from "./serviceClientCredentials";
+import { HttpRequest } from "../httpRequest";
 
 /**
  * @interface ApiKeyCredentialOptions
@@ -74,5 +75,42 @@ export class ApiKeyCredentials implements ServiceClientCredentials {
     }
 
     return Promise.resolve(webResource);
+  }
+
+  /**
+   * Signs a request with the values provided in the inHeader and inQuery parameter.
+   *
+   * @param httpRequest The HttpRequest to be signed.
+   * @returns The signed request.
+   */
+  public async signHttpRequest(httpRequest: HttpRequest): Promise<HttpRequest> {
+    if (!httpRequest) {
+      throw new Error(`httpRequest cannot be null or undefined and must be of type "object".`);
+    }
+
+    if (this.inHeader) {
+      for (const headerName in this.inHeader) {
+        httpRequest.headers.set(headerName, this.inHeader[headerName]);
+      }
+    }
+
+    if (this.inQuery) {
+      if (!httpRequest.url) {
+        throw new Error(`url cannot be null in the request object.`);
+      }
+
+      if (httpRequest.url.indexOf("?") < 0) {
+        httpRequest.url += "?";
+      }
+
+      for (const queryParameterName in this.inQuery) {
+        if (!httpRequest.url.endsWith("?")) {
+          httpRequest.url += "&";
+        }
+        httpRequest.url += `${queryParameterName}=${this.inQuery[queryParameterName]}`;
+      }
+    }
+
+    return Promise.resolve(httpRequest);
   }
 }

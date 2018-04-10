@@ -1,5 +1,6 @@
 import { WebResource } from "../webResource";
 import { ServiceClientCredentials } from "./serviceClientCredentials";
+import { HttpRequest } from "../httpRequest";
 /**
  * Creates a new BasicAuthenticationCredentials object.
  *
@@ -20,4 +21,11 @@ export declare class BasicAuthenticationCredentials implements ServiceClientCred
      * @returns {Promise<WebResource>} - The signed request object.
      */
     signRequest(webResource: WebResource): Promise<WebResource>;
+    /**
+     * Signs a request with the Authentication header.
+     *
+     * @param httpRequest The request to be signed.
+     * @returns The signed request.
+     */
+    signHttpRequest(httpRequest: HttpRequest): Promise<HttpRequest>;
 }

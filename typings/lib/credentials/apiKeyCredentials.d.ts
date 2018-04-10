@@ -1,5 +1,6 @@
 import { WebResource } from "../webResource";
 import { ServiceClientCredentials } from "./serviceClientCredentials";
+import { HttpRequest } from "../httpRequest";
 /**
  * @interface ApiKeyCredentialOptions
  * Describes the options to be provided while creating an instance of ApiKeyCredentials
@@ -38,4 +39,11 @@ export declare class ApiKeyCredentials implements ServiceClientCredentials {
      * @returns {Promise<WebResource>} - The signed request object.
      */
     signRequest(webResource: WebResource): Promise<WebResource>;
+    /**
+     * Signs a request with the values provided in the inHeader and inQuery parameter.
+     *
+     * @param httpRequest The HttpRequest to be signed.
+     * @returns The signed request.
+     */
+    signHttpRequest(httpRequest: HttpRequest): Promise<HttpRequest>;
 }

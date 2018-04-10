@@ -34,6 +34,16 @@ var TokenCredentials = /** @class */ (function () {
         webResource.headers[HeaderConstants.AUTHORIZATION] = this.authorizationScheme + " " + this.token;
         return Promise.resolve(webResource);
     };
+    /**
+     * Signs a request with the Authentication header.
+     *
+     * @param httpRequest The HttpRequest to be signed.
+     * @return The signed request.
+     */
+    TokenCredentials.prototype.signHttpRequest = function (httpRequest) {
+        httpRequest.headers.set(HeaderConstants.AUTHORIZATION, this.authorizationScheme + " " + this.token);
+        return Promise.resolve(httpRequest);
+    };
     return TokenCredentials;
 }());
 exports.TokenCredentials = TokenCredentials;
