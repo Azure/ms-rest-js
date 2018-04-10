@@ -18,7 +18,7 @@ export class HttpRequest {
      */
     constructor(public httpMethod: HttpMethod, public url: string, headers: HttpHeaders | RawHttpHeaders, private _body?: string) {
         if (!this.url) {
-            const urlString: string = (this.url === undefined || this.url === null ? this.url : `"${this.url}"`);
+            const urlString: string = (this.url == undefined ? this.url : `"${this.url}"`);
             throw new Error(`${urlString} is not a valid URL for a HttpRequest.`);
         }
 

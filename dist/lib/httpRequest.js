@@ -19,7 +19,7 @@ var HttpRequest = /** @class */ (function () {
         this.url = url;
         this._body = _body;
         if (!this.url) {
-            var urlString = (this.url === undefined || this.url === null ? this.url : "\"" + this.url + "\"");
+            var urlString = (this.url == undefined ? this.url : "\"" + this.url + "\"");
             throw new Error(urlString + " is not a valid URL for a HttpRequest.");
         }
         this._headers = (headers instanceof httpHeaders_1.HttpHeaders ? headers : new httpHeaders_1.HttpHeaders(headers));
