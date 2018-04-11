@@ -10,7 +10,7 @@ const numberSpec: TypeSpec<number> = {
 
     serialize(propertyPath: string[], value: any): number {
         if (typeof value !== "number") {
-            throw new Error(createValidationErrorMessage(propertyPath, value, "of type number"));
+            throw new Error(createValidationErrorMessage(propertyPath, value, "a number"));
         }
         return value;
     }

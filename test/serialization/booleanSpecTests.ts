@@ -14,7 +14,7 @@ describe("booleanSpec", () => {
                 booleanSpec.serialize(["a", "property", "path"], undefined);
                 assert.fail("Expected an error to be thrown.");
             } catch (error) {
-                assert.strictEqual(error.message, "Property a.property.path with value undefined must be of type boolean.");
+                assert.strictEqual(error.message, "Property a.property.path with value undefined must be a boolean.");
             }
         });
 
@@ -23,7 +23,7 @@ describe("booleanSpec", () => {
                 booleanSpec.serialize(["another", "property", "path"], 5);
                 assert.fail("Expected an error to be thrown.");
             } catch (error) {
-                assert.strictEqual(error.message, "Property another.property.path with value 5 must be of type boolean.");
+                assert.strictEqual(error.message, "Property another.property.path with value 5 must be a boolean.");
             }
         });
 

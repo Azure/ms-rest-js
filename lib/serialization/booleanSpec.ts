@@ -10,7 +10,7 @@ const booleanSpec: TypeSpec<boolean> = {
 
     serialize(propertyPath: string[], value: any): boolean {
         if (typeof value !== "boolean") {
-            throw new Error(createValidationErrorMessage(propertyPath, value, "of type boolean"));
+            throw new Error(createValidationErrorMessage(propertyPath, value, "a boolean"));
         }
         return value;
     }

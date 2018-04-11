@@ -4,14 +4,14 @@ import { TypeSpec, createValidationErrorMessage } from "./typeSpec";
 import * as utils from "../util/utils";
 
 /**
- * A type specification that describes how to validate and serialize an UUID.
+ * A type specification that describes how to validate and serialize a UUID.
  */
 const uuidSpec: TypeSpec<string> = {
     typeName: "UUID",
 
     serialize(propertyPath: string[], value: any): string {
         if (typeof value !== "string" || !utils.isValidUuid(value)) {
-            throw new Error(createValidationErrorMessage(propertyPath, value, "an UUID"));
+            throw new Error(createValidationErrorMessage(propertyPath, value, "a UUID"));
         }
         return value;
     }

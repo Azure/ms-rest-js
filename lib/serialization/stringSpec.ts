@@ -10,7 +10,7 @@ const stringSpec: TypeSpec<string> = {
 
     serialize(propertyPath: string[], value: any): string {
         if (typeof value !== "string") {
-            throw new Error(createValidationErrorMessage(propertyPath, value, "of type string"));
+            throw new Error(createValidationErrorMessage(propertyPath, value, "a string"));
         }
         return value;
     }

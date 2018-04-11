@@ -14,7 +14,7 @@ describe("uuidSpec", () => {
                 uuidSpec.serialize(["a", "property", "path"], undefined);
                 assert.fail("Expected an error to be thrown.");
             } catch (error) {
-                assert.strictEqual(error.message, "Property a.property.path with value undefined must be an UUID.");
+                assert.strictEqual(error.message, "Property a.property.path with value undefined must be a UUID.");
             }
         });
 
@@ -23,7 +23,7 @@ describe("uuidSpec", () => {
                 uuidSpec.serialize(["another", "property", "path"], false);
                 assert.fail("Expected an error to be thrown.");
             } catch (error) {
-                assert.strictEqual(error.message, "Property another.property.path with value false must be an UUID.");
+                assert.strictEqual(error.message, "Property another.property.path with value false must be a UUID.");
             }
         });
 
@@ -32,7 +32,7 @@ describe("uuidSpec", () => {
                 uuidSpec.serialize(["another", "property", "path"], []);
                 assert.fail("Expected an error to be thrown.");
             } catch (error) {
-                assert.strictEqual(error.message, "Property another.property.path with value [] must be an UUID.");
+                assert.strictEqual(error.message, "Property another.property.path with value [] must be a UUID.");
             }
         });
 
@@ -41,7 +41,7 @@ describe("uuidSpec", () => {
                 uuidSpec.serialize(["another", "property", "path"], "abc");
                 assert.fail("Expected an error to be thrown.");
             } catch (error) {
-                assert.strictEqual(error.message, "Property another.property.path with value \"abc\" must be an UUID.");
+                assert.strictEqual(error.message, "Property another.property.path with value \"abc\" must be a UUID.");
             }
         });
 

@@ -14,7 +14,7 @@ describe("stringSpec", () => {
                 stringSpec.serialize(["a", "property", "path"], undefined);
                 assert.fail("Expected an error to be thrown.");
             } catch (error) {
-                assert.strictEqual(error.message, "Property a.property.path with value undefined must be of type string.");
+                assert.strictEqual(error.message, "Property a.property.path with value undefined must be a string.");
             }
         });
 
@@ -23,7 +23,7 @@ describe("stringSpec", () => {
                 stringSpec.serialize(["another", "property", "path"], false);
                 assert.fail("Expected an error to be thrown.");
             } catch (error) {
-                assert.strictEqual(error.message, "Property another.property.path with value false must be of type string.");
+                assert.strictEqual(error.message, "Property another.property.path with value false must be a string.");
             }
         });
 
