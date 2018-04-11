@@ -1,5 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
+import { SerializationOptions } from "./serializationOptions";
 
 /**
  * A type specification that describes how to validate and serialize an object of a given type.
@@ -22,7 +23,7 @@ export interface TypeSpec<TSerialized> {
    * property.
    * @param value The value to validate and serialize.
    */
-  serialize(propertyPath: string[], value: any): TSerialized;
+  serialize(propertyPath: string[], value: any, options: SerializationOptions): TSerialized;
 }
 
 /**

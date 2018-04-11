@@ -12,7 +12,7 @@ describe("sequenceSpec", () => {
   describe("serialize()", () => {
     it("should throw an error when given undefined", () => {
       try {
-        sequenceSpec(stringSpec).serialize(["a", "property", "path"], undefined);
+        sequenceSpec(stringSpec).serialize(["a", "property", "path"], undefined, {});
         assert.fail("Expected an error to be thrown.");
       } catch (error) {
         assert.strictEqual(error.message, "Property a.property.path with value undefined must be an Array.");
@@ -21,7 +21,7 @@ describe("sequenceSpec", () => {
 
     it("should throw an error when given false", () => {
       try {
-        sequenceSpec(stringSpec).serialize(["another", "property", "path"], false);
+        sequenceSpec(stringSpec).serialize(["another", "property", "path"], false, {});
         assert.fail("Expected an error to be thrown.");
       } catch (error) {
         assert.strictEqual(error.message, "Property another.property.path with value false must be an Array.");
@@ -30,7 +30,7 @@ describe("sequenceSpec", () => {
 
     it("should throw an error when given {}", () => {
       try {
-        sequenceSpec(stringSpec).serialize(["another", "property", "path"], {});
+        sequenceSpec(stringSpec).serialize(["another", "property", "path"], {}, {});
         assert.fail("Expected an error to be thrown.");
       } catch (error) {
         assert.strictEqual(error.message, "Property another.property.path with value {} must be an Array.");
@@ -38,19 +38,19 @@ describe("sequenceSpec", () => {
     });
 
     it("should return the provided value with no error when given []", () => {
-      assert.deepEqual(sequenceSpec(stringSpec).serialize(["this", "one", "works"], []), []);
+      assert.deepEqual(sequenceSpec(stringSpec).serialize(["this", "one", "works"], [], {}), []);
     });
 
     it("should throw an error when given [9]", () => {
       try {
-        sequenceSpec(stringSpec).serialize(["another", "property", "path"], [9]);
+        sequenceSpec(stringSpec).serialize(["another", "property", "path"], [9], {});
         assert.fail("Expected an error to be thrown.");
       } catch (error) {
         assert.strictEqual(error.message, "Property another.property.path.0 with value 9 must be a string.");
       }
 
       it(`should return the provided value with no error when given ["a"]`, () => {
-        assert.deepEqual(sequenceSpec(stringSpec).serialize(["this", "one", "works"], ["a"]), ["a"]);
+        assert.deepEqual(sequenceSpec(stringSpec).serialize(["this", "one", "works"], ["a"], {}), ["a"]);
       });
     });
   });

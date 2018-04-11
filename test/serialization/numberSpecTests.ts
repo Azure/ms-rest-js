@@ -11,7 +11,7 @@ describe("numberSpec", () => {
     describe("serialize()", () => {
         it("should throw an error when given undefined", () => {
             try {
-                numberSpec.serialize(["a", "property", "path"], undefined);
+                numberSpec.serialize(["a", "property", "path"], undefined, {});
                 assert.fail("Expected an error to be thrown.");
             } catch (error) {
                 assert.strictEqual(error.message, "Property a.property.path with value undefined must be a number.");
@@ -20,7 +20,7 @@ describe("numberSpec", () => {
 
         it("should throw an error when given \"\"", () => {
             try {
-                numberSpec.serialize(["another", "property", "path"], "");
+                numberSpec.serialize(["another", "property", "path"], "", {});
                 assert.fail("Expected an error to be thrown.");
             } catch (error) {
                 assert.strictEqual(error.message, "Property another.property.path with value \"\" must be a number.");
@@ -28,7 +28,7 @@ describe("numberSpec", () => {
         });
 
         it("should return the provided value with no error when given 12", () => {
-            assert.strictEqual(numberSpec.serialize(["this", "one", "works"], 12), 12);
+            assert.strictEqual(numberSpec.serialize(["this", "one", "works"], 12, {}), 12);
         });
     });
 });

@@ -11,7 +11,7 @@ describe("objectSpec", () => {
     describe("serialize()", () => {
         it("should throw an error when given undefined", () => {
             try {
-                streamSpec.serialize(["a", "property", "path"], undefined);
+                streamSpec.serialize(["a", "property", "path"], undefined, {});
                 assert.fail("Expected an error to be thrown.");
             } catch (error) {
                 assert.strictEqual(error.message, "Property a.property.path with value undefined must be a Stream.");
@@ -20,7 +20,7 @@ describe("objectSpec", () => {
 
         it("should throw an error when given false", () => {
             try {
-                streamSpec.serialize(["another", "property", "path"], false);
+                streamSpec.serialize(["another", "property", "path"], false, {});
                 assert.fail("Expected an error to be thrown.");
             } catch (error) {
                 assert.strictEqual(error.message, "Property another.property.path with value false must be a Stream.");
@@ -29,7 +29,7 @@ describe("objectSpec", () => {
 
         it("should throw an error when given {}", () => {
             try {
-                streamSpec.serialize(["another", "property", "path"], {});
+                streamSpec.serialize(["another", "property", "path"], {}, {});
                 assert.fail("Expected an error to be thrown.");
             } catch (error) {
                 assert.strictEqual(error.message, "Property another.property.path with value {} must be a Stream.");
@@ -38,7 +38,7 @@ describe("objectSpec", () => {
 
         it("should throw an error when given []", () => {
             try {
-                streamSpec.serialize(["another", "property", "path"], []);
+                streamSpec.serialize(["another", "property", "path"], [], {});
                 assert.fail("Expected an error to be thrown.");
             } catch (error) {
                 assert.strictEqual(error.message, "Property another.property.path with value [] must be a Stream.");
