@@ -7,14 +7,14 @@ import { TypeSpec, createValidationErrorMessage } from "./typeSpec";
  * A type specification that describes how to validate and serialize a Stream.
  */
 const streamSpec: TypeSpec<any> = {
-    typeName: "Stream",
+  typeName: "Stream",
 
-    serialize(propertyPath: string[], value: any): any {
-        if (!isStream(value)) {
-            throw new Error(createValidationErrorMessage(propertyPath, value, "a Stream"));
-        }
-        return value;
+  serialize(propertyPath: string[], value: any): any {
+    if (!isStream(value)) {
+      throw new Error(createValidationErrorMessage(propertyPath, value, "a Stream"));
     }
+    return value;
+  }
 };
 
 export default streamSpec;

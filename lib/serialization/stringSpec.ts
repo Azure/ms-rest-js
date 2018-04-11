@@ -6,14 +6,14 @@ import { TypeSpec, createValidationErrorMessage } from "./typeSpec";
  * A type specification that describes how to validate and serialize a string.
  */
 const stringSpec: TypeSpec<string> = {
-    typeName: "string",
+  typeName: "string",
 
-    serialize(propertyPath: string[], value: any): string {
-        if (typeof value !== "string") {
-            throw new Error(createValidationErrorMessage(propertyPath, value, "a string"));
-        }
-        return value;
+  serialize(propertyPath: string[], value: any): string {
+    if (typeof value !== "string") {
+      throw new Error(createValidationErrorMessage(propertyPath, value, "a string"));
     }
+    return value;
+  }
 };
 
 export default stringSpec;
