@@ -6,12 +6,19 @@ import * as utils from "../util/utils";
 /**
  * A type specification that describes how to validate and serialize a UUID.
  */
-const uuidSpec: TypeSpec<string> = {
+const uuidSpec: TypeSpec<string, string> = {
   typeName: "UUID",
 
-  serialize(propertyPath: string[], value: any): string {
+  serialize(propertyPath: string[], value: string): string {
     if (typeof value !== "string" || !utils.isValidUuid(value)) {
-      throw new Error(createValidationErrorMessage(propertyPath, value, "a UUID"));
+      throw new Error(createValidationErrorMessage(propertyPath, value, "a UUID string"));
+    }
+    return value;
+  },
+
+  deserialize(propertyPath: string[], value: string): string {
+    if (typeof value !== "string" || !utils.isValidUuid(value)) {
+      throw new Error(createValidationErrorMessage(propertyPath, value, "a UUID string"));
     }
     return value;
   }

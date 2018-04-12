@@ -5,15 +5,22 @@ import { TypeSpec, createValidationErrorMessage } from "./typeSpec";
 /**
  * A type specification that describes how to validate and serialize a Date.
  */
-const unixTimeSpec: TypeSpec<number> = {
+const unixTimeSpec: TypeSpec<number, Date> = {
   typeName: "UnixTime",
 
-  serialize(propertyPath: string[], value: any): number {
+  serialize(propertyPath: string[], value: Date | string): number {
     if (!value || (!(value instanceof Date) && (typeof value !== "string" || isNaN(Date.parse(value))))) {
       throw new Error(createValidationErrorMessage(propertyPath, value, `an instanceof Date or a string in ISO8601 format`));
     }
     const valueDate: Date = (value instanceof Date ? value : new Date(value));
     return Math.floor(valueDate.getTime() / 1000);
+  },
+
+  deserialize(propertyPath: string[], value: number): Date {
+    if (typeof value !== "number") {
+      throw new Error(createValidationErrorMessage(propertyPath, value, `a number`));
+    }
+    return new Date(value * 1000);
   }
 };
 

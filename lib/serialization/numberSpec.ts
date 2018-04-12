@@ -5,10 +5,17 @@ import { TypeSpec, createValidationErrorMessage } from "./typeSpec";
 /**
  * A type specification that describes how to validate and serialize a number.
  */
-const numberSpec: TypeSpec<number> = {
+const numberSpec: TypeSpec<number, number> = {
   typeName: "number",
 
-  serialize(propertyPath: string[], value: any): number {
+  serialize(propertyPath: string[], value: number): number {
+    if (typeof value !== "number") {
+      throw new Error(createValidationErrorMessage(propertyPath, value, "a number"));
+    }
+    return value;
+  },
+
+  deserialize(propertyPath: string[], value: number): number {
     if (typeof value !== "number") {
       throw new Error(createValidationErrorMessage(propertyPath, value, "a number"));
     }

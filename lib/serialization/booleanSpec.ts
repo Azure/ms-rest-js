@@ -5,10 +5,17 @@ import { TypeSpec, createValidationErrorMessage } from "./typeSpec";
 /**
  * A type specification that describes how to validate and serialize a boolean.
  */
-const booleanSpec: TypeSpec<boolean> = {
+const booleanSpec: TypeSpec<boolean, boolean> = {
   typeName: "boolean",
 
-  serialize(propertyPath: string[], value: any): boolean {
+  serialize(propertyPath: string[], value: boolean): boolean {
+    if (typeof value !== "boolean") {
+      throw new Error(createValidationErrorMessage(propertyPath, value, "a boolean"));
+    }
+    return value;
+  },
+
+  deserialize(propertyPath: string[], value: boolean): boolean {
     if (typeof value !== "boolean") {
       throw new Error(createValidationErrorMessage(propertyPath, value, "a boolean"));
     }

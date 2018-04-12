@@ -5,14 +5,21 @@ import { TypeSpec, createValidationErrorMessage } from "./typeSpec";
 /**
  * A type specification that describes how to validate and serialize a Date.
  */
-const dateTimeSpec: TypeSpec<string> = {
+const dateTimeSpec: TypeSpec<string, Date> = {
   typeName: "DateTime",
 
-  serialize(propertyPath: string[], value: any): string {
+  serialize(propertyPath: string[], value: Date | string): string {
     if (!value || (!(value instanceof Date) && (typeof value !== "string" || isNaN(Date.parse(value))))) {
-      throw new Error(createValidationErrorMessage(propertyPath, value, `an instanceof Date or a string in ISO8601 format`));
+      throw new Error(createValidationErrorMessage(propertyPath, value, `an instanceof Date or a string in ISO8601 DateTime format`));
     }
     return (value instanceof Date ? value : new Date(value)).toISOString();
+  },
+
+  deserialize(propertyPath: string[], value: string): Date {
+    if (!value || typeof value !== "string") {
+      throw new Error(createValidationErrorMessage(propertyPath, value, `a string in ISO8601 DateTime format`));
+    }
+    return new Date(value);
   }
 };
 

@@ -1,19 +1,26 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 import { TypeSpec, createValidationErrorMessage } from "./typeSpec";
-import { isDuration } from "moment";
+import { isDuration, Duration, duration } from "moment";
 
 /**
  * A type specification that describes how to validate and serialize a Date.
  */
-const timeSpanSpec: TypeSpec<string> = {
+const timeSpanSpec: TypeSpec<string, Duration> = {
   typeName: "TimeSpan",
 
-  serialize(propertyPath: string[], value: any): string {
-    if (!value || (!isDuration(value) && !(value.constructor && value.constructor.name === "Duration" && typeof value.isValid === "function" && value.isValid()))) {
+  serialize(propertyPath: string[], value: Duration): string {
+    if (!value || (!isDuration(value) && !((value as any).constructor && (value as any).constructor.name === "Duration" && typeof (value as any).isValid === "function" && (value as any).isValid()))) {
       throw new Error(createValidationErrorMessage(propertyPath, value, `a TimeSpan/Duration`));
     }
     return value.toISOString();
+  },
+
+  deserialize(propertyPath: string[], value: any): Duration {
+    if (!value || typeof value !== "string") {
+      throw new Error(createValidationErrorMessage(propertyPath, value, `an ISO8601 TimeSpan/Duration string`));
+    }
+    return duration(value);
   }
 };
 

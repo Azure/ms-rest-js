@@ -3,37 +3,53 @@
 import { SerializationOptions, SerializationOutputType } from "./serializationOptions";
 import { TypeSpec, createValidationErrorMessage } from "./typeSpec";
 
+export interface CompositeType {
+  [key: string]: any;
+}
+
 /**
  * A type specification that describes how to validate and serialize a Composite value.
  */
-export function compositeSpec(typeName: string, propertySpecs: { [propertyName: string]: PropertySpec<any> }): TypeSpec<{}> {
+export function compositeSpec(typeName: string, propertySpecs: { [propertyName: string]: PropertySpec }): TypeSpec<CompositeType, CompositeType> {
   return {
     typeName: `Composite<${typeName}>`,
 
-    serialize(propertyPath: string[], value: any, options: SerializationOptions): { [key: string]: any } {
+    serialize(propertyPath: string[], value: CompositeType, options: SerializationOptions): CompositeType {
       if (typeof value !== "object" || Array.isArray(value)) {
         throw new Error(createValidationErrorMessage(propertyPath, value, "an object"));
       }
 
       const outputXML: boolean = (options && options.outputType === SerializationOutputType.XML);
 
-      const serializedComposite: { [key: string]: any } = {};
+      const serializedComposite: CompositeType = {};
       for (const childPropertyName in propertySpecs) {
-        const childPropertySpec: PropertySpec<any> = propertySpecs[childPropertyName];
+        const childPropertySpec: PropertySpec = propertySpecs[childPropertyName];
         const childPropertyValue: any = value[childPropertyName];
         const childPropertyPath: string[] = propertyPath.concat([childPropertyName]);
+
+        // Get the child property's value spec.
+        let childPropertyValueSpec: TypeSpec<any, any>;
+        if (typeof childPropertySpec.valueSpec === "string") {
+          if (!options.compositeSpecDictionary || !options.compositeSpecDictionary[childPropertySpec.valueSpec]) {
+            throw new Error(`Missing composite specification entry in composite type dictionary for type named "${childPropertySpec.valueSpec}".`);
+          }
+          childPropertyValueSpec = options.compositeSpecDictionary[childPropertySpec.valueSpec];
+        } else {
+          childPropertyValueSpec = childPropertySpec.valueSpec;
+        }
+
         if (!childPropertyValue) {
           if (childPropertySpec.required && !childPropertySpec.constant) {
-            throw new Error(`Missing non-constant ${childPropertySpec.valueSpec.typeName} property at ${childPropertyPath.join(".")}.`);
+            throw new Error(`Missing non-constant ${childPropertyValueSpec.typeName} property at ${childPropertyPath.join(".")}.`);
           }
         } else if (!childPropertySpec.readonly) {
 
           // This variable will point to the object that will contain the serialized property.
-          let propertyParent: { [key: string]: any } = serializedComposite;
+          let propertyParent: CompositeType = serializedComposite;
           // The name of the serialized property.
           let serializedChildPropertyName: string;
           // The value of the serialized property.
-          const serializedChildPropertyValue: any = childPropertySpec.valueSpec.serialize(childPropertyPath, childPropertyValue, options);
+          const serializedChildPropertyValue: any = childPropertyValueSpec.serialize(childPropertyPath, childPropertyValue, options);
 
           if (outputXML) {
             // XML
@@ -87,6 +103,14 @@ export function compositeSpec(typeName: string, propertySpecs: { [propertyName: 
       }
 
       return serializedComposite;
+    },
+
+    deserialize(propertyPath: string[], value: CompositeType): CompositeType {
+      if (typeof value !== "object" || Array.isArray(value)) {
+        throw new Error(createValidationErrorMessage(propertyPath, value, "an object"));
+      }
+
+      return {};
     }
   };
 }
@@ -112,7 +136,7 @@ function splitSerializeName(prop: string): string[] {
 /**
  * A specification that describes a property on a Composite type.
  */
-export interface PropertySpec<TSerialized> {
+export interface PropertySpec {
   /**
    * The name of this property when it is serialized.
    */
@@ -160,7 +184,8 @@ export interface PropertySpec<TSerialized> {
   xmlElementName?: string;
 
   /**
-   * The specification for the value of this property.
+   * The specification for the value of this property, or the key to lookup the composite
+   * specification within a composite specification dictionary.
    */
-  valueSpec: TypeSpec<TSerialized>;
+  valueSpec: TypeSpec<any, any> | string;
 }

@@ -5,10 +5,17 @@ import { TypeSpec, createValidationErrorMessage } from "./typeSpec";
 /**
  * A type specification that describes how to validate and serialize an object.
  */
-const objectSpec: TypeSpec<{}> = {
+const objectSpec: TypeSpec<{ [key: string]: any }, { [key: string]: any }> = {
   typeName: "object",
 
-  serialize(propertyPath: string[], value: any): {} {
+  serialize(propertyPath: string[], value: { [key: string]: any }): { [key: string]: any } {
+    if (typeof value !== "object" || Array.isArray(value)) {
+      throw new Error(createValidationErrorMessage(propertyPath, value, "an object"));
+    }
+    return value;
+  },
+
+  deserialize(propertyPath: string[], value: { [key: string]: any }): { [key: string]: any } {
     if (typeof value !== "object" || Array.isArray(value)) {
       throw new Error(createValidationErrorMessage(propertyPath, value, "an object"));
     }

@@ -5,11 +5,11 @@ import { TypeSpec, createValidationErrorMessage } from "./typeSpec";
 /**
  * A type specification that describes how to validate and serialize a Base64Url encoded ByteArray.
  */
-const byteArraySpec: TypeSpec<string> = {
+const base64UrlSpec: TypeSpec<string, Buffer> = {
   typeName: "Base64Url",
 
-  serialize(propertyPath: string[], value: any): string {
-    if (!value || typeof value.constructor.isBuffer !== "function" || !value.constructor.isBuffer(value)) {
+  serialize(propertyPath: string[], value: Buffer): string {
+    if (!value || typeof (value as any).constructor.isBuffer !== "function" || !(value as any).constructor.isBuffer(value)) {
       throw new Error(createValidationErrorMessage(propertyPath, value, "a Buffer"));
     }
 
@@ -21,7 +21,19 @@ const byteArraySpec: TypeSpec<string> = {
     }
 
     return result.substr(0, trimmedResultLength).replace(/\+/g, "-").replace(/\//g, "_");
+  },
+
+  deserialize(propertyPath: string[], value: string): Buffer {
+    if (!value || typeof value !== "string") {
+      throw new Error(createValidationErrorMessage(propertyPath, value, "a string."));
+    }
+
+    // Base64Url to Base64.
+    value = value.replace(/\-/g, "+").replace(/\_/g, "/");
+
+    // Base64 to Buffer.
+    return Buffer.from(value, "base64");
   }
 };
 
-export default byteArraySpec;
+export default base64UrlSpec;
