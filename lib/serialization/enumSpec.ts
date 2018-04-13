@@ -1,17 +1,32 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 import { TypeSpec, createValidationErrorMessage } from "./typeSpec";
+import { SpecPath } from "./specPath";
+
+export interface EnumTypeSpec<T> extends TypeSpec<T, T> {
+  /**
+   * The name of the enum type that this EnumTypeSpec describes.
+   */
+  enumName: string;
+
+  /**
+   * The values that are allowed for this EnumTypeSpec.
+   */
+  allowedValues: T[];
+}
 
 /**
  * A type specification that describes how to validate and serialize an object.
  */
-export function enumSpec<T>(enumName: string, allowedValues: T[]): TypeSpec<T, T> {
+export function enumSpec<T>(enumName: string, allowedValues: T[]): EnumTypeSpec<T> {
   return {
-    typeName: `Enum<${enumName}>`,
+    specType: `Enum`,
+
+    enumName: enumName,
 
     allowedValues: allowedValues,
 
-    serialize(propertyPath: string[], value: T): T {
+    serialize(propertyPath: SpecPath, value: T): T {
       const foundMatch: boolean = allowedValues.some((item) => {
         return item === value || (typeof item === "string" && typeof value === "string" && item.toLowerCase() === value.toLowerCase());
       });
@@ -21,7 +36,7 @@ export function enumSpec<T>(enumName: string, allowedValues: T[]): TypeSpec<T, T
       return value;
     },
 
-    deserialize(propertyPath: string[], value: T): T {
+    deserialize(propertyPath: SpecPath, value: T): T {
       const foundMatch: boolean = allowedValues.some((item) => {
         return item === value || (typeof item === "string" && typeof value === "string" && item.toLowerCase() === value.toLowerCase());
       });

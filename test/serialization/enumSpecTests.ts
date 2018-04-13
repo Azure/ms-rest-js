@@ -2,37 +2,53 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 import * as assert from "assert";
 import { enumSpec } from "../../lib/serialization/enumSpec";
+import { serializeTest } from "./specTest";
 
 describe("enumSpec", () => {
-    it("should have \"Enum<Letters>\" for its typeName property", () => {
-        assert.strictEqual("Enum<Letters>", enumSpec("Letters", []).typeName);
+  it("should have \"Enum\" for its specType property", () => {
+    assert.strictEqual("Enum", enumSpec("Letters", []).specType);
+  });
+
+  it("shoudl have the correct enumName property", () => {
+    assert.strictEqual("Letters", enumSpec("Letters", []).enumName);
+  });
+
+  describe("serialize()", () => {
+    describe("with strict type-checking", () => {
+      function enumSerializeWithStrictTypeCheckingTest<T>(args: { allowedValues: T[], value: T, expectedResult: T | Error }): void {
+        serializeTest({
+          typeSpec: enumSpec("Letters", args.allowedValues),
+          options: {
+            serializationStrictTypeChecking: true
+          },
+          value: args.value,
+          expectedResult: args.expectedResult
+        });
+      }
+
+      enumSerializeWithStrictTypeCheckingTest({
+        allowedValues: ["a", "b", "c"],
+        value: <any>undefined,
+        expectedResult: new Error(`Property a.property.path with value undefined must be one of the enum allowed values: ["a","b","c"].`)
+      });
+
+      enumSerializeWithStrictTypeCheckingTest({
+        allowedValues: ["a", "b", "c"],
+        value: "",
+        expectedResult: new Error(`Property a.property.path with value "" must be one of the enum allowed values: ["a","b","c"].`)
+      });
+
+      enumSerializeWithStrictTypeCheckingTest({
+        allowedValues: ["a", "b", "c"],
+        value: "a",
+        expectedResult: "a"
+      });
+
+      enumSerializeWithStrictTypeCheckingTest({
+        allowedValues: ["a", "b", "c"],
+        value: "A",
+        expectedResult: "A"
+      });
     });
-
-    describe("serialize()", () => {
-        it("should throw an error when given undefined", () => {
-            try {
-                enumSpec("Letters", ["a", "b", "c"]).serialize(["a", "property", "path"], undefined, {});
-                assert.fail("Expected an error to be thrown.");
-            } catch (error) {
-                assert.strictEqual(error.message, `Property a.property.path with value undefined must be one of the enum allowed values: ["a","b","c"].`);
-            }
-        });
-
-        it("should throw an error when given \"\"", () => {
-            try {
-                enumSpec("Letters", ["a", "b", "c"]).serialize(["another", "property", "path"], "", {});
-                assert.fail("Expected an error to be thrown.");
-            } catch (error) {
-                assert.strictEqual(error.message, `Property another.property.path with value \"\" must be one of the enum allowed values: ["a","b","c"].`);
-            }
-        });
-
-        it("should return the provided value with no error when given \"a\"", () => {
-            assert.strictEqual(enumSpec("Letters", ["a", "b", "c"]).serialize(["this", "one", "works"], "a", {}), "a");
-        });
-
-        it("should return the provided value with no error when given \"A\"", () => {
-            assert.strictEqual(enumSpec("Letters", ["a", "b", "c"]).serialize(["this", "one", "works"], "A", {}), "A");
-        });
-    });
+  });
 });

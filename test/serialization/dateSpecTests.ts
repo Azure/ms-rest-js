@@ -2,55 +2,56 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 import * as assert from "assert";
 import dateSpec from "../../lib/serialization/dateSpec";
+import { serializeTest } from "./specTest";
 
 describe("dateSpec", () => {
-    it("should have \"Date\" for its typeName property", () => {
-        assert.strictEqual("Date", dateSpec.typeName);
+  it("should have \"Date\" for its typeName property", () => {
+    assert.strictEqual("Date", dateSpec.specType);
+  });
+
+  describe("serialize()", () => {
+    describe("with strict type-checking", () => {
+      function dateSerializeWithStrictTypeCheckingTest(args: { propertyPath?: string[], value: Date | string, expectedResult: string | Error }): void {
+        serializeTest({
+          typeSpec: dateSpec,
+          propertyPath: args.propertyPath,
+          options: {
+            serializationStrictTypeChecking: true
+          },
+          value: args.value,
+          expectedResult: args.expectedResult
+        });
+      }
+
+      dateSerializeWithStrictTypeCheckingTest({
+        value: <any>undefined,
+        expectedResult: new Error("Property a.property.path with value undefined must be an instanceof Date or a string in ISO8601 Date format.")
+      });
+
+      dateSerializeWithStrictTypeCheckingTest({
+        value: <any>false,
+        expectedResult: new Error("Property a.property.path with value false must be an instanceof Date or a string in ISO8601 Date format.")
+      });
+
+      dateSerializeWithStrictTypeCheckingTest({
+        value: <any>5,
+        expectedResult: new Error("Property a.property.path with value 5 must be an instanceof Date or a string in ISO8601 Date format.")
+      });
+
+      dateSerializeWithStrictTypeCheckingTest({
+        value: "hello world!",
+        expectedResult: new Error(`Property a.property.path with value "hello world!" must be an instanceof Date or a string in ISO8601 Date format.`)
+      });
+
+      dateSerializeWithStrictTypeCheckingTest({
+        value: "2011-10-05T14:48:00.000Z",
+        expectedResult: "2011-10-05"
+      });
+
+      dateSerializeWithStrictTypeCheckingTest({
+        value: new Date("2011-10-06T14:48:00.000Z"),
+        expectedResult: "2011-10-06"
+      });
     });
-
-    describe("serialize()", () => {
-        it("should throw an error when given undefined", () => {
-            try {
-                dateSpec.serialize(["a", "property", "path"], undefined, {});
-                assert.fail("Expected an error to be thrown.");
-            } catch (error) {
-                assert.strictEqual(error.message, "Property a.property.path with value undefined must be an instanceof Date or a string in ISO8601 format.");
-            }
-        });
-
-        it("should throw an error when given false", () => {
-            try {
-                dateSpec.serialize(["another", "property", "path"], false, {});
-                assert.fail("Expected an error to be thrown.");
-            } catch (error) {
-                assert.strictEqual(error.message, "Property another.property.path with value false must be an instanceof Date or a string in ISO8601 format.");
-            }
-        });
-
-        it("should throw an error when given 5", () => {
-            try {
-                dateSpec.serialize(["another", "property", "path"], 5, {});
-                assert.fail("Expected an error to be thrown.");
-            } catch (error) {
-                assert.strictEqual(error.message, "Property another.property.path with value 5 must be an instanceof Date or a string in ISO8601 format.");
-            }
-        });
-
-        it("should throw an error when given \"hello world!\"", () => {
-            try {
-                dateSpec.serialize(["another", "property", "path"], "hello world!", {});
-                assert.fail("Expected an error to be thrown.");
-            } catch (error) {
-                assert.strictEqual(error.message, "Property another.property.path with value \"hello world!\" must be an instanceof Date or a string in ISO8601 format.");
-            }
-        });
-
-        it("should return the provided value with no error when given an ISO 8601 date string", () => {
-            assert.strictEqual(dateSpec.serialize(["this", "one", "works"], "2011-10-05T14:48:00.000Z", {}), "2011-10-05");
-        });
-
-        it("should return the ISO 8601 string representation of the provided value with no error when given a Date", () => {
-            assert.strictEqual(dateSpec.serialize(["this", "one", "works"], new Date("2011-10-05T14:48:00.000Z"), {}), "2011-10-05");
-        });
-    });
+  });
 });

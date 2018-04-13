@@ -2,75 +2,150 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 import * as assert from "assert";
 import byteArraySpec from "../../lib/serialization/byteArraySpec";
+import { deserializeTest, serializeTest } from "./specTest";
 
 describe("byteArraySpec", () => {
   it("should have \"ByteArray\" for its typeName property", () => {
-    assert.strictEqual("ByteArray", byteArraySpec.typeName);
+    assert.strictEqual("ByteArray", byteArraySpec.specType);
   });
 
   describe("serialize()", () => {
-    it("should throw an error when given undefined", () => {
-      try {
-        byteArraySpec.serialize(["a", "property", "path"], <any>undefined, {});
-        assert.fail("Expected an error to be thrown.");
-      } catch (error) {
-        assert.strictEqual(error.message, "Property a.property.path with value undefined must be a Buffer.");
+    describe("with strict type-checking", () => {
+      function byteArraySerializeWithStrictTypeCheckingTest(args: { propertyPath?: string[], value: Buffer, expectedResult: string | Error }): void {
+        serializeTest({
+          typeSpec: byteArraySpec,
+          propertyPath: args.propertyPath,
+          options: {
+            serializationStrictTypeChecking: true
+          },
+          value: args.value,
+          expectedResult: args.expectedResult
+        });
       }
+
+      byteArraySerializeWithStrictTypeCheckingTest({
+        value: <any>undefined,
+        expectedResult: new Error("Property a.property.path with value undefined must be a Buffer.")
+      });
+
+      byteArraySerializeWithStrictTypeCheckingTest({
+        value: <any>5,
+        expectedResult: new Error("Property a.property.path with value 5 must be a Buffer.")
+      });
+
+      byteArraySerializeWithStrictTypeCheckingTest({
+        value: <any>{},
+        expectedResult: new Error("Property a.property.path with value {} must be a Buffer.")
+      });
+
+      byteArraySerializeWithStrictTypeCheckingTest({
+        value: new Buffer([0, 1, 2, 3, 4]),
+        expectedResult: "AAECAwQ="
+      });
     });
 
-    it("should throw an error when given 5", () => {
-      try {
-        byteArraySpec.serialize(["another", "property", "path"], <any>5, {});
-        assert.fail("Expected an error to be thrown.");
-      } catch (error) {
-        assert.strictEqual(error.message, "Property another.property.path with value 5 must be a Buffer.");
+    describe("without strict type-checking", () => {
+      function byteArraySerializeWithoutStrictTypeCheckingTest(args: { propertyPath?: string[], value: Buffer, expectedResult: string | Error }): void {
+        serializeTest({
+          typeSpec: byteArraySpec,
+          propertyPath: args.propertyPath,
+          options: {
+            serializationStrictTypeChecking: false
+          },
+          value: args.value,
+          expectedResult: args.expectedResult
+        });
       }
-    });
 
-    it("should throw an error when given {}", () => {
-      try {
-        byteArraySpec.serialize(["another", "property", "path"], <any>{}, {});
-        assert.fail("Expected an error to be thrown.");
-      } catch (error) {
-        assert.strictEqual(error.message, "Property another.property.path with value {} must be a Buffer.");
-      }
-    });
+      byteArraySerializeWithoutStrictTypeCheckingTest({
+        value: <any>undefined,
+        expectedResult: <any>undefined
+      });
 
-    it("should return a base64 encoded string with no error when given a Buffer", () => {
-      assert.strictEqual(byteArraySpec.serialize(["this", "one", "works"], new Buffer([0, 1, 2, 3, 4]), {}), "AAECAwQ=");
+      byteArraySerializeWithoutStrictTypeCheckingTest({
+        value: <any>5,
+        expectedResult: <any>5
+      });
+
+      byteArraySerializeWithoutStrictTypeCheckingTest({
+        value: <any>{},
+        expectedResult: <any>{}
+      });
+
+      byteArraySerializeWithoutStrictTypeCheckingTest({
+        value: new Buffer([0, 1, 2, 3, 4]),
+        expectedResult: "AAECAwQ="
+      });
     });
   });
 
   describe("deserialize()", () => {
-    it("should throw an error when given undefined", () => {
-      try {
-        byteArraySpec.deserialize(["a", "property", "path"], <any>undefined, {});
-        assert.fail("Expected an error to be thrown.");
-      } catch (error) {
-        assert.strictEqual(error.message, "Property a.property.path with value undefined must be a Buffer.");
+    describe("with strict type-checking", () => {
+      function byteArrayDeserializeWithStrictTypeCheckingTest(args: { propertyPath?: string[], value: string, expectedResult: Buffer | Error }): void {
+        deserializeTest({
+          typeSpec: byteArraySpec,
+          propertyPath: args.propertyPath,
+          options: {
+            deserializationStrictTypeChecking: true
+          },
+          value: args.value,
+          expectedResult: args.expectedResult
+        });
       }
+
+      byteArrayDeserializeWithStrictTypeCheckingTest({
+        value: <any>undefined,
+        expectedResult: new Error("Property a.property.path with value undefined must be a string.")
+      });
+
+      byteArrayDeserializeWithStrictTypeCheckingTest({
+        value: <any>5,
+        expectedResult: new Error("Property a.property.path with value 5 must be a string.")
+      });
+
+      byteArrayDeserializeWithStrictTypeCheckingTest({
+        value: <any>{},
+        expectedResult: new Error("Property a.property.path with value {} must be a string.")
+      });
+
+      byteArrayDeserializeWithStrictTypeCheckingTest({
+        value: "AAECAwQ=",
+        expectedResult: new Buffer([0, 1, 2, 3, 4])
+      });
     });
 
-    it("should throw an error when given 5", () => {
-      try {
-        byteArraySpec.deserialize(["another", "property", "path"], <any>5, {});
-        assert.fail("Expected an error to be thrown.");
-      } catch (error) {
-        assert.strictEqual(error.message, "Property another.property.path with value 5 must be a Buffer.");
+    describe("without strict type-checking", () => {
+      function byteArrayDeserializeWithoutStrictTypeCheckingTest(args: { propertyPath?: string[], value: string, expectedResult: Buffer | Error }): void {
+        deserializeTest({
+          typeSpec: byteArraySpec,
+          propertyPath: args.propertyPath,
+          options: {
+            deserializationStrictTypeChecking: false
+          },
+          value: args.value,
+          expectedResult: args.expectedResult
+        });
       }
-    });
 
-    it("should throw an error when given {}", () => {
-      try {
-        byteArraySpec.deserialize(["another", "property", "path"], <any>{}, {});
-        assert.fail("Expected an error to be thrown.");
-      } catch (error) {
-        assert.strictEqual(error.message, "Property another.property.path with value {} must be a Buffer.");
-      }
-    });
+      byteArrayDeserializeWithoutStrictTypeCheckingTest({
+        value: <any>undefined,
+        expectedResult: <any>undefined
+      });
 
-    it("should return a base64 encoded string with no error when given a Buffer", () => {
-      assert.strictEqual(byteArraySpec.deserialize(["this", "one", "works"], "AAECAwQ=", {}), new Buffer([0, 1, 2, 3, 4]));
+      byteArrayDeserializeWithoutStrictTypeCheckingTest({
+        value: <any>5,
+        expectedResult: <any>5
+      });
+
+      byteArrayDeserializeWithoutStrictTypeCheckingTest({
+        value: <any>{},
+        expectedResult: <any>{}
+      });
+
+      byteArrayDeserializeWithoutStrictTypeCheckingTest({
+        value: "AAECAwQ=",
+        expectedResult: new Buffer([0, 1, 2, 3, 4])
+      });
     });
   });
 });

@@ -2,57 +2,190 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 import * as assert from "assert";
 import booleanSpec from "../../lib/serialization/booleanSpec";
+import { deserializeTest, serializeTest } from "./specTest";
 
 describe("booleanSpec", () => {
   it("should have \"boolean\" for its typeName property", () => {
-    assert.strictEqual("boolean", booleanSpec.typeName);
+    assert.strictEqual("boolean", booleanSpec.specType);
   });
 
   describe("serialize()", () => {
-    it("should throw an error when given undefined", () => {
-      try {
-        booleanSpec.serialize(["a", "property", "path"], <any>undefined, {});
-        assert.fail("Expected an error to be thrown.");
-      } catch (error) {
-        assert.strictEqual(error.message, "Property a.property.path with value undefined must be a boolean.");
+    describe("with strict type-checking", () => {
+      function booleanSerializeWithStrictTypeCheckingTest(args: { propertyPath?: string[], value: boolean, expectedResult: boolean | Error }): void {
+        serializeTest({
+          typeSpec: booleanSpec,
+          propertyPath: args.propertyPath,
+          options: {
+            serializationStrictTypeChecking: true
+          },
+          value: args.value,
+          expectedResult: args.expectedResult
+        });
       }
+
+      booleanSerializeWithStrictTypeCheckingTest({
+        value: <any>undefined,
+        expectedResult: new Error("Property a.property.path with value undefined must be a boolean.")
+      });
+
+      booleanSerializeWithStrictTypeCheckingTest({
+        value: <any>5,
+        expectedResult: new Error("Property a.property.path with value 5 must be a boolean.")
+      });
+
+      booleanSerializeWithStrictTypeCheckingTest({
+        value: <any>"true",
+        expectedResult: new Error(`Property a.property.path with value "true" must be a boolean.`)
+      });
+
+      booleanSerializeWithStrictTypeCheckingTest({
+        value: <any>"false",
+        expectedResult: new Error(`Property a.property.path with value "false" must be a boolean.`)
+      });
+
+      booleanSerializeWithStrictTypeCheckingTest({
+        value: true,
+        expectedResult: true
+      });
+
+      booleanSerializeWithStrictTypeCheckingTest({
+        value: false,
+        expectedResult: false
+      });
     });
 
-    it("should throw an error when given 5", () => {
-      try {
-        booleanSpec.serialize(["another", "property", "path"], <any>5, {});
-        assert.fail("Expected an error to be thrown.");
-      } catch (error) {
-        assert.strictEqual(error.message, "Property another.property.path with value 5 must be a boolean.");
+    describe("without strict type-checking", () => {
+      function booleanSerializeWithoutStrictTypeCheckingTest(args: { propertyPath?: string[], value: boolean, expectedResult: boolean | Error }): void {
+        serializeTest({
+          typeSpec: booleanSpec,
+          propertyPath: args.propertyPath,
+          options: {
+            serializationStrictTypeChecking: false
+          },
+          value: args.value,
+          expectedResult: args.expectedResult
+        });
       }
-    });
 
-    it("should return the provided value with no error when given true", () => {
-      assert.strictEqual(booleanSpec.serialize(["this", "one", "works"], true, {}), true);
+      booleanSerializeWithoutStrictTypeCheckingTest({
+        value: <any>undefined,
+        expectedResult: <any>undefined
+      });
+
+      booleanSerializeWithoutStrictTypeCheckingTest({
+        value: <any>5,
+        expectedResult: <any>5
+      });
+
+      booleanSerializeWithoutStrictTypeCheckingTest({
+        value: <any>"true",
+        expectedResult: <any>"true"
+      });
+
+      booleanSerializeWithoutStrictTypeCheckingTest({
+        value: <any>"false",
+        expectedResult: <any>"false"
+      });
+
+      booleanSerializeWithoutStrictTypeCheckingTest({
+        value: true,
+        expectedResult: true
+      });
+
+      booleanSerializeWithoutStrictTypeCheckingTest({
+        value: false,
+        expectedResult: false
+      });
     });
   });
 
   describe("deserialize()", () => {
-    it("should throw an error when given undefined", () => {
-      try {
-        booleanSpec.deserialize(["a", "property", "path"], <any>undefined, {});
-        assert.fail("Expected an error to be thrown.");
-      } catch (error) {
-        assert.strictEqual(error.message, "Property a.property.path with value undefined must be a boolean.");
+    describe("with strict type-checking", () => {
+      function booleanDeserializeWithStrictTypeCheckingTest(args: { propertyPath?: string[], value: boolean, expectedResult: boolean | Error }): void {
+        deserializeTest({
+          typeSpec: booleanSpec,
+          propertyPath: args.propertyPath,
+          options: {
+            deserializationStrictTypeChecking: true
+          },
+          value: args.value,
+          expectedResult: args.expectedResult
+        });
       }
+
+      booleanDeserializeWithStrictTypeCheckingTest({
+        value: <any>undefined,
+        expectedResult: new Error("Property a.property.path with value undefined must be a boolean.")
+      });
+
+      booleanDeserializeWithStrictTypeCheckingTest({
+        value: <any>5,
+        expectedResult: new Error("Property a.property.path with value 5 must be a boolean.")
+      });
+
+      booleanDeserializeWithStrictTypeCheckingTest({
+        value: <any>"true",
+        expectedResult: new Error(`Property a.property.path with value "true" must be a boolean.`)
+      });
+
+      booleanDeserializeWithStrictTypeCheckingTest({
+        value: <any>"false",
+        expectedResult: new Error(`Property a.property.path with value "false" must be a boolean.`)
+      });
+
+      booleanDeserializeWithStrictTypeCheckingTest({
+        value: true,
+        expectedResult: true
+      });
+
+      booleanDeserializeWithStrictTypeCheckingTest({
+        value: false,
+        expectedResult: false
+      });
     });
 
-    it("should throw an error when given 5", () => {
-      try {
-        booleanSpec.deserialize(["another", "property", "path"], <any>5, {});
-        assert.fail("Expected an error to be thrown.");
-      } catch (error) {
-        assert.strictEqual(error.message, "Property another.property.path with value 5 must be a boolean.");
+    describe("without strict type-checking", () => {
+      function booleanDeserializeWithoutStrictTypeCheckingTest(args: { propertyPath?: string[], value: boolean, expectedResult: boolean | Error }): void {
+        deserializeTest({
+          typeSpec: booleanSpec,
+          propertyPath: args.propertyPath,
+          options: {
+            deserializationStrictTypeChecking: false
+          },
+          value: args.value,
+          expectedResult: args.expectedResult
+        });
       }
-    });
 
-    it("should return the provided value with no error when given true", () => {
-      assert.strictEqual(booleanSpec.deserialize(["this", "one", "works"], true, {}), true);
+      booleanDeserializeWithoutStrictTypeCheckingTest({
+        value: <any>undefined,
+        expectedResult: <any>undefined
+      });
+
+      booleanDeserializeWithoutStrictTypeCheckingTest({
+        value: <any>5,
+        expectedResult: <any>5
+      });
+
+      booleanDeserializeWithoutStrictTypeCheckingTest({
+        value: <any>"true",
+        expectedResult: <any>"true"
+      });
+
+      booleanDeserializeWithoutStrictTypeCheckingTest({
+        value: <any>"false",
+        expectedResult: <any>"false"
+      });
+
+      booleanDeserializeWithoutStrictTypeCheckingTest({
+        value: true,
+        expectedResult: true
+      });
+
+      booleanDeserializeWithoutStrictTypeCheckingTest({
+        value: false,
+        expectedResult: false
+      });
     });
   });
 });

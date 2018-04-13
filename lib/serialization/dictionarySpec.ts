@@ -1,16 +1,30 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
-import { TypeSpec, createValidationErrorMessage } from "./typeSpec";
 import { SerializationOptions } from "./serializationOptions";
+import { SpecPath } from "./specPath";
+import { TypeSpec, createValidationErrorMessage } from "./typeSpec";
+
+export interface DictionaryType<T> {
+  [key: string]: T;
+}
+
+export interface DictionaryTypeSpec<TSerializedValue, TDeserializedValue> extends TypeSpec<DictionaryType<TSerializedValue>, DictionaryType<TDeserializedValue>> {
+  /**
+   * The values that are allowed for this EnumTypeSpec.
+   */
+  valueSpec: TypeSpec<TSerializedValue, TDeserializedValue>;
+}
 
 /**
  * A type specification that describes how to validate and serialize a Dictionary of values.
  */
-export default function dictionarySpec<TSerializedValue, TDeserializedValue>(valueSpec: TypeSpec<TSerializedValue, TDeserializedValue>): TypeSpec<{ [key: string]: TSerializedValue }, { [key: string]: TDeserializedValue }> {
+export default function dictionarySpec<TSerializedValue, TDeserializedValue>(valueSpec: TypeSpec<TSerializedValue, TDeserializedValue>): DictionaryTypeSpec<TSerializedValue, TDeserializedValue> {
   return {
-    typeName: `Dictionary<${valueSpec.typeName}>`,
+    specType: `Dictionary`,
 
-    serialize(propertyPath: string[], value: { [key: string]: TDeserializedValue }, options: SerializationOptions): { [key: string]: TSerializedValue } {
+    valueSpec: valueSpec,
+
+    serialize(propertyPath: SpecPath, value: DictionaryType<TDeserializedValue>, options: SerializationOptions): DictionaryType<TSerializedValue> {
       if (typeof value !== "object" || Array.isArray(value)) {
         throw new Error(createValidationErrorMessage(propertyPath, value, "an object"));
       }
@@ -23,7 +37,7 @@ export default function dictionarySpec<TSerializedValue, TDeserializedValue>(val
       return serializedDictionary;
     },
 
-    deserialize(propertyPath: string[], value: { [key: string]: TSerializedValue }, options: SerializationOptions): { [key: string]: TDeserializedValue } {
+    deserialize(propertyPath: SpecPath, value: DictionaryType<TSerializedValue>, options: SerializationOptions): DictionaryType<TDeserializedValue> {
       if (typeof value !== "object" || Array.isArray(value)) {
         throw new Error(createValidationErrorMessage(propertyPath, value, "an object"));
       }

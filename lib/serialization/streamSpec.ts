@@ -2,21 +2,22 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 import * as isStream from "is-stream";
 import { TypeSpec, createValidationErrorMessage } from "./typeSpec";
+import { SpecPath } from "./specPath";
 
 /**
  * A type specification that describes how to validate and serialize a Stream.
  */
 const streamSpec: TypeSpec<any, any> = {
-  typeName: "Stream",
+  specType: "Stream",
 
-  serialize(propertyPath: string[], value: any): any {
+  serialize(propertyPath: SpecPath, value: any): any {
     if (!isStream(value)) {
       throw new Error(createValidationErrorMessage(propertyPath, value, "a Stream"));
     }
     return value;
   },
 
-  deserialize(propertyPath: string[], value: any): any {
+  deserialize(propertyPath: SpecPath, value: any): any {
     if (!isStream(value)) {
       throw new Error(createValidationErrorMessage(propertyPath, value, "a Stream"));
     }

@@ -2,33 +2,40 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 import * as assert from "assert";
 import stringSpec from "../../lib/serialization/stringSpec";
+import { serializeTest } from "./specTest";
 
 describe("stringSpec", () => {
-    it("should have \"string\" for its typeName property", () => {
-        assert.strictEqual("string", stringSpec.typeName);
+  it("should have \"string\" for its typeName property", () => {
+    assert.strictEqual("string", stringSpec.specType);
+  });
+
+  describe("serialize()", () => {
+    describe("with strict type-checking", () => {
+      function stringSerializeWithStrictTypeCheckingTest(args: { value: string, expectedResult: string | Error }): void {
+        serializeTest({
+          typeSpec: stringSpec,
+          options: {
+            serializationStrictTypeChecking: true
+          },
+          value: args.value,
+          expectedResult: args.expectedResult
+        });
+      }
+
+      stringSerializeWithStrictTypeCheckingTest({
+        value: <any>undefined,
+        expectedResult: new Error(`Property a.property.path with value undefined must be a string.`)
+      });
+
+      stringSerializeWithStrictTypeCheckingTest({
+        value: <any>false,
+        expectedResult: new Error(`Property a.property.path with value false must be a string.`)
+      });
+
+      stringSerializeWithStrictTypeCheckingTest({
+        value: "abc",
+        expectedResult: "abc"
+      });
     });
-
-    describe("serialize()", () => {
-        it("should throw an error when given undefined", () => {
-            try {
-                stringSpec.serialize(["a", "property", "path"], undefined, {});
-                assert.fail("Expected an error to be thrown.");
-            } catch (error) {
-                assert.strictEqual(error.message, "Property a.property.path with value undefined must be a string.");
-            }
-        });
-
-        it("should throw an error when given false", () => {
-            try {
-                stringSpec.serialize(["another", "property", "path"], false, {});
-                assert.fail("Expected an error to be thrown.");
-            } catch (error) {
-                assert.strictEqual(error.message, "Property another.property.path with value false must be a string.");
-            }
-        });
-
-        it("should return the provided value with no error when given \"abc\"", () => {
-            assert.strictEqual(stringSpec.serialize(["this", "one", "works"], "abc", {}), "abc");
-        });
-    });
+  });
 });

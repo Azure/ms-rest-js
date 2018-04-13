@@ -1,56 +1,63 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 import * as assert from "assert";
-import dictionarySpec from "../../lib/serialization/dictionarySpec";
+import dictionarySpec, { DictionaryType } from "../../lib/serialization/dictionarySpec";
 import numberSpec from "../../lib/serialization/numberSpec";
+import { TypeSpec } from "../../lib/serialization/typeSpec";
+import { serializeTest } from "./specTest";
 
 describe("dictionarySpec", () => {
-  it("should have \"Dictionary<T>\" for its typeName property", () => {
-    assert.strictEqual("Dictionary<number>", dictionarySpec(numberSpec).typeName);
+  it("should have \"Dictionary<T>\" for its specType property", () => {
+    assert.strictEqual("Dictionary", dictionarySpec(numberSpec).specType);
   });
 
   describe("serialize()", () => {
-    it("should throw an error when given undefined", () => {
-      try {
-        dictionarySpec(numberSpec).serialize(["a", "property", "path"], undefined, {});
-        assert.fail("Expected an error to be thrown.");
-      } catch (error) {
-        assert.strictEqual(error.message, "Property a.property.path with value undefined must be an object.");
-      }
-    });
-
-    it("should throw an error when given false", () => {
-      try {
-        dictionarySpec(numberSpec).serialize(["another", "property", "path"], false, {});
-        assert.fail("Expected an error to be thrown.");
-      } catch (error) {
-        assert.strictEqual(error.message, "Property another.property.path with value false must be an object.");
-      }
-    });
-
-    it("should throw an error when given []", () => {
-      try {
-        dictionarySpec(numberSpec).serialize(["another", "property", "path"], [], {});
-        assert.fail("Expected an error to be thrown.");
-      } catch (error) {
-        assert.strictEqual(error.message, "Property another.property.path with value [] must be an object.");
-      }
-    });
-
-    it("should return the provided value with no error when given {}", () => {
-      assert.deepEqual(dictionarySpec(numberSpec).serialize(["this", "one", "works"], {}, {}), {});
-    });
-
-    it("should throw an error when given {\"9\": \"9\"}", () => {
-      try {
-        dictionarySpec(numberSpec).serialize(["another", "property", "path"], {"9": "9"}, {});
-        assert.fail("Expected an error to be thrown.");
-      } catch (error) {
-        assert.strictEqual(error.message, "Property another.property.path.9 with value \"9\" must be a number.");
+    describe("with strict type-checking", () => {
+      function dictionarySerializeWithStrictTypeCheckingTest<TSerialized, TDeserialized>(args: { valueSpec: TypeSpec<TSerialized, TDeserialized>, value: DictionaryType<TDeserialized>, expectedResult: DictionaryType<TSerialized> | Error }): void {
+        serializeTest({
+          typeSpec: dictionarySpec(args.valueSpec),
+          options: {
+            serializationStrictTypeChecking: true
+          },
+          value: args.value,
+          expectedResult: args.expectedResult
+        });
       }
 
-      it(`should return the provided value with no error when given {"1": 1, "2": 2}`, () => {
-        assert.deepEqual(dictionarySpec(numberSpec).serialize(["this", "one", "works"], {"1": 1, "2": 2}, {}), {"1": 1, "2": 2});
+      dictionarySerializeWithStrictTypeCheckingTest({
+        valueSpec: numberSpec,
+        value: <any>undefined,
+        expectedResult: new Error("Property a.property.path with value undefined must be an object.")
+      });
+
+      dictionarySerializeWithStrictTypeCheckingTest({
+        valueSpec: numberSpec,
+        value: <any>false,
+        expectedResult: new Error("Property a.property.path with value false must be an object.")
+      });
+
+      dictionarySerializeWithStrictTypeCheckingTest({
+        valueSpec: numberSpec,
+        value: <any>[],
+        expectedResult: new Error("Property a.property.path with value [] must be an object.")
+      });
+
+      dictionarySerializeWithStrictTypeCheckingTest({
+        valueSpec: numberSpec,
+        value: {},
+        expectedResult: {}
+      });
+
+      dictionarySerializeWithStrictTypeCheckingTest({
+        valueSpec: numberSpec,
+        value: <any>{ "9": "9" },
+        expectedResult: new Error(`Property a.property.path.9 with value "9" must be a number.`)
+      });
+
+      dictionarySerializeWithStrictTypeCheckingTest({
+        valueSpec: numberSpec,
+        value: { "1": 1, "2": 2 },
+        expectedResult: { "1": 1, "2": 2 }
       });
     });
   });

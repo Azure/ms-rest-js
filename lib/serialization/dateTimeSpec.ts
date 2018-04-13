@@ -1,21 +1,22 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 import { TypeSpec, createValidationErrorMessage } from "./typeSpec";
+import { SpecPath } from "./specPath";
 
 /**
  * A type specification that describes how to validate and serialize a Date.
  */
 const dateTimeSpec: TypeSpec<string, Date> = {
-  typeName: "DateTime",
+  specType: "DateTime",
 
-  serialize(propertyPath: string[], value: Date | string): string {
+  serialize(propertyPath: SpecPath, value: Date | string): string {
     if (!value || (!(value instanceof Date) && (typeof value !== "string" || isNaN(Date.parse(value))))) {
       throw new Error(createValidationErrorMessage(propertyPath, value, `an instanceof Date or a string in ISO8601 DateTime format`));
     }
     return (value instanceof Date ? value : new Date(value)).toISOString();
   },
 
-  deserialize(propertyPath: string[], value: string): Date {
+  deserialize(propertyPath: SpecPath, value: string): Date {
     if (!value || typeof value !== "string") {
       throw new Error(createValidationErrorMessage(propertyPath, value, `a string in ISO8601 DateTime format`));
     }
