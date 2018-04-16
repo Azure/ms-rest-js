@@ -1,8 +1,9 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
-import { SerializationOptions } from "./serializationOptions";
+import { SerializationOptions, log } from "./serializationOptions";
 import { PropertyPath } from "./propertyPath";
-import { TypeSpec, createValidationErrorMessage } from "./typeSpec";
+import { TypeSpec, createValidationErrorMessage, createValidationWarningMessage } from "./typeSpec";
+import { HttpPipelineLogLevel } from "../httpPipelineLogLevel";
 
 export interface DictionaryType<T> {
   [key: string]: T;
@@ -25,29 +26,46 @@ export default function dictionarySpec<TSerializedValue, TDeserializedValue>(val
     valueSpec: valueSpec,
 
     serialize(propertyPath: PropertyPath, value: DictionaryType<TDeserializedValue>, options: SerializationOptions): DictionaryType<TSerializedValue> {
+      let result: DictionaryType<TSerializedValue>;
       if (typeof value !== "object" || Array.isArray(value)) {
-        throw new Error(createValidationErrorMessage(propertyPath, value, "an object"));
+        if (options && options.serializationStrictTypeChecking) {
+          const errorMessage: string = createValidationErrorMessage(propertyPath, value, "an object");
+          log(options, HttpPipelineLogLevel.ERROR, errorMessage);
+          throw new Error(errorMessage);
+        } else {
+          log(options, HttpPipelineLogLevel.WARNING, createValidationWarningMessage(propertyPath, value, "an object"));
+        }
+
+        result = value as any;
+      } else {
+        result = {};
+        for (const key in value) {
+          result[key] = valueSpec.serialize(propertyPath.concat([key]), value[key], options);
+        }
       }
 
-      const serializedDictionary: { [key: string]: TSerializedValue } = {};
-      for (const key in value) {
-        serializedDictionary[key] = valueSpec.serialize(propertyPath.concat([key]), value[key], options);
-      }
-
-      return serializedDictionary;
+      return result;
     },
 
     deserialize(propertyPath: PropertyPath, value: DictionaryType<TSerializedValue>, options: SerializationOptions): DictionaryType<TDeserializedValue> {
+      let result: DictionaryType<TDeserializedValue>;
       if (typeof value !== "object" || Array.isArray(value)) {
-        throw new Error(createValidationErrorMessage(propertyPath, value, "an object"));
-      }
+        if (options && options.deserializationStrictTypeChecking) {
+          const errorMessage: string = createValidationErrorMessage(propertyPath, value, "an object");
+          log(options, HttpPipelineLogLevel.ERROR, errorMessage);
+          throw new Error(errorMessage);
+        } else {
+          log(options, HttpPipelineLogLevel.WARNING, createValidationWarningMessage(propertyPath, value, "an object"));
+        }
 
-      const deserializedDictionary: { [key: string]: TDeserializedValue } = {};
-      for (const key in value) {
-        deserializedDictionary[key] = valueSpec.deserialize(propertyPath.concat([key]), value[key], options);
+        result = value as any;
+      } else {
+        result = {};
+        for (const key in value) {
+          result[key] = valueSpec.deserialize(propertyPath.concat([key]), value[key], options);
+        }
       }
-
-      return deserializedDictionary;
+      return result;
     }
   };
 }
