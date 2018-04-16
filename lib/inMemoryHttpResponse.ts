@@ -6,11 +6,9 @@ import { HttpResponse } from "../lib/httpResponse";
 
 export class InMemoryHttpResponse implements HttpResponse {
   private readonly _headers: HttpHeaders;
-  public deserializedBody: any;
 
-  constructor(private _request: HttpRequest, private _statusCode: number, headers: HttpHeaders | RawHttpHeaders, private _bodyText?: string, deserializedBody?: any) {
+  constructor(private _request: HttpRequest, private _statusCode: number, headers: HttpHeaders | RawHttpHeaders, private _bodyText?: string, private readonly _deserializedBody?: any) {
     this._headers = (headers instanceof HttpHeaders ? headers : new HttpHeaders(headers));
-    this.deserializedBody = deserializedBody;
   }
 
   public get request(): HttpRequest {
@@ -29,7 +27,11 @@ export class InMemoryHttpResponse implements HttpResponse {
     return Promise.resolve(this._bodyText);
   }
 
-  serializedBody(): Promise<any | undefined> {
+  parsedBody(): Promise<any | undefined> {
     return Promise.resolve(this._bodyText == undefined ? undefined : JSON.parse(this._bodyText));
+  }
+
+  deserializedBody(): Promise<any | undefined> {
+    return Promise.resolve(this._deserializedBody);
   }
 }

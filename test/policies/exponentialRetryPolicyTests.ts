@@ -26,11 +26,11 @@ describe("exponentialRetryPolicy", () => {
     };
 
     const policy: RequestPolicy = policyFactory(nextPolicy, new RequestPolicyOptions());
-    const request = new HttpRequest(HttpMethod.GET, "https://spam.com", {});
+    const request = new HttpRequest({ method: HttpMethod.GET, url: "https://spam.com" });
     const response: HttpResponse = await policy.send(request);
 
-    assert.deepStrictEqual(request, new HttpRequest(HttpMethod.GET, "https://spam.com", {}), "The original request should not be modified.");
-    assert.deepStrictEqual(response.request, new HttpRequest(HttpMethod.GET, "https://spam.com", { "A": "B" }), "The request associated with the response should have the modified header.");
+    assert.deepStrictEqual(request, new HttpRequest({ method: HttpMethod.GET, url: "https://spam.com" }), "The original request should not be modified.");
+    assert.deepStrictEqual(response.request, new HttpRequest({ method: HttpMethod.GET, url: "https://spam.com", headers: { "A": "B" } }), "The request associated with the response should have the modified header.");
   });
 
   it("should retry if an undefined HttpResponse is returned", async () => {
@@ -57,11 +57,11 @@ describe("exponentialRetryPolicy", () => {
     };
 
     const policy: RequestPolicy = policyFactory(nextPolicy, new RequestPolicyOptions());
-    const request = new HttpRequest(HttpMethod.GET, "https://spam.com", {});
+    const request = new HttpRequest({ method: HttpMethod.GET, url: "https://spam.com" });
     const response: HttpResponse = await policy.send(request);
 
-    assert.deepStrictEqual(request, new HttpRequest(HttpMethod.GET, "https://spam.com", {}), "The original request should not be modified.");
-    assert.deepStrictEqual(response.request, new HttpRequest(HttpMethod.GET, "https://spam.com", { "A": "2" }), "The request associated with the response should have the modified header.");
+    assert.deepStrictEqual(request, new HttpRequest({ method: HttpMethod.GET, url: "https://spam.com" }), "The original request should not be modified.");
+    assert.deepStrictEqual(response.request, new HttpRequest({ method: HttpMethod.GET, url: "https://spam.com", headers: { "A": "2" } }), "The request associated with the response should have the modified header.");
     assert.strictEqual(millisecondsDelayed, 30 * 1000);
   });
 });

@@ -19,7 +19,7 @@ describe("HttpPipeline", () => {
 
     const httpPipeline = new HttpPipeline([], { httpClient: httpClient });
 
-    const httpRequest = new HttpRequest(HttpMethod.GET, "http://www.example.com", {});
+    const httpRequest = new HttpRequest({ method: HttpMethod.GET, url: "http://www.example.com" });
     const response: HttpResponse = await httpPipeline.send(httpRequest);
     assert.deepStrictEqual(response.request, httpRequest);
     assert.strictEqual(response.statusCode, 200);
@@ -39,7 +39,7 @@ describe("HttpPipeline", () => {
       [userAgentPolicy("my user agent string")],
       { httpClient: httpClient });
 
-    const httpRequest = new HttpRequest(HttpMethod.GET, "http://www.example.com", {});
+    const httpRequest = new HttpRequest({ method: HttpMethod.GET, url: "http://www.example.com" });
     const response: HttpResponse = await httpPipeline.send(httpRequest);
     assert.deepStrictEqual(response.request, httpRequest);
     assert.deepStrictEqual(response.request.headers.toJson(), { "User-Agent": "my user agent string" });
@@ -67,7 +67,7 @@ describe("HttpPipeline", () => {
       [(nextPolicy, options) => new ResponseModifyingRequestPolicy(nextPolicy, options)],
       { httpClient: httpClient });
 
-    const httpRequest = new HttpRequest(HttpMethod.GET, "http://www.example.com", {});
+    const httpRequest = new HttpRequest({ method: HttpMethod.GET, url: "http://www.example.com" });
     const response: HttpResponse = await httpPipeline.send(httpRequest);
     assert.deepStrictEqual(response.request, httpRequest);
     assert.deepStrictEqual(response.request.headers.toJson(), {});

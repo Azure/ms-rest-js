@@ -38,18 +38,18 @@ class SerializationPolicy extends BaseRequestPolicy {
   async send(request: HttpRequest): Promise<HttpResponse> {
     const requestBodySpec: TypeSpec<any, any> | undefined = request.operationSpec && request.operationSpec.requestBodySpec;
     if (requestBodySpec) {
-      request.serializedBody = requestBodySpec.serialize(new PropertyPath([]), request.deserializedBody, this._serializationOptions);
+      request.serializedBody = requestBodySpec.serialize(new PropertyPath([]), request.body, this._serializationOptions);
     }
 
     let response: HttpResponse = await this._nextPolicy.send(request);
 
     const responseBodySpec: TypeSpec<any, any> | undefined = request.operationSpec && request.operationSpec.responseBodySpec;
     if (responseBodySpec) {
-      const textBody: string | undefined = await response.textBody();
-      const serializedBody: any = textBody == undefined ? undefined : JSON.parse(textBody);
-      const deserializedBody: any = responseBodySpec.deserialize(new PropertyPath([]), serializedBody, this._serializationOptions);
+      const responseTextBody: string | undefined = await response.textBody();
+      const responseBody: any = responseTextBody == undefined ? undefined : JSON.parse(responseTextBody);
+      const responseDeserializedBody: any = responseBodySpec.deserialize(new PropertyPath([]), responseBody, this._serializationOptions);
 
-      response = new InMemoryHttpResponse(response.request, response.statusCode, response.headers, textBody, deserializedBody);
+      response = new InMemoryHttpResponse(response.request, response.statusCode, response.headers, responseTextBody, responseDeserializedBody);
     }
 
     return response;

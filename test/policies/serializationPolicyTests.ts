@@ -29,13 +29,14 @@ describe("serializationPolicy", () => {
 
     const policy: RequestPolicy = policyFactory(inMemoryEchoServer, new RequestPolicyOptions());
 
-    const request = new HttpRequest(
-      HttpMethod.GET, "https://spam.com",
-      {
+    const request = new HttpRequest({
+      method: HttpMethod.GET,
+      url: "https://spam.com",
+      headers: {
         "1": "one",
         "2": "2"
       },
-      {
+      body: {
         "booleanProperty": false,
         "numberProperty": 20,
         "objectProperty": { "booleanProperty": true },
@@ -43,7 +44,7 @@ describe("serializationPolicy", () => {
         "dateProperty": new Date("2018-10-05"),
         "dateTimeRfc1123Property": new Date("2011-10-05T14:48:00.000Z")
       },
-      {
+      operationSpec: {
         requestHttpMethod: HttpMethod.GET,
         requestBodySpec: compositeSpec("FakeRequestBody", {
           "booleanProperty": {
@@ -97,11 +98,12 @@ describe("serializationPolicy", () => {
             valueSpec: dateTimeRfc1123Spec
           }
         })
-      });
+      }
+    });
 
     const response: HttpResponse = await policy.send(request);
 
-    assert.deepEqual(request.deserializedBody, {
+    assert.deepEqual(request.body, {
       "booleanProperty": false,
       "numberProperty": 20,
       "objectProperty": { "booleanProperty": true },
@@ -118,7 +120,8 @@ describe("serializationPolicy", () => {
       "dateTimeRfc1123Property": "Wed, 05 Oct 2011 14:48:00 GMT"
     });
 
-    assert.deepEqual(await response.serializedBody(), {
+    assert(response instanceof InMemoryHttpResponse);
+    assert.deepEqual(JSON.parse(await response.textBody() as string), {
       "booleanProperty": false,
       "numberProperty": 20,
       "objectProperty": { "booleanProperty": true },
@@ -126,7 +129,7 @@ describe("serializationPolicy", () => {
       "dateProperty": "2018-10-05",
       "dateTimeRfc1123Property": "Wed, 05 Oct 2011 14:48:00 GMT"
     });
-    assert.deepEqual(await response.deserializedBody, {
+    assert.deepEqual(await response.deserializedBody(), {
       "booleanProperty": false,
       "numberProperty": 20,
       "objectProperty": { "booleanProperty": true },

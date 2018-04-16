@@ -23,16 +23,16 @@ describe("logPolicy", () => {
     };
 
     const policy: RequestPolicy = policyFactory(nextPolicy, new RequestPolicyOptions());
-    const request = new HttpRequest(HttpMethod.GET, "https://spam.com", {});
+    const request = new HttpRequest({ method: HttpMethod.GET, url: "https://spam.com" });
     const response: HttpResponse = await policy.send(request);
 
-    assert.deepStrictEqual(request, new HttpRequest(HttpMethod.GET, "https://spam.com", {}));
-    assert.deepStrictEqual(response.request, new HttpRequest(HttpMethod.GET, "https://spam.com", {}));
+    assert.deepStrictEqual(request, new HttpRequest({ method: HttpMethod.GET, url: "https://spam.com" }));
+    assert.deepStrictEqual(response.request, new HttpRequest({ method: HttpMethod.GET, url: "https://spam.com" }));
     assert.deepStrictEqual(response.statusCode, 200);
     assert.deepStrictEqual(response.headers, new HttpHeaders());
 
     assert.deepStrictEqual(logs, [
-      ">> Request: {\n  \"httpMethod\": \"GET\",\n  \"url\": \"https://spam.com\",\n  \"headers\": {\n    \"_headersMap\": {}\n  }\n}",
+      ">> Request: {\n  \"method\": \"GET\",\n  \"url\": \"https://spam.com\",\n  \"headers\": {\n    \"_headersMap\": {}\n  }\n}",
       ">> Response Status Code: 200",
       ">> Response Body: undefined"
     ]);
