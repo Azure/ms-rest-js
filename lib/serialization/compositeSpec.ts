@@ -59,7 +59,7 @@ export function compositeSpec(typeName: string, propertySpecs: { [propertyName: 
             childPropertyValueSpec = childPropertySpec.valueSpec;
           }
 
-          if (!childPropertyValue) {
+          if (childPropertyValue == undefined) {
             if (childPropertySpec.required && !childPropertySpec.constant) {
               throw new Error(`Missing non-constant ${childPropertyValueSpec.specType} property at ${propertyPath.pathStringConcat(childPropertyName)}.`);
             }

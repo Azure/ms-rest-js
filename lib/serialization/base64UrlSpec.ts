@@ -41,7 +41,7 @@ const base64UrlSpec: TypeSpec<string, Buffer> = {
         throw new Error(createValidationErrorMessage(propertyPath, value, "a string"));
       }
 
-      result = <any>value;
+      result = value as any;
     } else {
       // Base64Url to Base64.
       value = value.replace(/\-/g, "+").replace(/\_/g, "/");
