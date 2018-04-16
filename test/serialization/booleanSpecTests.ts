@@ -11,7 +11,7 @@ describe("booleanSpec", () => {
 
   describe("serialize()", () => {
     describe("with strict type-checking", () => {
-      function booleanSerializeWithStrictTypeCheckingTest(args: { propertyPath?: string[], value: boolean, expectedResult: boolean | Error }): void {
+      function booleanSerializeWithStrictTypeCheckingTest(args: { propertyPath?: string[], value: boolean, expectedResult: boolean | Error, expectedLogs?: string[] }): void {
         serializeTest({
           typeSpec: booleanSpec,
           propertyPath: args.propertyPath,
@@ -19,28 +19,33 @@ describe("booleanSpec", () => {
             serializationStrictTypeChecking: true
           },
           value: args.value,
-          expectedResult: args.expectedResult
+          expectedResult: args.expectedResult,
+          expectedLogs: args.expectedLogs
         });
       }
 
       booleanSerializeWithStrictTypeCheckingTest({
-        value: <any>undefined,
-        expectedResult: new Error("Property a.property.path with value undefined must be a boolean.")
+        value: undefined as any,
+        expectedResult: new Error("Property a.property.path with value undefined must be a boolean."),
+        expectedLogs: [`ERROR: Property a.property.path with value undefined must be a boolean.`]
       });
 
       booleanSerializeWithStrictTypeCheckingTest({
-        value: <any>5,
-        expectedResult: new Error("Property a.property.path with value 5 must be a boolean.")
+        value: 5 as any,
+        expectedResult: new Error("Property a.property.path with value 5 must be a boolean."),
+        expectedLogs: [`ERROR: Property a.property.path with value 5 must be a boolean.`]
       });
 
       booleanSerializeWithStrictTypeCheckingTest({
-        value: <any>"true",
-        expectedResult: new Error(`Property a.property.path with value "true" must be a boolean.`)
+        value: "true" as any,
+        expectedResult: new Error(`Property a.property.path with value "true" must be a boolean.`),
+        expectedLogs: [`ERROR: Property a.property.path with value "true" must be a boolean.`]
       });
 
       booleanSerializeWithStrictTypeCheckingTest({
-        value: <any>"false",
-        expectedResult: new Error(`Property a.property.path with value "false" must be a boolean.`)
+        value: "false" as any,
+        expectedResult: new Error(`Property a.property.path with value "false" must be a boolean.`),
+        expectedLogs: [`ERROR: Property a.property.path with value "false" must be a boolean.`]
       });
 
       booleanSerializeWithStrictTypeCheckingTest({
@@ -55,7 +60,7 @@ describe("booleanSpec", () => {
     });
 
     describe("without strict type-checking", () => {
-      function booleanSerializeWithoutStrictTypeCheckingTest(args: { propertyPath?: string[], value: boolean, expectedResult: boolean | Error }): void {
+      function booleanSerializeWithoutStrictTypeCheckingTest(args: { propertyPath?: string[], value: boolean, expectedResult: boolean | Error, expectedLogs?: string[] }): void {
         serializeTest({
           typeSpec: booleanSpec,
           propertyPath: args.propertyPath,
@@ -63,28 +68,33 @@ describe("booleanSpec", () => {
             serializationStrictTypeChecking: false
           },
           value: args.value,
-          expectedResult: args.expectedResult
+          expectedResult: args.expectedResult,
+          expectedLogs: args.expectedLogs
         });
       }
 
       booleanSerializeWithoutStrictTypeCheckingTest({
-        value: <any>undefined,
-        expectedResult: <any>undefined
+        value: undefined as any,
+        expectedResult: undefined as any,
+        expectedLogs: [`WARNING: Property a.property.path with value undefined should be a boolean.`]
       });
 
       booleanSerializeWithoutStrictTypeCheckingTest({
-        value: <any>5,
-        expectedResult: <any>5
+        value: 5 as any,
+        expectedResult: 5 as any,
+        expectedLogs: [`WARNING: Property a.property.path with value 5 should be a boolean.`]
       });
 
       booleanSerializeWithoutStrictTypeCheckingTest({
-        value: <any>"true",
-        expectedResult: <any>"true"
+        value: "true" as any,
+        expectedResult: "true" as any,
+        expectedLogs: [`WARNING: Property a.property.path with value "true" should be a boolean.`]
       });
 
       booleanSerializeWithoutStrictTypeCheckingTest({
-        value: <any>"false",
-        expectedResult: <any>"false"
+        value: "false" as any,
+        expectedResult: "false" as any,
+        expectedLogs: [`WARNING: Property a.property.path with value "false" should be a boolean.`]
       });
 
       booleanSerializeWithoutStrictTypeCheckingTest({
@@ -101,7 +111,7 @@ describe("booleanSpec", () => {
 
   describe("deserialize()", () => {
     describe("with strict type-checking", () => {
-      function booleanDeserializeWithStrictTypeCheckingTest(args: { propertyPath?: string[], value: boolean, expectedResult: boolean | Error }): void {
+      function booleanDeserializeWithStrictTypeCheckingTest(args: { propertyPath?: string[], value: boolean, expectedResult: boolean | Error, expectedLogs?: string[] }): void {
         deserializeTest({
           typeSpec: booleanSpec,
           propertyPath: args.propertyPath,
@@ -109,28 +119,33 @@ describe("booleanSpec", () => {
             deserializationStrictTypeChecking: true
           },
           value: args.value,
-          expectedResult: args.expectedResult
+          expectedResult: args.expectedResult,
+          expectedLogs: args.expectedLogs
         });
       }
 
       booleanDeserializeWithStrictTypeCheckingTest({
-        value: <any>undefined,
-        expectedResult: new Error("Property a.property.path with value undefined must be a boolean.")
+        value: undefined as any,
+        expectedResult: new Error("Property a.property.path with value undefined must be a boolean."),
+        expectedLogs: [`ERROR: Property a.property.path with value undefined must be a boolean.`]
       });
 
       booleanDeserializeWithStrictTypeCheckingTest({
-        value: <any>5,
-        expectedResult: new Error("Property a.property.path with value 5 must be a boolean.")
+        value: 5 as any,
+        expectedResult: new Error("Property a.property.path with value 5 must be a boolean."),
+        expectedLogs: [`ERROR: Property a.property.path with value 5 must be a boolean.`]
       });
 
       booleanDeserializeWithStrictTypeCheckingTest({
-        value: <any>"true",
-        expectedResult: new Error(`Property a.property.path with value "true" must be a boolean.`)
+        value: "true" as any,
+        expectedResult: new Error(`Property a.property.path with value "true" must be a boolean.`),
+        expectedLogs: [`ERROR: Property a.property.path with value "true" must be a boolean.`]
       });
 
       booleanDeserializeWithStrictTypeCheckingTest({
-        value: <any>"false",
-        expectedResult: new Error(`Property a.property.path with value "false" must be a boolean.`)
+        value: "false" as any,
+        expectedResult: new Error(`Property a.property.path with value "false" must be a boolean.`),
+        expectedLogs: [`ERROR: Property a.property.path with value "false" must be a boolean.`]
       });
 
       booleanDeserializeWithStrictTypeCheckingTest({
@@ -145,7 +160,7 @@ describe("booleanSpec", () => {
     });
 
     describe("without strict type-checking", () => {
-      function booleanDeserializeWithoutStrictTypeCheckingTest(args: { propertyPath?: string[], value: boolean, expectedResult: boolean | Error }): void {
+      function booleanDeserializeWithoutStrictTypeCheckingTest(args: { propertyPath?: string[], value: boolean, expectedResult: boolean | Error, expectedLogs?: string[] }): void {
         deserializeTest({
           typeSpec: booleanSpec,
           propertyPath: args.propertyPath,
@@ -153,28 +168,33 @@ describe("booleanSpec", () => {
             deserializationStrictTypeChecking: false
           },
           value: args.value,
-          expectedResult: args.expectedResult
+          expectedResult: args.expectedResult,
+          expectedLogs: args.expectedLogs
         });
       }
 
       booleanDeserializeWithoutStrictTypeCheckingTest({
-        value: <any>undefined,
-        expectedResult: <any>undefined
+        value: undefined as any,
+        expectedResult: undefined as any,
+        expectedLogs: [`WARNING: Property a.property.path with value undefined should be a boolean.`]
       });
 
       booleanDeserializeWithoutStrictTypeCheckingTest({
-        value: <any>5,
-        expectedResult: <any>5
+        value: 5 as any,
+        expectedResult: 5 as any,
+        expectedLogs: [`WARNING: Property a.property.path with value 5 should be a boolean.`]
       });
 
       booleanDeserializeWithoutStrictTypeCheckingTest({
-        value: <any>"true",
-        expectedResult: <any>"true"
+        value: "true" as any,
+        expectedResult: "true" as any,
+        expectedLogs: [`WARNING: Property a.property.path with value "true" should be a boolean.`]
       });
 
       booleanDeserializeWithoutStrictTypeCheckingTest({
-        value: <any>"false",
-        expectedResult: <any>"false"
+        value: "false" as any,
+        expectedResult: "false" as any,
+        expectedLogs: [`WARNING: Property a.property.path with value "false" should be a boolean.`]
       });
 
       booleanDeserializeWithoutStrictTypeCheckingTest({
