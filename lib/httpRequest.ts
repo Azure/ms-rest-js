@@ -2,47 +2,104 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 import { HttpHeaders, RawHttpHeaders } from "./httpHeaders";
 import { HttpMethod } from "./httpMethod";
+import { OperationSpec } from "./operationSpec";
+
+/**
+ * The parameters that can be set to create a new HttpRequest.
+ */
+export interface HttpRequestParameters {
+  /**
+   * The HTTP method of the request.
+   */
+  method: HttpMethod;
+
+  /**
+   * The URL that the request will be sent to.
+   */
+  url: string;
+
+  /**
+   * The HTTP headers to include in the request.
+   */
+  headers?: HttpHeaders | RawHttpHeaders;
+
+  /**
+   * The body that will be sent in the request.
+   */
+  body?: any;
+
+  /**
+   * The body of the request after it has been serialized.
+   */
+  serializedBody?: any;
+
+  /**
+   * The specification that describes the operation that the request will perform.
+   */
+  operationSpec?: OperationSpec;
+}
 
 /**
  * An individual HTTP request that can be sent with a HttpClient.
  */
 export class HttpRequest {
-  private readonly _headers: HttpHeaders;
+  /**
+   * The HTTP method of this request.
+   */
+  public method: HttpMethod;
+
+  /**
+   * The URL that this request will be sent to.
+   */
+  public url: string;
+
+  /**
+   * The HTTP headers that will be sent with this request.
+   */
+  public readonly headers: HttpHeaders;
+
+  /**
+   * The body that will be sent with this request.
+   */
+  public readonly body?: any;
+
+  /**
+   * The specification that describes the operation that this request will perform.
+   */
+  public readonly operationSpec?: OperationSpec;
+
+  /**
+   * The body of this HttpRequest after it has been serialized.
+   */
+  public serializedBody?: any;
 
   /**
    * Create a new HTTP request using the provided properties.
-   * @param httpMethod The HTTP method that will be used to send this request.
-   * @param url The URL that this request will be sent to.
-   * @param headers The HTTP headers to include in this request.
-   * @param _body The body of this HTTP request.
+   * @param args The arguments that will be used to create the HTTP request.
    */
-  constructor(public httpMethod: HttpMethod, public url: string, headers: HttpHeaders | RawHttpHeaders, private _body?: string) {
-    if (!this.url) {
-      const urlString: string = (this.url == undefined ? this.url : `"${this.url}"`);
+  constructor(args: HttpRequestParameters) {
+    this.method = args.method;
+    if (!args.url) {
+      const urlString: string = (args.url == undefined ? args.url : `"${args.url}"`);
       throw new Error(`${urlString} is not a valid URL for a HttpRequest.`);
     }
-
-    this._headers = (headers instanceof HttpHeaders ? headers : new HttpHeaders(headers));
-  }
-
-  /**
-   * Get the HTTP headers that will be sent with this request.
-   */
-  public get headers(): HttpHeaders {
-    return this._headers;
-  }
-
-  /**
-   * Get the body that will be sent with this request.
-   */
-  public get body(): string | undefined {
-    return this._body;
+    this.url = args.url;
+    this.headers = args.headers instanceof HttpHeaders ? args.headers : new HttpHeaders(args.headers);
+    this.body = args.body;
+    this.operationSpec = args.operationSpec;
   }
 
   /**
    * Create a deep clone/copy of this HttpRequest.
    */
   public clone(): HttpRequest {
-    return new HttpRequest(this.httpMethod, this.url, this.headers.clone(), this.body);
+    return new HttpRequest({
+      method: this.method,
+      url: this.url,
+      headers: this.headers.clone(),
+      body: this.body,
+      serializedBody: this.serializedBody,
+      operationSpec: this.operationSpec
+    });
   }
 }

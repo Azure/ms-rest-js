@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 import { TypeSpec, createValidationErrorMessage } from "./typeSpec";
 import { SerializationOptions } from "./serializationOptions";
-import { SpecPath } from "./specPath";
+import { PropertyPath } from "./propertyPath";
 
 /**
  * A type specification that describes how to validate and serialize a ByteArray.
@@ -10,7 +10,7 @@ import { SpecPath } from "./specPath";
 const byteArraySpec: TypeSpec<string, Buffer> = {
   specType: "ByteArray",
 
-  serialize(propertyPath: SpecPath, value: Buffer, options: SerializationOptions): string {
+  serialize(propertyPath: PropertyPath, value: Buffer, options: SerializationOptions): string {
     let result: string;
 
     const anyValue: any = value;
@@ -27,7 +27,7 @@ const byteArraySpec: TypeSpec<string, Buffer> = {
     return result;
   },
 
-  deserialize(propertyPath: SpecPath, value: string, options: SerializationOptions): Buffer {
+  deserialize(propertyPath: PropertyPath, value: string, options: SerializationOptions): Buffer {
     let result: Buffer;
 
     if (typeof value !== "string") {

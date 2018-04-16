@@ -31,5 +31,5 @@ export interface HttpResponse {
   /**
    * Get the body of this HttpResponse after it has been deserialized.
    */
-  deserializedBody(): Promise<any>;
+  deserializedBody(): Promise<any | undefined>;
 }

@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 import { SerializationOptions } from "./serializationOptions";
-import { SpecPath } from "./specPath";
+import { PropertyPath } from "./propertyPath";
 
 /**
  * A type specification that describes how to validate and serialize an object of a given type.
@@ -19,7 +19,7 @@ export interface TypeSpec<TSerialized, TDeserialized> {
    * @param value The value to validate and serialize.
    * @param options The options that indicate how the value is to be serialized and validated.
    */
-  serialize(propertyPath: SpecPath, value: TDeserialized, options: SerializationOptions): TSerialized;
+  serialize(propertyPath: PropertyPath, value: TDeserialized, options: SerializationOptions): TSerialized;
 
   /**
    * Validate and deserialize the provided value into the return type TDeserialized.
@@ -28,7 +28,7 @@ export interface TypeSpec<TSerialized, TDeserialized> {
    * @param value The value to validate and deserialize.
    * @param options The options that indicate how the value is to be deserialized and validated.
    */
-  deserialize(propertyPath: SpecPath, value: TSerialized, options: SerializationOptions): TDeserialized;
+  deserialize(propertyPath: PropertyPath, value: TSerialized, options: SerializationOptions): TDeserialized;
 }
 
 /**
@@ -37,6 +37,6 @@ export interface TypeSpec<TSerialized, TDeserialized> {
  * @param value The value that failed the serialization.
  * @param expectedConditionDescription A brief description of what type was expected.
  */
-export function createValidationErrorMessage(propertyPath: SpecPath, value: any, expectedConditionDescription: string): string {
+export function createValidationErrorMessage(propertyPath: PropertyPath, value: any, expectedConditionDescription: string): string {
   return `Property ${propertyPath} with value ${JSON.stringify(value)} must be ${expectedConditionDescription}.`;
 }

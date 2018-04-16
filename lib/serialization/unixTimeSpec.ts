@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 import { TypeSpec, createValidationErrorMessage } from "./typeSpec";
-import { SpecPath } from "./specPath";
+import { PropertyPath } from "./propertyPath";
 
 /**
  * A type specification that describes how to validate and serialize a Date.
@@ -9,7 +9,7 @@ import { SpecPath } from "./specPath";
 const unixTimeSpec: TypeSpec<number, Date> = {
   specType: "UnixTime",
 
-  serialize(propertyPath: SpecPath, value: Date | string): number {
+  serialize(propertyPath: PropertyPath, value: Date | string): number {
     if (!value || (!(value instanceof Date) && (typeof value !== "string" || isNaN(Date.parse(value))))) {
       throw new Error(createValidationErrorMessage(propertyPath, value, `an instanceof Date or a string in ISO8601 format`));
     }
@@ -17,7 +17,7 @@ const unixTimeSpec: TypeSpec<number, Date> = {
     return Math.floor(valueDate.getTime() / 1000);
   },
 
-  deserialize(propertyPath: SpecPath, value: number): Date {
+  deserialize(propertyPath: PropertyPath, value: number): Date {
     if (typeof value !== "number") {
       throw new Error(createValidationErrorMessage(propertyPath, value, `a number`));
     }

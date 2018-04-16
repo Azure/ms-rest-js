@@ -1,10 +1,15 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-export class SpecPath {
+/**
+ * The path to a property in both the deserialized and serialized scenarios.
+ */
+export class PropertyPath {
+  public readonly path: string[];
   public readonly serializedPath: string[];
-  constructor(public readonly path: string[], _serializedPath?: string[]) {
-    this.serializedPath = _serializedPath || this.path;
+  constructor(path?: string[], serializedPath?: string[]) {
+    this.path = path || [];
+    this.serializedPath = serializedPath || this.path;
   }
 
   public get pathString(): string {
@@ -15,12 +20,12 @@ export class SpecPath {
     return pathToString(this.serializedPath);
   }
 
-  public pathStringConcat(...path: string[]): SpecPath {
-    return new SpecPath(this.path.concat(path));
+  public pathStringConcat(...path: string[]): PropertyPath {
+    return new PropertyPath(this.path.concat(path));
   }
 
-  public concat(path: string[], serializedPath?: string[]): SpecPath {
-    return new SpecPath(this.path.concat(path), this.serializedPath.concat(serializedPath || path));
+  public concat(path: string[], serializedPath?: string[]): PropertyPath {
+    return new PropertyPath(this.path.concat(path), this.serializedPath.concat(serializedPath || path));
   }
 
   public toString(): string {
