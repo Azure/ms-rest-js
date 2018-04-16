@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 import { TypeSpec, createValidationErrorMessage } from "./typeSpec";
-import { SpecPath } from "./specPath";
+import { PropertyPath } from "./propertyPath";
 
 export interface EnumTypeSpec<T> extends TypeSpec<T, T> {
   /**
@@ -26,7 +26,7 @@ export function enumSpec<T>(enumName: string, allowedValues: T[]): EnumTypeSpec<
 
     allowedValues: allowedValues,
 
-    serialize(propertyPath: SpecPath, value: T): T {
+    serialize(propertyPath: PropertyPath, value: T): T {
       const foundMatch: boolean = allowedValues.some((item) => {
         return item === value || (typeof item === "string" && typeof value === "string" && item.toLowerCase() === value.toLowerCase());
       });
@@ -36,7 +36,7 @@ export function enumSpec<T>(enumName: string, allowedValues: T[]): EnumTypeSpec<
       return value;
     },
 
-    deserialize(propertyPath: SpecPath, value: T): T {
+    deserialize(propertyPath: PropertyPath, value: T): T {
       const foundMatch: boolean = allowedValues.some((item) => {
         return item === value || (typeof item === "string" && typeof value === "string" && item.toLowerCase() === value.toLowerCase());
       });

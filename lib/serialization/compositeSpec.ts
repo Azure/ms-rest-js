@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 import { SerializationOptions, SerializationOutputType } from "./serializationOptions";
 import { TypeSpec, createValidationErrorMessage } from "./typeSpec";
-import { SpecPath } from "./specPath";
+import { PropertyPath } from "./propertyPath";
 
 export interface CompositeType {
   [key: string]: any;
@@ -32,7 +32,7 @@ export function compositeSpec(typeName: string, propertySpecs: { [propertyName: 
 
     propertySpecs: propertySpecs,
 
-    serialize(propertyPath: SpecPath, value: CompositeType, options: SerializationOptions): CompositeType {
+    serialize(propertyPath: PropertyPath, value: CompositeType, options: SerializationOptions): CompositeType {
       let result: CompositeType;
       if (typeof value !== "object" || Array.isArray(value)) {
         if (options.serializationStrictTypeChecking) {
@@ -59,7 +59,7 @@ export function compositeSpec(typeName: string, propertySpecs: { [propertyName: 
             childPropertyValueSpec = childPropertySpec.valueSpec;
           }
 
-          if (!childPropertyValue) {
+          if (childPropertyValue == undefined) {
             if (childPropertySpec.required && !childPropertySpec.constant) {
               throw new Error(`Missing non-constant ${childPropertyValueSpec.specType} property at ${propertyPath.pathStringConcat(childPropertyName)}.`);
             }
@@ -117,7 +117,7 @@ export function compositeSpec(typeName: string, propertySpecs: { [propertyName: 
               serializedChildPropertyName = serializedChildPropertyNameParts[serializedChildPropertyNameParts.length - 1];
             }
 
-            const childPropertyPath: SpecPath = propertyPath.concat([childPropertyName], serializedChildPropertyNameParts);
+            const childPropertyPath: PropertyPath = propertyPath.concat([childPropertyName], serializedChildPropertyNameParts);
 
             // Write the serialized property value to its parent property container.
             serializedPropertyParent[serializedChildPropertyName] = childPropertyValueSpec.serialize(childPropertyPath, childPropertyValue, options);
@@ -128,7 +128,7 @@ export function compositeSpec(typeName: string, propertySpecs: { [propertyName: 
       return result;
     },
 
-    deserialize(propertyPath: SpecPath, value: CompositeType, options: SerializationOptions): CompositeType {
+    deserialize(propertyPath: PropertyPath, value: CompositeType, options: SerializationOptions): CompositeType {
       let result: CompositeType;
 
       if (typeof value !== "object" || Array.isArray(value)) {
@@ -205,10 +205,10 @@ export function compositeSpec(typeName: string, propertySpecs: { [propertyName: 
             childPropertyValueSpec = childPropertySpec.valueSpec;
           }
 
-          const childPropertyPath: SpecPath = propertyPath.concat([childPropertyName], serializedChildPropertyNameParts);
+          const childPropertyPath: PropertyPath = propertyPath.concat([childPropertyName], serializedChildPropertyNameParts);
 
           const serializedChildPropertyValue: any = (!serializedPropertyParent ? undefined : serializedPropertyParent[serializedChildPropertyName]);
-          if (serializedChildPropertyValue) {
+          if (serializedChildPropertyValue != undefined) {
             result[childPropertyName] = childPropertyValueSpec.deserialize(childPropertyPath, serializedChildPropertyValue, options);
           } else if (childPropertySpec.required && !childPropertySpec.constant) {
             if (options && options.deserializationStrictMissingProperties) {

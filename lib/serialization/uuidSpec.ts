@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 import { TypeSpec, createValidationErrorMessage } from "./typeSpec";
 import * as utils from "../util/utils";
-import { SpecPath } from "./specPath";
+import { PropertyPath } from "./propertyPath";
 
 /**
  * A type specification that describes how to validate and serialize a UUID.
@@ -10,14 +10,14 @@ import { SpecPath } from "./specPath";
 const uuidSpec: TypeSpec<string, string> = {
   specType: "UUID",
 
-  serialize(propertyPath: SpecPath, value: string): string {
+  serialize(propertyPath: PropertyPath, value: string): string {
     if (typeof value !== "string" || !utils.isValidUuid(value)) {
       throw new Error(createValidationErrorMessage(propertyPath, value, "a UUID string"));
     }
     return value;
   },
 
-  deserialize(propertyPath: SpecPath, value: string): string {
+  deserialize(propertyPath: PropertyPath, value: string): string {
     if (typeof value !== "string" || !utils.isValidUuid(value)) {
       throw new Error(createValidationErrorMessage(propertyPath, value, "a UUID string"));
     }

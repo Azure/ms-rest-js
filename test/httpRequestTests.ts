@@ -11,7 +11,7 @@ describe("HttpRequest", () => {
         new HttpRequest(HttpMethod.GET, "", {});
         assert.fail("Should have thrown an error.");
       } catch (error) {
-        assert.notEqual(error, null);
+        assert.notEqual(error, undefined);
         assert.strictEqual(error.message, `"" is not a valid URL for a HttpRequest.`);
       }
     });
@@ -21,7 +21,8 @@ describe("HttpRequest", () => {
       assert.strictEqual(httpRequest.httpMethod, HttpMethod.GET);
       assert.strictEqual(httpRequest.url, "www.example.com");
       assert.deepStrictEqual(httpRequest.headers.toJson(), {});
-      assert.strictEqual(httpRequest.body, undefined);
+      assert.strictEqual(httpRequest.deserializedBody, undefined);
+      assert.strictEqual(httpRequest.serializedBody, undefined);
     });
 
     it(`should return a valid POST HttpRequest when the body is undefined`, () => {
@@ -29,7 +30,8 @@ describe("HttpRequest", () => {
       assert.strictEqual(httpRequest.httpMethod, HttpMethod.POST);
       assert.strictEqual(httpRequest.url, "www.example.com");
       assert.deepStrictEqual(httpRequest.headers.toJson(), {});
-      assert.strictEqual(httpRequest.body, undefined);
+      assert.strictEqual(httpRequest.deserializedBody, undefined);
+      assert.strictEqual(httpRequest.serializedBody, undefined);
     });
 
     it(`should return a valid POST HttpRequest when the body is ""`, () => {
@@ -37,7 +39,8 @@ describe("HttpRequest", () => {
       assert.strictEqual(httpRequest.httpMethod, HttpMethod.POST);
       assert.strictEqual(httpRequest.url, "www.example.com");
       assert.deepStrictEqual(httpRequest.headers.toJson(), {});
-      assert.strictEqual(httpRequest.body, "");
+      assert.strictEqual(httpRequest.deserializedBody, "");
+      assert.strictEqual(httpRequest.serializedBody, undefined);
     });
 
     it(`should return a valid POST HttpRequest when the body is "hello"`, () => {
@@ -45,7 +48,8 @@ describe("HttpRequest", () => {
       assert.strictEqual(httpRequest.httpMethod, HttpMethod.POST);
       assert.strictEqual(httpRequest.url, "www.example.com");
       assert.deepStrictEqual(httpRequest.headers.toJson(), { "Content-Length": "5" });
-      assert.strictEqual(httpRequest.body, "hello");
+      assert.strictEqual(httpRequest.deserializedBody, "hello");
+      assert.strictEqual(httpRequest.serializedBody, undefined);
     });
   });
 });

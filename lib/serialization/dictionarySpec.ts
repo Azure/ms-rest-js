@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 import { SerializationOptions } from "./serializationOptions";
-import { SpecPath } from "./specPath";
+import { PropertyPath } from "./propertyPath";
 import { TypeSpec, createValidationErrorMessage } from "./typeSpec";
 
 export interface DictionaryType<T> {
@@ -24,7 +24,7 @@ export default function dictionarySpec<TSerializedValue, TDeserializedValue>(val
 
     valueSpec: valueSpec,
 
-    serialize(propertyPath: SpecPath, value: DictionaryType<TDeserializedValue>, options: SerializationOptions): DictionaryType<TSerializedValue> {
+    serialize(propertyPath: PropertyPath, value: DictionaryType<TDeserializedValue>, options: SerializationOptions): DictionaryType<TSerializedValue> {
       if (typeof value !== "object" || Array.isArray(value)) {
         throw new Error(createValidationErrorMessage(propertyPath, value, "an object"));
       }
@@ -37,7 +37,7 @@ export default function dictionarySpec<TSerializedValue, TDeserializedValue>(val
       return serializedDictionary;
     },
 
-    deserialize(propertyPath: SpecPath, value: DictionaryType<TSerializedValue>, options: SerializationOptions): DictionaryType<TDeserializedValue> {
+    deserialize(propertyPath: PropertyPath, value: DictionaryType<TSerializedValue>, options: SerializationOptions): DictionaryType<TDeserializedValue> {
       if (typeof value !== "object" || Array.isArray(value)) {
         throw new Error(createValidationErrorMessage(propertyPath, value, "an object"));
       }

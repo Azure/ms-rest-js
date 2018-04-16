@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 import { TypeSpec, createValidationErrorMessage } from "./typeSpec";
 import { SerializationOptions } from "./serializationOptions";
-import { SpecPath } from "./specPath";
+import { PropertyPath } from "./propertyPath";
 
 export interface SequenceTypeSpec<TSerializedValue, TDeserializedValue> extends TypeSpec<TSerializedValue[], TDeserializedValue[]> {
   /**
@@ -20,7 +20,7 @@ export default function sequenceSpec<TSerializedElement, TDeserializedElement>(e
 
     elementSpec: elementSpec,
 
-    serialize(propertyPath: SpecPath, value: TDeserializedElement[], options: SerializationOptions): TSerializedElement[] {
+    serialize(propertyPath: PropertyPath, value: TDeserializedElement[], options: SerializationOptions): TSerializedElement[] {
       if (!Array.isArray(value)) {
         throw new Error(createValidationErrorMessage(propertyPath, value, "an Array"));
       }
@@ -33,7 +33,7 @@ export default function sequenceSpec<TSerializedElement, TDeserializedElement>(e
       return serializedArray;
     },
 
-    deserialize(propertyPath: SpecPath, value: TSerializedElement[], options: SerializationOptions): TDeserializedElement[] {
+    deserialize(propertyPath: PropertyPath, value: TSerializedElement[], options: SerializationOptions): TDeserializedElement[] {
       if (!Array.isArray(value)) {
         throw new Error(createValidationErrorMessage(propertyPath, value, "an Array"));
       }
