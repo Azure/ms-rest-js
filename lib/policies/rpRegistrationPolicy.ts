@@ -113,7 +113,7 @@ class RpRegistrationPolicy extends BaseRequestPolicy {
     const getUrl = `${urlPrefix}providers/${provider}?api-version=2016-02-01`;
     const nextRequest: HttpRequest = originalRequest.clone();
     this.setEssentialHeaders(nextRequest);
-    nextRequest.httpMethod = HttpMethod.POST;
+    nextRequest.method = HttpMethod.POST;
     nextRequest.url = postUrl;
 
     const response: HttpResponse = await this._nextPolicy.send(nextRequest);
@@ -136,7 +136,7 @@ class RpRegistrationPolicy extends BaseRequestPolicy {
     const nextRequest: HttpRequest = originalRequest.clone();
     this.setEssentialHeaders(nextRequest);
     nextRequest.url = url;
-    nextRequest.httpMethod = HttpMethod.GET;
+    nextRequest.method = HttpMethod.GET;
     const response: HttpResponse = await this._nextPolicy.send(nextRequest);
 
     let result = false;

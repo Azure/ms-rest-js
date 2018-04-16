@@ -21,10 +21,10 @@ describe("userAgentPolicy", () => {
     };
 
     const policy: RequestPolicy = policyFactory(nextPolicy, new RequestPolicyOptions());
-    const request = new HttpRequest(HttpMethod.GET, "https://spam.com", {});
+    const request = new HttpRequest({ method: HttpMethod.GET, url: "https://spam.com", headers: {} });
     const response: HttpResponse = await policy.send(request);
 
-    assert.deepStrictEqual(request, new HttpRequest(HttpMethod.GET, "https://spam.com", { "User-Agent": "my-user-agent-string" }));
-    assert.deepStrictEqual(response.request, new HttpRequest(HttpMethod.GET, "https://spam.com", { "User-Agent": "my-user-agent-string" }));
+    assert.deepStrictEqual(request, new HttpRequest({ method: HttpMethod.GET, url: "https://spam.com", headers: { "User-Agent": "my-user-agent-string" } }));
+    assert.deepStrictEqual(response.request, new HttpRequest({ method: HttpMethod.GET, url: "https://spam.com", headers: { "User-Agent": "my-user-agent-string" } }));
   });
 });

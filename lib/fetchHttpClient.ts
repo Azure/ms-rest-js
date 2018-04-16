@@ -17,15 +17,15 @@ const fetch: FetchMethod = require("fetch-ponyfill")({ useCookie: true }).fetch;
  */
 export class FetchHttpClient implements HttpClient {
   public async send(request: HttpRequest): Promise<HttpResponse> {
-    const fetchRequestBody: any = request.serializedBody || request.deserializedBody;
+    const fetchRequestBody: any = request.serializedBody || request.body;
 
     const fetchRequestOptions: RequestInit = {
-      method: request.httpMethod,
+      method: request.method,
       headers: request.headers.toJson(),
       body: fetchRequestBody
     };
 
-    const fetchResponse: Response = await fetch(request.url, fetchRequestOptions);
+    const fetchResponse: Response = await fetch(request.url.toString(), fetchRequestOptions);
 
     const responseHeaders = new HttpHeaders();
     const fetchResponseHeaders: Headers = fetchResponse.headers;
@@ -36,7 +36,7 @@ export class FetchHttpClient implements HttpClient {
       statusCode: fetchResponse.status,
       headers: responseHeaders,
       textBody: async () => await fetchResponse.text(),
-      serializedBody: async () => await fetchResponse.json()
+      deserializedBody: async () => await fetchResponse.json()
     };
   }
 }

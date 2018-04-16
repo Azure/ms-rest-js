@@ -8,7 +8,7 @@ import { HttpResponse } from "../lib/httpResponse";
 
 describe("fetchHttpClient", () => {
   it("should send HTTP requests", async () => {
-    const request = new HttpRequest(HttpMethod.GET, "http://www.example.com", {});
+    const request = new HttpRequest({ method: HttpMethod.GET, url: "http://www.example.com" });
     const httpClient = new FetchHttpClient();
 
     const response: HttpResponse = await httpClient.send(request);
@@ -77,7 +77,7 @@ describe("fetchHttpClient", () => {
   });
 
   it("should throw for awaited 404", async () => {
-    const request = new HttpRequest(HttpMethod.GET, "http://www.notanexample.coms", {});
+    const request = new HttpRequest({ method: HttpMethod.GET, url: "http://www.notanexample.coms" });
     const httpClient = new FetchHttpClient();
 
     try {
@@ -91,7 +91,7 @@ describe("fetchHttpClient", () => {
   });
 
   it("should reject for promised 404", async () => {
-    const request = new HttpRequest(HttpMethod.GET, "http://www.notanexample.coms", {});
+    const request = new HttpRequest({ method: HttpMethod.GET, url: "http://www.notanexample.coms" });
     const httpClient = new FetchHttpClient();
 
     return httpClient.send(request)

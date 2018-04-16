@@ -24,17 +24,12 @@ export interface HttpResponse {
   headers: HttpHeaders;
 
   /**
-   * The body of this HttpResponse after it has been deserialized.
-   */
-  deserializedBody?: any;
-
-  /**
    * Get the body of this HttpResponse as a string.
    */
   textBody(): Promise<string | undefined>;
 
   /**
-   * Get the body of this HttpResponse before it has been deserialized.
+   * Get the body of this HttpResponse after it has been deserialized.
    */
-  serializedBody(): Promise<any | undefined>;
+  deserializedBody(): Promise<any | undefined>;
 }

@@ -32,7 +32,7 @@ class RedirectPolicy extends BaseRequestPolicy {
       response = await this._nextPolicy.send(request.clone());
 
       if (response && response.headers && response.headers.get("location") &&
-        (response.statusCode === 300 || response.statusCode === 307 || (response.statusCode === 303 && request.httpMethod === HttpMethod.POST)) &&
+        (response.statusCode === 300 || response.statusCode === 307 || (response.statusCode === 303 && request.method === HttpMethod.POST)) &&
         (!this._maximumRedirections || redirections < this._maximumRedirections)) {
 
         ++redirections;
@@ -42,7 +42,7 @@ class RedirectPolicy extends BaseRequestPolicy {
         // POST request with Status code 303 should be converted into a
         // redirected GET request if the redirect url is present in the location header
         if (response.statusCode === 303) {
-          request.httpMethod = HttpMethod.GET;
+          request.method = HttpMethod.GET;
         }
       } else {
         break;

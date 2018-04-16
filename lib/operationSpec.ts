@@ -7,7 +7,7 @@ import { HttpMethod } from "./httpMethod";
 /**
  * A specification that describes the details of an Operation.
  */
-export interface OperationSpec<TDeserializedRequestBody, TDeserializedResponseBody> {
+export interface OperationSpec {
   /**
    * The HttpMethod that will be used for the outgoing request.
    */
@@ -16,10 +16,10 @@ export interface OperationSpec<TDeserializedRequestBody, TDeserializedResponseBo
   /**
    * The specification that describes how to serialize the body of the outgoing request.
    */
-  requestBodySpec?: TypeSpec<any, TDeserializedRequestBody>;
+  requestBodySpec?: TypeSpec<any, any>;
 
   /**
    * The specification that describes the body of the incoming response.
    */
-  responseBodySpec?: TypeSpec<any, TDeserializedResponseBody>;
+  responseBodySpec?: TypeSpec<any, any>;
 }
