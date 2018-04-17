@@ -1,8 +1,9 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
-import { TypeSpec, createValidationErrorMessage } from "./typeSpec";
-import { SerializationOptions } from "./serializationOptions";
+import { TypeSpec, createValidationErrorMessage, createValidationWarningMessage } from "./typeSpec";
+import { SerializationOptions, log } from "./serializationOptions";
 import { PropertyPath } from "./propertyPath";
+import { HttpPipelineLogLevel } from "../httpPipelineLogLevel";
 
 export interface SequenceTypeSpec<TSerializedValue, TDeserializedValue> extends TypeSpec<TSerializedValue[], TDeserializedValue[]> {
   /**
@@ -21,29 +22,45 @@ export default function sequenceSpec<TSerializedElement, TDeserializedElement>(e
     elementSpec: elementSpec,
 
     serialize(propertyPath: PropertyPath, value: TDeserializedElement[], options: SerializationOptions): TSerializedElement[] {
+      let result: TSerializedElement[];
       if (!Array.isArray(value)) {
-        throw new Error(createValidationErrorMessage(propertyPath, value, "an Array"));
-      }
+        if (options && options.serializationStrictTypeChecking) {
+          const errorMessage: string = createValidationErrorMessage(propertyPath, value, "an Array");
+          log(options, HttpPipelineLogLevel.ERROR, errorMessage);
+          throw new Error(errorMessage);
+        } else {
+          log(options, HttpPipelineLogLevel.WARNING, createValidationWarningMessage(propertyPath, value, "an Array"));
+        }
 
-      const serializedArray: TSerializedElement[] = [];
-      for (let i = 0; i < value.length; i++) {
-        serializedArray[i] = elementSpec.serialize(propertyPath.concat([i.toString()]), value[i], options);
+        result = value;
+      } else {
+        result = [];
+        for (let i = 0; i < value.length; i++) {
+          result[i] = elementSpec.serialize(propertyPath.concat([i.toString()]), value[i], options);
+        }
       }
-
-      return serializedArray;
+      return result;
     },
 
     deserialize(propertyPath: PropertyPath, value: TSerializedElement[], options: SerializationOptions): TDeserializedElement[] {
+      let result: TDeserializedElement[];
       if (!Array.isArray(value)) {
-        throw new Error(createValidationErrorMessage(propertyPath, value, "an Array"));
-      }
+        if (options && options.deserializationStrictTypeChecking) {
+          const errorMessage: string = createValidationErrorMessage(propertyPath, value, "an Array");
+          log(options, HttpPipelineLogLevel.ERROR, errorMessage);
+          throw new Error(errorMessage);
+        } else {
+          log(options, HttpPipelineLogLevel.WARNING, createValidationWarningMessage(propertyPath, value, "an Array"));
+        }
 
-      const deserializedArray: TDeserializedElement[] = [];
-      for (let i = 0; i < value.length; i++) {
-        deserializedArray[i] = elementSpec.deserialize(propertyPath.concat([i.toString()]), value[i], options);
+        result = value;
+      } else {
+        result = [];
+        for (let i = 0; i < value.length; i++) {
+          result[i] = elementSpec.deserialize(propertyPath.concat([i.toString()]), value[i], options);
+        }
       }
-
-      return deserializedArray;
+      return result;
     }
   };
 }
