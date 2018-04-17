@@ -5,9 +5,19 @@ import { HttpClient } from "./httpClient";
 import { HttpPipelineOptions } from "./httpPipelineOptions";
 import { HttpRequest } from "./httpRequest";
 import { HttpResponse } from "./httpResponse";
+import { msRestNodeJsUserAgentPolicy } from "./policies/msRestNodeJsUserAgentPolicy";
 import { RequestPolicy } from "./requestPolicy";
 import { RequestPolicyFactory } from "./requestPolicyFactory";
 import { RequestPolicyOptions } from "./requestPolicyOptions";
+import { Constants } from "./util/constants";
+import { isNode } from "./util/utils";
+import { ServiceClientCredentials } from "./msRest";
+import { HttpPipelineLogger } from "./httpPipelineLogger";
+import { signingPolicy } from "./policies/signingPolicy";
+import { redirectPolicy } from "./policies/redirectPolicy";
+import { rpRegistrationPolicy } from "./policies/rpRegistrationPolicy";
+import { exponentialRetryPolicy } from "./policies/exponentialRetryPolicy";
+import { systemErrorRetryPolicy } from "./policies/systemErrorRetryPolicy";
 
 let defaultHttpClient: HttpClient;
 
@@ -16,6 +26,66 @@ function getDefaultHttpClient(): HttpClient {
     defaultHttpClient = new FetchHttpClient();
   }
   return defaultHttpClient;
+}
+
+/**
+ * Options that can be used to configure the default HttpPipeline configuration.
+ */
+export interface DefaultHttpPipelineOptions {
+  /**
+   * Credentials that will be used to authenticate with the target endpoint.
+   */
+  credentials?: ServiceClientCredentials;
+
+  /**
+   * The number of seconds to wait on a resource provider registration request before timing out.
+   */
+  rpRegistrationRetryTimeoutInSeconds?: number;
+
+  /**
+   * Whether or not to add the retry policies to the HttpPipeline.
+   */
+  addRetryPolicies?: boolean;
+
+  /**
+   * The HttpClient to use. If no httpClient is specified, then the default HttpClient will be used.
+   */
+  httpClient?: HttpClient;
+
+  /**
+   * The logger to use when RequestPolicies need to log information.
+   */
+  logger?: HttpPipelineLogger;
+}
+
+/**
+ * Get the default HttpPipeline.
+ */
+export function createDefaultHttpPipeline(options?: DefaultHttpPipelineOptions): HttpPipeline {
+  const requestPolicyFactories: RequestPolicyFactory[] = [];
+
+  if (options && options.credentials) {
+    requestPolicyFactories.push(signingPolicy(options.credentials));
+  }
+
+  if (isNode) {
+    requestPolicyFactories.push(msRestNodeJsUserAgentPolicy([`ms-rest-js/${Constants.msRestVersion}`]));
+  }
+
+  requestPolicyFactories.push(redirectPolicy());
+  requestPolicyFactories.push(rpRegistrationPolicy(options && options.rpRegistrationRetryTimeoutInSeconds != undefined ? options.rpRegistrationRetryTimeoutInSeconds : undefined));
+
+  if (options && options.addRetryPolicies) {
+    requestPolicyFactories.push(exponentialRetryPolicy());
+    requestPolicyFactories.push(systemErrorRetryPolicy());
+  }
+
+  const httpPipelineOptions: HttpPipelineOptions = {
+    httpClient: options && options.httpClient ? options.httpClient : getDefaultHttpClient(),
+    pipelineLogger: options && options.logger ? options.logger : undefined
+  };
+
+  return new HttpPipeline(requestPolicyFactories, httpPipelineOptions);
 }
 
 /**

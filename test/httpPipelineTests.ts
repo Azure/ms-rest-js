@@ -3,13 +3,14 @@
 import * as assert from "assert";
 import { HttpClient } from "../lib/httpClient";
 import { HttpMethod } from "../lib/httpMethod";
-import { HttpPipeline } from "../lib/httpPipeline";
+import { HttpPipeline, createDefaultHttpPipeline } from "../lib/httpPipeline";
 import { HttpRequest } from "../lib/httpRequest";
 import { HttpResponse } from "../lib/httpResponse";
 import { InMemoryHttpResponse } from "../lib/inMemoryHttpResponse";
 import { userAgentPolicy } from "../lib/policies/userAgentPolicy";
 import { BaseRequestPolicy } from "../lib/requestPolicy";
 import { FakeHttpClient } from "./fakeHttpClient";
+import { HttpHeaders } from "../lib/httpHeaders";
 
 describe("HttpPipeline", () => {
   it("should send requests when no request policies are assigned", async () => {
@@ -75,5 +76,35 @@ describe("HttpPipeline", () => {
     assert.deepStrictEqual(response.headers.toJson(), { "My-Header": "My-Value" });
     const responseBodyAsText: string | undefined = await response.textBody();
     assert.strictEqual("hello3", responseBodyAsText);
+  });
+
+  it("should send requests when using the default HTTP pipeline", async () => {
+    const httpPipeline: HttpPipeline = createDefaultHttpPipeline();
+
+    const httpRequest = new HttpRequest({ method: HttpMethod.GET, url: "https://www.httpbin.org" });
+
+    const httpResponse: HttpResponse = await httpPipeline.send(httpRequest);
+    assert(httpResponse);
+
+    assert.deepEqual(httpResponse.statusCode, 200);
+
+    assert(httpResponse.headers);
+    assert.strictEqual(httpResponse.headers.get("access-control-allow-credentials"), "true");
+    assert.strictEqual(httpResponse.headers.get("access-control-allow-origin"), "*");
+    assert.strictEqual(httpResponse.headers.get("connection"), "close");
+    assert.strictEqual(httpResponse.headers.get("content-length"), "13129");
+    assert.strictEqual(httpResponse.headers.get("content-type"), "text/html; charset=utf-8");
+    assert(httpResponse.headers.get("date"));
+    assert.strictEqual(httpResponse.headers.get("server"), "meinheld/0.6.1");
+    assert.strictEqual(httpResponse.headers.get("via"), "1.1 vegur");
+    assert.strictEqual(httpResponse.headers.get("x-powered-by"), "Flask");
+    assert(httpResponse.headers.get("x-processed-time"));
+
+    const textBody: string = await httpResponse.textBody() as string;
+    assert(textBody);
+    assert.notStrictEqual(textBody.indexOf(`<html>`), -1);
+    assert.notStrictEqual(textBody.indexOf(`httpbin.org`), -1);
+
+    assert.deepEqual(httpResponse.request, httpRequest);
   });
 });
