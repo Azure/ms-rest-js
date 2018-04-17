@@ -1,10 +1,10 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 import * as assert from "assert";
-import dictionarySpec, { DictionaryType } from "../../lib/serialization/dictionarySpec";
+import { DictionaryType, dictionarySpec } from "../../lib/serialization/dictionarySpec";
 import numberSpec from "../../lib/serialization/numberSpec";
 import { TypeSpec } from "../../lib/serialization/typeSpec";
-import { serializeTest, deserializeTest } from "./specTest";
+import { deserializeTest, serializeTest } from "./specTest";
 
 describe("dictionarySpec", () => {
   it("should have \"Dictionary<T>\" for its specType property", () => {

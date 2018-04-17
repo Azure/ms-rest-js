@@ -2,12 +2,12 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 import * as assert from "assert";
 import booleanSpec from "../../lib/serialization/booleanSpec";
-import { compositeSpec, CompositeType, PropertySpec } from "../../lib/serialization/compositeSpec";
+import { CompositeType, PropertySpec, compositeSpec } from "../../lib/serialization/compositeSpec";
 import numberSpec from "../../lib/serialization/numberSpec";
-import sequenceSpec from "../../lib/serialization/sequenceSpec";
+import { sequenceSpec } from "../../lib/serialization/sequenceSpec";
 import { SerializationOptions, SerializationOutputType } from "../../lib/serialization/serializationOptions";
 import stringSpec from "../../lib/serialization/stringSpec";
-import { serializeTest, deserializeTest } from "./specTest";
+import { deserializeTest, serializeTest } from "./specTest";
 
 describe("compositeSpec", () => {
   it("should have \"Composite\" for its specType property", () => {

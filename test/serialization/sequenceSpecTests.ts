@@ -1,10 +1,10 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 import * as assert from "assert";
-import sequenceSpec from "../../lib/serialization/sequenceSpec";
+import { sequenceSpec } from "../../lib/serialization/sequenceSpec";
 import stringSpec from "../../lib/serialization/stringSpec";
 import { TypeSpec } from "../../lib/serialization/typeSpec";
-import { serializeTest, deserializeTest } from "./specTest";
+import { deserializeTest, serializeTest } from "./specTest";
 
 describe("sequenceSpec", () => {
   it("should have \"Sequence\" for its specType property", () => {

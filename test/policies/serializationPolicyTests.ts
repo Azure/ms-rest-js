@@ -15,7 +15,7 @@ import dateSpec from "../../lib/serialization/dateSpec";
 import dateTimeRfc1123Spec from "../../lib/serialization/dateTimeRfc1123Spec";
 import numberSpec from "../../lib/serialization/numberSpec";
 import objectSpec from "../../lib/serialization/objectSpec";
-import sequenceSpec from "../../lib/serialization/sequenceSpec";
+import { sequenceSpec } from "../../lib/serialization/sequenceSpec";
 
 describe("serializationPolicy", () => {
   it("serializes request and response bodies", async () => {

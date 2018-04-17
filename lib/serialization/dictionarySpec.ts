@@ -19,7 +19,7 @@ export interface DictionaryTypeSpec<TSerializedValue, TDeserializedValue> extend
 /**
  * A type specification that describes how to validate and serialize a Dictionary of values.
  */
-export default function dictionarySpec<TSerializedValue, TDeserializedValue>(valueSpec: TypeSpec<TSerializedValue, TDeserializedValue>): DictionaryTypeSpec<TSerializedValue, TDeserializedValue> {
+export function dictionarySpec<TSerializedValue, TDeserializedValue>(valueSpec: TypeSpec<TSerializedValue, TDeserializedValue>): DictionaryTypeSpec<TSerializedValue, TDeserializedValue> {
   return {
     specType: `Dictionary`,
 
