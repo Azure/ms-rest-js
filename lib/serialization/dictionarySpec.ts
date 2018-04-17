@@ -1,9 +1,9 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
-import { SerializationOptions, log } from "./serializationOptions";
-import { PropertyPath } from "./propertyPath";
-import { TypeSpec, createValidationErrorMessage, createValidationWarningMessage } from "./typeSpec";
 import { HttpPipelineLogLevel } from "../httpPipelineLogLevel";
+import { PropertyPath } from "./propertyPath";
+import { SerializationOptions, log } from "./serializationOptions";
+import { TypeSpec, createValidationErrorMessage, createValidationWarningMessage } from "./typeSpec";
 
 export interface DictionaryType<T> {
   [key: string]: T;
@@ -11,15 +11,15 @@ export interface DictionaryType<T> {
 
 export interface DictionaryTypeSpec<TSerializedValue, TDeserializedValue> extends TypeSpec<DictionaryType<TSerializedValue>, DictionaryType<TDeserializedValue>> {
   /**
-   * The values that are allowed for this EnumTypeSpec.
+   * The TypeSpec that defines each value in this DictionaryTypeSpec.
    */
-  valueSpec: TypeSpec<TSerializedValue, TDeserializedValue>;
+  valueSpec: TypeSpec<TSerializedValue, TDeserializedValue> | string;
 }
 
 /**
  * A type specification that describes how to validate and serialize a Dictionary of values.
  */
-export function dictionarySpec<TSerializedValue, TDeserializedValue>(valueSpec: TypeSpec<TSerializedValue, TDeserializedValue>): DictionaryTypeSpec<TSerializedValue, TDeserializedValue> {
+export function dictionarySpec<TSerializedValue, TDeserializedValue>(valueSpec: TypeSpec<TSerializedValue, TDeserializedValue> | string): DictionaryTypeSpec<TSerializedValue, TDeserializedValue> {
   return {
     specType: `Dictionary`,
 
@@ -38,9 +38,21 @@ export function dictionarySpec<TSerializedValue, TDeserializedValue>(valueSpec: 
 
         result = value as any;
       } else {
+        let valueTypeSpec: TypeSpec<TSerializedValue, TDeserializedValue>;
+        if (typeof valueSpec === "string") {
+          if (!options.compositeSpecDictionary || !options.compositeSpecDictionary[valueSpec]) {
+            const errorMessage = `Missing composite specification entry in composite type dictionary for type named "${valueSpec}" at property ${propertyPath}.`;
+            log(options, HttpPipelineLogLevel.ERROR, errorMessage);
+            throw new Error(errorMessage);
+          }
+          valueTypeSpec = options.compositeSpecDictionary[valueSpec] as TypeSpec<TSerializedValue, TDeserializedValue>;
+        } else {
+          valueTypeSpec = valueSpec;
+        }
+
         result = {};
         for (const key in value) {
-          result[key] = valueSpec.serialize(propertyPath.concat([key]), value[key], options);
+          result[key] = valueTypeSpec.serialize(propertyPath.concat([key]), value[key], options);
         }
       }
 
@@ -60,9 +72,21 @@ export function dictionarySpec<TSerializedValue, TDeserializedValue>(valueSpec: 
 
         result = value as any;
       } else {
+        let valueTypeSpec: TypeSpec<TSerializedValue, TDeserializedValue>;
+        if (typeof valueSpec === "string") {
+          if (!options.compositeSpecDictionary || !options.compositeSpecDictionary[valueSpec]) {
+            const errorMessage = `Missing composite specification entry in composite type dictionary for type named "${valueSpec}" at property ${propertyPath}.`;
+            log(options, HttpPipelineLogLevel.ERROR, errorMessage);
+            throw new Error(errorMessage);
+          }
+          valueTypeSpec = options.compositeSpecDictionary[valueSpec] as TypeSpec<TSerializedValue, TDeserializedValue>;
+        } else {
+          valueTypeSpec = valueSpec;
+        }
+
         result = {};
         for (const key in value) {
-          result[key] = valueSpec.deserialize(propertyPath.concat([key]), value[key], options);
+          result[key] = valueTypeSpec.deserialize(propertyPath.concat([key]), value[key], options);
         }
       }
       return result;

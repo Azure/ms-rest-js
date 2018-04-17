@@ -5,17 +5,17 @@ import { SerializationOptions, log } from "./serializationOptions";
 import { PropertyPath } from "./propertyPath";
 import { HttpPipelineLogLevel } from "../httpPipelineLogLevel";
 
-export interface SequenceTypeSpec<TSerializedValue, TDeserializedValue> extends TypeSpec<TSerializedValue[], TDeserializedValue[]> {
+export interface SequenceTypeSpec<TSerializedElement, TDeserializedElement> extends TypeSpec<TSerializedElement[], TDeserializedElement[]> {
   /**
-   * The values that are allowed for this EnumTypeSpec.
+   * The TypeSpec that defines each element in this SequenceTypeSpec.
    */
-  elementSpec: TypeSpec<TSerializedValue, TDeserializedValue>;
+  elementSpec: TypeSpec<TSerializedElement, TDeserializedElement> | string;
 }
 
 /**
  * A type specification that describes how to validate and serialize a Sequence of elements.
  */
-export function sequenceSpec<TSerializedElement, TDeserializedElement>(elementSpec: TypeSpec<TSerializedElement, TDeserializedElement>): SequenceTypeSpec<TSerializedElement, TDeserializedElement> {
+export function sequenceSpec<TSerializedElement, TDeserializedElement>(elementSpec: TypeSpec<TSerializedElement, TDeserializedElement> | string): SequenceTypeSpec<TSerializedElement, TDeserializedElement> {
   return {
     specType: `Sequence`,
 
@@ -34,9 +34,21 @@ export function sequenceSpec<TSerializedElement, TDeserializedElement>(elementSp
 
         result = value;
       } else {
+        let elementTypeSpec: TypeSpec<TSerializedElement, TDeserializedElement>;
+        if (typeof elementSpec === "string") {
+          if (!options.compositeSpecDictionary || !options.compositeSpecDictionary[elementSpec]) {
+            const errorMessage = `Missing composite specification entry in composite type dictionary for type named "${elementSpec}" at property ${propertyPath}.`;
+            log(options, HttpPipelineLogLevel.ERROR, errorMessage);
+            throw new Error(errorMessage);
+          }
+          elementTypeSpec = options.compositeSpecDictionary[elementSpec] as TypeSpec<TSerializedElement, TDeserializedElement>;
+        } else {
+          elementTypeSpec = elementSpec;
+        }
+
         result = [];
         for (let i = 0; i < value.length; i++) {
-          result[i] = elementSpec.serialize(propertyPath.concat([i.toString()]), value[i], options);
+          result[i] = elementTypeSpec.serialize(propertyPath.concat([i.toString()]), value[i], options);
         }
       }
       return result;
@@ -55,9 +67,21 @@ export function sequenceSpec<TSerializedElement, TDeserializedElement>(elementSp
 
         result = value;
       } else {
+        let elementTypeSpec: TypeSpec<TSerializedElement, TDeserializedElement>;
+        if (typeof elementSpec === "string") {
+          if (!options.compositeSpecDictionary || !options.compositeSpecDictionary[elementSpec]) {
+            const errorMessage = `Missing composite specification entry in composite type dictionary for type named "${elementSpec}" at property ${propertyPath}.`;
+            log(options, HttpPipelineLogLevel.ERROR, errorMessage);
+            throw new Error(errorMessage);
+          }
+          elementTypeSpec = options.compositeSpecDictionary[elementSpec] as TypeSpec<TSerializedElement, TDeserializedElement>;
+        } else {
+          elementTypeSpec = elementSpec;
+        }
+
         result = [];
         for (let i = 0; i < value.length; i++) {
-          result[i] = elementSpec.deserialize(propertyPath.concat([i.toString()]), value[i], options);
+          result[i] = elementTypeSpec.deserialize(propertyPath.concat([i.toString()]), value[i], options);
         }
       }
       return result;
