@@ -20,7 +20,7 @@ describe("compositeSpec", () => {
 
   describe("serialize()", () => {
     describe("with strict type-checking", () => {
-      function compositeSerializeWithStrictTypeCheckingTest(args: { testName?: string, typeName?: string, propertySpecs?: { [propertyName: string]: PropertySpec }, propertyPath?: string[], value: CompositeType, options?: SerializationOptions, expectedResult: CompositeType | Error }): void {
+      function compositeSerializeWithStrictTypeCheckingTest(args: { testName?: string, typeName?: string, propertySpecs?: { [propertyName: string]: PropertySpec }, propertyPath?: string[], value: CompositeType, options?: SerializationOptions, expectedResult: CompositeType | Error, expectedLogs?: string[] }): void {
         const options: SerializationOptions = args.options || {};
         options.serializationStrictTypeChecking = true;
 
@@ -30,23 +30,27 @@ describe("compositeSpec", () => {
           propertyPath: args.propertyPath,
           options: options,
           value: args.value,
-          expectedResult: args.expectedResult
+          expectedResult: args.expectedResult,
+          expectedLogs: args.expectedLogs
         });
       }
 
       compositeSerializeWithStrictTypeCheckingTest({
-        value: <any>undefined,
-        expectedResult: new Error("Property a.property.path with value undefined must be an object.")
+        value: undefined as any,
+        expectedResult: new Error("Property a.property.path with value undefined must be an object."),
+        expectedLogs: [`ERROR: Property a.property.path with value undefined must be an object.`]
       });
 
       compositeSerializeWithStrictTypeCheckingTest({
-        value: <any>false,
-        expectedResult: new Error("Property a.property.path with value false must be an object.")
+        value: false as any,
+        expectedResult: new Error("Property a.property.path with value false must be an object."),
+        expectedLogs: [`ERROR: Property a.property.path with value false must be an object.`]
       });
 
       compositeSerializeWithStrictTypeCheckingTest({
-        value: <any>[],
-        expectedResult: new Error("Property a.property.path with value [] must be an object.")
+        value: [] as any,
+        expectedResult: new Error("Property a.property.path with value [] must be an object."),
+        expectedLogs: [`ERROR: Property a.property.path with value [] must be an object.`]
       });
 
       compositeSerializeWithStrictTypeCheckingTest({
@@ -58,14 +62,16 @@ describe("compositeSpec", () => {
         testName: `should throw an error when a required property is missing`,
         propertySpecs: { "tasty?": { required: true, valueSpec: booleanSpec } },
         value: {},
-        expectedResult: new Error("Missing non-constant boolean property at a.property.path.tasty?.")
+        expectedResult: new Error("Missing non-constant boolean property at a.property.path.tasty?."),
+        expectedLogs: [`ERROR: Missing non-constant boolean property at a.property.path.tasty?.`]
       });
 
       compositeSerializeWithStrictTypeCheckingTest({
         testName: `should throw an error when a property has the wrong type`,
         propertySpecs: { "tasty?": { valueSpec: booleanSpec } },
         value: { "tasty?": 2 },
-        expectedResult: new Error("Property a.property.path.tasty? with value 2 must be a boolean.")
+        expectedResult: new Error("Property a.property.path.tasty? with value 2 must be a boolean."),
+        expectedLogs: [`ERROR: Property a.property.path.tasty? with value 2 must be a boolean.`]
       });
 
       compositeSerializeWithStrictTypeCheckingTest({
@@ -229,7 +235,7 @@ describe("compositeSpec", () => {
     });
 
     describe("without strict type-checking", () => {
-      function compositeSerializeWithoutStrictTypeCheckingTest(args: { testName?: string, typeName?: string, propertySpecs?: { [propertyName: string]: PropertySpec }, propertyPath?: string[], value: CompositeType, options?: SerializationOptions, expectedResult: CompositeType | Error }): void {
+      function compositeSerializeWithoutStrictTypeCheckingTest(args: { testName?: string, typeName?: string, propertySpecs?: { [propertyName: string]: PropertySpec }, propertyPath?: string[], value: CompositeType, options?: SerializationOptions, expectedResult: CompositeType | Error, expectedLogs?: string[] }): void {
         const options: SerializationOptions = args.options || {};
         options.serializationStrictTypeChecking = false;
 
@@ -239,23 +245,27 @@ describe("compositeSpec", () => {
           propertyPath: args.propertyPath,
           options: options,
           value: args.value,
-          expectedResult: args.expectedResult
+          expectedResult: args.expectedResult,
+          expectedLogs: args.expectedLogs
         });
       }
 
       compositeSerializeWithoutStrictTypeCheckingTest({
-        value: <any>undefined,
-        expectedResult: <any>undefined
+        value: undefined as any,
+        expectedResult: undefined as any,
+        expectedLogs: [`WARNING: Property a.property.path with value undefined should be an object.`]
       });
 
       compositeSerializeWithoutStrictTypeCheckingTest({
-        value: <any>false,
-        expectedResult: <any>false
+        value: false as any,
+        expectedResult: false as any,
+        expectedLogs: [`WARNING: Property a.property.path with value false should be an object.`]
       });
 
       compositeSerializeWithoutStrictTypeCheckingTest({
-        value: <any>[],
-        expectedResult: <any>[]
+        value: [],
+        expectedResult: [],
+        expectedLogs: [`WARNING: Property a.property.path with value [] should be an object.`]
       });
 
       compositeSerializeWithoutStrictTypeCheckingTest({
@@ -267,14 +277,16 @@ describe("compositeSpec", () => {
         testName: `should throw an error when a required property is missing`,
         propertySpecs: { "tasty?": { required: true, valueSpec: booleanSpec } },
         value: {},
-        expectedResult: new Error("Missing non-constant boolean property at a.property.path.tasty?.")
+        expectedResult: new Error("Missing non-constant boolean property at a.property.path.tasty?."),
+        expectedLogs: [`ERROR: Missing non-constant boolean property at a.property.path.tasty?.`]
       });
 
       compositeSerializeWithoutStrictTypeCheckingTest({
         testName: `should throw an error when a property has the wrong type`,
         propertySpecs: { "tasty?": { valueSpec: booleanSpec } },
         value: { "tasty?": 2 },
-        expectedResult: { "tasty?": 2 }
+        expectedResult: { "tasty?": 2 },
+        expectedLogs: [`WARNING: Property a.property.path.tasty? with value 2 should be a boolean.`]
       });
 
       compositeSerializeWithoutStrictTypeCheckingTest({
@@ -440,7 +452,7 @@ describe("compositeSpec", () => {
 
   describe("deserialize()", () => {
     describe("with strict type-checking", () => {
-      function compositeDeserializeWithStrictTypeCheckingTest(args: { testName?: string, typeName?: string, propertySpecs?: { [propertyName: string]: PropertySpec }, propertyPath?: string[], value: CompositeType, options?: SerializationOptions, expectedResult: CompositeType | Error }): void {
+      function compositeDeserializeWithStrictTypeCheckingTest(args: { testName?: string, typeName?: string, propertySpecs?: { [propertyName: string]: PropertySpec }, propertyPath?: string[], value: CompositeType, options?: SerializationOptions, expectedResult: CompositeType | Error, expectedLogs?: string[] }): void {
         const options: SerializationOptions = args.options || {};
         options.deserializationStrictTypeChecking = true;
 
@@ -450,22 +462,23 @@ describe("compositeSpec", () => {
           propertyPath: args.propertyPath,
           options: options,
           value: args.value,
-          expectedResult: args.expectedResult
+          expectedResult: args.expectedResult,
+          expectedLogs: args.expectedLogs
         });
       }
 
       compositeDeserializeWithStrictTypeCheckingTest({
-        value: <any>undefined,
+        value: undefined as any,
         expectedResult: new Error("Property a.property.path with value undefined must be an object.")
       });
 
       compositeDeserializeWithStrictTypeCheckingTest({
-        value: <any>false,
+        value: false as any,
         expectedResult: new Error("Property a.property.path with value false must be an object.")
       });
 
       compositeDeserializeWithStrictTypeCheckingTest({
-        value: <any>[],
+        value: [],
         expectedResult: new Error("Property a.property.path with value [] must be an object.")
       });
 
@@ -488,7 +501,8 @@ describe("compositeSpec", () => {
         testName: "should throw an error when the value has a property with the wrong type",
         propertySpecs: { "tasty?": { valueSpec: booleanSpec } },
         value: { "tasty?": 2 },
-        expectedResult: new Error("Property a.property.path.tasty? with value 2 must be a boolean.")
+        expectedResult: new Error("Property a.property.path.tasty? with value 2 must be a boolean."),
+        expectedLogs: [`ERROR: Property a.property.path.tasty? with value 2 must be a boolean.`]
       });
 
       compositeDeserializeWithStrictTypeCheckingTest({
@@ -652,7 +666,7 @@ describe("compositeSpec", () => {
     });
 
     describe("without strict type-checking", () => {
-      function compositeDeserializeWithoutStrictTypeCheckingTest(args: { testName?: string, typeName?: string, propertySpecs?: { [propertyName: string]: PropertySpec }, propertyPath?: string[], value: CompositeType, options?: SerializationOptions, expectedResult: CompositeType | Error }): void {
+      function compositeDeserializeWithoutStrictTypeCheckingTest(args: { testName?: string, typeName?: string, propertySpecs?: { [propertyName: string]: PropertySpec }, propertyPath?: string[], value: CompositeType, options?: SerializationOptions, expectedResult: CompositeType | Error, expectedLogs?: string[] }): void {
         const options: SerializationOptions = args.options || {};
         options.deserializationStrictTypeChecking = false;
 
@@ -662,23 +676,24 @@ describe("compositeSpec", () => {
           propertyPath: args.propertyPath,
           options: options,
           value: args.value,
-          expectedResult: args.expectedResult
+          expectedResult: args.expectedResult,
+          expectedLogs: args.expectedLogs
         });
       }
 
       compositeDeserializeWithoutStrictTypeCheckingTest({
-        value: <any>undefined,
-        expectedResult: <any>undefined
+        value: undefined as any,
+        expectedResult: undefined as any
       });
 
       compositeDeserializeWithoutStrictTypeCheckingTest({
-        value: <any>false,
-        expectedResult: <any>false
+        value: false as any,
+        expectedResult: false as any
       });
 
       compositeDeserializeWithoutStrictTypeCheckingTest({
-        value: <any>[],
-        expectedResult: <any>[]
+        value: [],
+        expectedResult: []
       });
 
       compositeDeserializeWithoutStrictTypeCheckingTest({
@@ -700,7 +715,8 @@ describe("compositeSpec", () => {
         testName: "should throw an error when the value has a property with the wrong type",
         propertySpecs: { "tasty?": { valueSpec: booleanSpec } },
         value: { "tasty?": 2 },
-        expectedResult: { "tasty?": 2 }
+        expectedResult: { "tasty?": 2 },
+        expectedLogs: [`WARNING: Property a.property.path.tasty? with value 2 should be a boolean.`]
       });
 
       compositeDeserializeWithoutStrictTypeCheckingTest({

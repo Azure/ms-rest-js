@@ -11,7 +11,7 @@ describe("byteArraySpec", () => {
 
   describe("serialize()", () => {
     describe("with strict type-checking", () => {
-      function byteArraySerializeWithStrictTypeCheckingTest(args: { propertyPath?: string[], value: Buffer, expectedResult: string | Error }): void {
+      function byteArraySerializeWithStrictTypeCheckingTest(args: { propertyPath?: string[], value: Buffer, expectedResult: string | Error, expectedLogs?: string[] }): void {
         serializeTest({
           typeSpec: byteArraySpec,
           propertyPath: args.propertyPath,
@@ -19,23 +19,27 @@ describe("byteArraySpec", () => {
             serializationStrictTypeChecking: true
           },
           value: args.value,
-          expectedResult: args.expectedResult
+          expectedResult: args.expectedResult,
+          expectedLogs: args.expectedLogs
         });
       }
 
       byteArraySerializeWithStrictTypeCheckingTest({
-        value: <any>undefined,
-        expectedResult: new Error("Property a.property.path with value undefined must be a Buffer.")
+        value: undefined as any,
+        expectedResult: new Error("Property a.property.path with value undefined must be a Buffer."),
+        expectedLogs: [`ERROR: Property a.property.path with value undefined must be a Buffer.`]
       });
 
       byteArraySerializeWithStrictTypeCheckingTest({
-        value: <any>5,
-        expectedResult: new Error("Property a.property.path with value 5 must be a Buffer.")
+        value: 5 as any,
+        expectedResult: new Error("Property a.property.path with value 5 must be a Buffer."),
+        expectedLogs: [`ERROR: Property a.property.path with value 5 must be a Buffer.`]
       });
 
       byteArraySerializeWithStrictTypeCheckingTest({
-        value: <any>{},
-        expectedResult: new Error("Property a.property.path with value {} must be a Buffer.")
+        value: {} as any,
+        expectedResult: new Error("Property a.property.path with value {} must be a Buffer."),
+        expectedLogs: [`ERROR: Property a.property.path with value {} must be a Buffer.`]
       });
 
       byteArraySerializeWithStrictTypeCheckingTest({
@@ -45,7 +49,7 @@ describe("byteArraySpec", () => {
     });
 
     describe("without strict type-checking", () => {
-      function byteArraySerializeWithoutStrictTypeCheckingTest(args: { propertyPath?: string[], value: Buffer, expectedResult: string | Error }): void {
+      function byteArraySerializeWithoutStrictTypeCheckingTest(args: { propertyPath?: string[], value: Buffer, expectedResult: string | Error, expectedLogs?: string[] }): void {
         serializeTest({
           typeSpec: byteArraySpec,
           propertyPath: args.propertyPath,
@@ -53,23 +57,27 @@ describe("byteArraySpec", () => {
             serializationStrictTypeChecking: false
           },
           value: args.value,
-          expectedResult: args.expectedResult
+          expectedResult: args.expectedResult,
+          expectedLogs: args.expectedLogs
         });
       }
 
       byteArraySerializeWithoutStrictTypeCheckingTest({
-        value: <any>undefined,
-        expectedResult: <any>undefined
+        value: undefined as any,
+        expectedResult: undefined as any,
+        expectedLogs: [`WARNING: Property a.property.path with value undefined should be a Buffer.`]
       });
 
       byteArraySerializeWithoutStrictTypeCheckingTest({
-        value: <any>5,
-        expectedResult: <any>5
+        value: 5 as any,
+        expectedResult: 5 as any,
+        expectedLogs: [`WARNING: Property a.property.path with value 5 should be a Buffer.`]
       });
 
       byteArraySerializeWithoutStrictTypeCheckingTest({
-        value: <any>{},
-        expectedResult: <any>{}
+        value: {} as any,
+        expectedResult: {} as any,
+        expectedLogs: [`WARNING: Property a.property.path with value {} should be a Buffer.`]
       });
 
       byteArraySerializeWithoutStrictTypeCheckingTest({
@@ -81,7 +89,7 @@ describe("byteArraySpec", () => {
 
   describe("deserialize()", () => {
     describe("with strict type-checking", () => {
-      function byteArrayDeserializeWithStrictTypeCheckingTest(args: { propertyPath?: string[], value: string, expectedResult: Buffer | Error }): void {
+      function byteArrayDeserializeWithStrictTypeCheckingTest(args: { propertyPath?: string[], value: string, expectedResult: Buffer | Error, expectedLogs?: string[] }): void {
         deserializeTest({
           typeSpec: byteArraySpec,
           propertyPath: args.propertyPath,
@@ -89,23 +97,27 @@ describe("byteArraySpec", () => {
             deserializationStrictTypeChecking: true
           },
           value: args.value,
-          expectedResult: args.expectedResult
+          expectedResult: args.expectedResult,
+          expectedLogs: args.expectedLogs
         });
       }
 
       byteArrayDeserializeWithStrictTypeCheckingTest({
-        value: <any>undefined,
-        expectedResult: new Error("Property a.property.path with value undefined must be a string.")
+        value: undefined as any,
+        expectedResult: new Error("Property a.property.path with value undefined must be a string."),
+        expectedLogs: [`ERROR: Property a.property.path with value undefined must be a string.`]
       });
 
       byteArrayDeserializeWithStrictTypeCheckingTest({
-        value: <any>5,
-        expectedResult: new Error("Property a.property.path with value 5 must be a string.")
+        value: 5 as any,
+        expectedResult: new Error("Property a.property.path with value 5 must be a string."),
+        expectedLogs: [`ERROR: Property a.property.path with value 5 must be a string.`]
       });
 
       byteArrayDeserializeWithStrictTypeCheckingTest({
-        value: <any>{},
-        expectedResult: new Error("Property a.property.path with value {} must be a string.")
+        value: {} as any,
+        expectedResult: new Error("Property a.property.path with value {} must be a string."),
+        expectedLogs: [`ERROR: Property a.property.path with value {} must be a string.`]
       });
 
       byteArrayDeserializeWithStrictTypeCheckingTest({
@@ -115,7 +127,7 @@ describe("byteArraySpec", () => {
     });
 
     describe("without strict type-checking", () => {
-      function byteArrayDeserializeWithoutStrictTypeCheckingTest(args: { propertyPath?: string[], value: string, expectedResult: Buffer | Error }): void {
+      function byteArrayDeserializeWithoutStrictTypeCheckingTest(args: { propertyPath?: string[], value: string, expectedResult: Buffer | Error, expectedLogs?: string[] }): void {
         deserializeTest({
           typeSpec: byteArraySpec,
           propertyPath: args.propertyPath,
@@ -123,23 +135,27 @@ describe("byteArraySpec", () => {
             deserializationStrictTypeChecking: false
           },
           value: args.value,
-          expectedResult: args.expectedResult
+          expectedResult: args.expectedResult,
+          expectedLogs: args.expectedLogs
         });
       }
 
       byteArrayDeserializeWithoutStrictTypeCheckingTest({
-        value: <any>undefined,
-        expectedResult: <any>undefined
+        value: undefined as any,
+        expectedResult: undefined as any,
+        expectedLogs: [`WARNING: Property a.property.path with value undefined should be a string.`]
       });
 
       byteArrayDeserializeWithoutStrictTypeCheckingTest({
-        value: <any>5,
-        expectedResult: <any>5
+        value: 5 as any,
+        expectedResult: 5 as any,
+        expectedLogs: [`WARNING: Property a.property.path with value 5 should be a string.`]
       });
 
       byteArrayDeserializeWithoutStrictTypeCheckingTest({
-        value: <any>{},
-        expectedResult: <any>{}
+        value: {} as any,
+        expectedResult: {} as any,
+        expectedLogs: [`WARNING: Property a.property.path with value {} should be a string.`]
       });
 
       byteArrayDeserializeWithoutStrictTypeCheckingTest({

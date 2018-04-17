@@ -11,7 +11,7 @@ describe("base64UrlSpec", () => {
 
   describe("serialize()", () => {
     describe("with strict type-checking", () => {
-      function base64UrlSerializeWithStrictTypeCheckingTest(args: { propertyPath?: string[], value: Buffer, expectedResult: string | Error }): void {
+      function base64UrlSerializeWithStrictTypeCheckingTest(args: { propertyPath?: string[], value: Buffer, expectedResult: string | Error, expectedLogs?: string[] }): void {
         serializeTest({
           typeSpec: base64UrlSpec,
           propertyPath: args.propertyPath,
@@ -19,23 +19,27 @@ describe("base64UrlSpec", () => {
             serializationStrictTypeChecking: true
           },
           value: args.value,
-          expectedResult: args.expectedResult
+          expectedResult: args.expectedResult,
+          expectedLogs: args.expectedLogs
         });
       }
 
       base64UrlSerializeWithStrictTypeCheckingTest({
-        value: <any>undefined,
-        expectedResult: new Error("Property a.property.path with value undefined must be a Buffer.")
+        value: undefined as any,
+        expectedResult: new Error("Property a.property.path with value undefined must be a Buffer."),
+        expectedLogs: ["ERROR: Property a.property.path with value undefined must be a Buffer."]
       });
 
       base64UrlSerializeWithStrictTypeCheckingTest({
-        value: <any>5,
-        expectedResult: new Error("Property a.property.path with value 5 must be a Buffer.")
+        value: 5 as any,
+        expectedResult: new Error("Property a.property.path with value 5 must be a Buffer."),
+        expectedLogs: ["ERROR: Property a.property.path with value 5 must be a Buffer."]
       });
 
       base64UrlSerializeWithStrictTypeCheckingTest({
-        value: <any>{},
-        expectedResult: new Error("Property a.property.path with value {} must be a Buffer.")
+        value: {} as any,
+        expectedResult: new Error("Property a.property.path with value {} must be a Buffer."),
+        expectedLogs: ["ERROR: Property a.property.path with value {} must be a Buffer."]
       });
 
       base64UrlSerializeWithStrictTypeCheckingTest({
@@ -45,7 +49,7 @@ describe("base64UrlSpec", () => {
     });
 
     describe("without strict type-checking", () => {
-      function base64UrlSerializeWithoutStrictTypeCheckingTest(args: { propertyPath?: string[], value: Buffer, expectedResult: string | Error }): void {
+      function base64UrlSerializeWithoutStrictTypeCheckingTest(args: { propertyPath?: string[], value: Buffer, expectedResult: string | Error, expectedLogs?: string[] }): void {
         serializeTest({
           typeSpec: base64UrlSpec,
           propertyPath: args.propertyPath,
@@ -53,23 +57,27 @@ describe("base64UrlSpec", () => {
             serializationStrictTypeChecking: false
           },
           value: args.value,
-          expectedResult: args.expectedResult
+          expectedResult: args.expectedResult,
+          expectedLogs: args.expectedLogs
         });
       }
 
       base64UrlSerializeWithoutStrictTypeCheckingTest({
-        value: <any>undefined,
-        expectedResult: <any>undefined
+        value: undefined as any,
+        expectedResult: undefined as any,
+        expectedLogs: ["WARNING: Property a.property.path with value undefined should be a Buffer."]
       });
 
       base64UrlSerializeWithoutStrictTypeCheckingTest({
-        value: <any>5,
-        expectedResult: <any>5
+        value: 5 as any,
+        expectedResult: 5 as any,
+        expectedLogs: ["WARNING: Property a.property.path with value 5 should be a Buffer."]
       });
 
       base64UrlSerializeWithoutStrictTypeCheckingTest({
-        value: <any>{},
-        expectedResult: <any>{}
+        value: {} as any,
+        expectedResult: {} as any,
+        expectedLogs: ["WARNING: Property a.property.path with value {} should be a Buffer."]
       });
 
       base64UrlSerializeWithoutStrictTypeCheckingTest({
@@ -81,7 +89,7 @@ describe("base64UrlSpec", () => {
 
   describe("deserialize()", () => {
     describe("with strict type-checking", () => {
-      function base64UrlDeserializeWithStrictTypeCheckingTest(args: { propertyPath?: string[], value: string, expectedResult: Buffer | Error }): void {
+      function base64UrlDeserializeWithStrictTypeCheckingTest(args: { propertyPath?: string[], value: string, expectedResult: Buffer | Error, expectedLogs?: string[] }): void {
         deserializeTest({
           typeSpec: base64UrlSpec,
           propertyPath: args.propertyPath,
@@ -89,23 +97,27 @@ describe("base64UrlSpec", () => {
             deserializationStrictTypeChecking: true
           },
           value: args.value,
-          expectedResult: args.expectedResult
+          expectedResult: args.expectedResult,
+          expectedLogs: args.expectedLogs
         });
       }
 
       base64UrlDeserializeWithStrictTypeCheckingTest({
-        value: <any>undefined,
-        expectedResult: new Error("Property a.property.path with value undefined must be a string.")
+        value: undefined as any,
+        expectedResult: new Error("Property a.property.path with value undefined must be a string."),
+        expectedLogs: ["ERROR: Property a.property.path with value undefined must be a string."]
       });
 
       base64UrlDeserializeWithStrictTypeCheckingTest({
-        value: <any>5,
-        expectedResult: new Error("Property a.property.path with value 5 must be a string.")
+        value: 5 as any,
+        expectedResult: new Error("Property a.property.path with value 5 must be a string."),
+        expectedLogs: ["ERROR: Property a.property.path with value 5 must be a string."]
       });
 
       base64UrlDeserializeWithStrictTypeCheckingTest({
-        value: <any>{},
-        expectedResult: new Error("Property a.property.path with value {} must be a string.")
+        value: {} as any,
+        expectedResult: new Error("Property a.property.path with value {} must be a string."),
+        expectedLogs: ["ERROR: Property a.property.path with value {} must be a string."]
       });
 
       base64UrlDeserializeWithStrictTypeCheckingTest({
@@ -115,7 +127,7 @@ describe("base64UrlSpec", () => {
     });
 
     describe("without strict type-checking", () => {
-      function base64UrlDeserializeWithoutStrictTypeCheckingTest(args: { propertyPath?: string[], value: string, expectedResult: Buffer | Error }): void {
+      function base64UrlDeserializeWithoutStrictTypeCheckingTest(args: { propertyPath?: string[], value: string, expectedResult: Buffer | Error, expectedLogs?: string[] }): void {
         deserializeTest({
           typeSpec: base64UrlSpec,
           propertyPath: args.propertyPath,
@@ -123,23 +135,27 @@ describe("base64UrlSpec", () => {
             deserializationStrictTypeChecking: false
           },
           value: args.value,
-          expectedResult: args.expectedResult
+          expectedResult: args.expectedResult,
+          expectedLogs: args.expectedLogs
         });
       }
 
       base64UrlDeserializeWithoutStrictTypeCheckingTest({
-        value: <any>undefined,
-        expectedResult: <any>undefined
+        value: undefined as any,
+        expectedResult: undefined as any,
+        expectedLogs: ["WARNING: Property a.property.path with value undefined should be a string."]
       });
 
       base64UrlDeserializeWithoutStrictTypeCheckingTest({
-        value: <any>5,
-        expectedResult: <any>5
+        value: 5 as any,
+        expectedResult: 5 as any,
+        expectedLogs: ["WARNING: Property a.property.path with value 5 should be a string."]
       });
 
       base64UrlDeserializeWithoutStrictTypeCheckingTest({
-        value: <any>{},
-        expectedResult: <any>{}
+        value: {} as any,
+        expectedResult: {} as any,
+        expectedLogs: ["WARNING: Property a.property.path with value {} should be a string."]
       });
 
       base64UrlDeserializeWithoutStrictTypeCheckingTest({

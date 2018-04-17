@@ -1,8 +1,9 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
-import { SerializationOptions, SerializationOutputType } from "./serializationOptions";
-import { TypeSpec, createValidationErrorMessage } from "./typeSpec";
+import { SerializationOptions, SerializationOutputType, log } from "./serializationOptions";
+import { TypeSpec, createValidationErrorMessage, createValidationWarningMessage } from "./typeSpec";
 import { PropertyPath } from "./propertyPath";
+import { HttpPipelineLogLevel } from "../httpPipelineLogLevel";
 
 export interface CompositeType {
   [key: string]: any;
@@ -36,8 +37,11 @@ export function compositeSpec(typeName: string, propertySpecs: { [propertyName: 
       let result: CompositeType;
       if (typeof value !== "object" || Array.isArray(value)) {
         if (options.serializationStrictTypeChecking) {
-          throw new Error(createValidationErrorMessage(propertyPath, value, "an object"));
+          const errorMessage: string = createValidationErrorMessage(propertyPath, value, "an object");
+          log(options, HttpPipelineLogLevel.ERROR, errorMessage);
+          throw new Error(errorMessage);
         } else {
+          log(options, HttpPipelineLogLevel.WARNING, createValidationWarningMessage(propertyPath, value, "an object"));
           result = <any>value;
         }
       } else {
@@ -52,7 +56,9 @@ export function compositeSpec(typeName: string, propertySpecs: { [propertyName: 
           let childPropertyValueSpec: TypeSpec<any, any>;
           if (typeof childPropertySpec.valueSpec === "string") {
             if (!options.compositeSpecDictionary || !options.compositeSpecDictionary[childPropertySpec.valueSpec]) {
-              throw new Error(`Missing composite specification entry in composite type dictionary for type named "${childPropertySpec.valueSpec}" at property ${propertyPath.pathStringConcat(childPropertyName)}.`);
+              const errorMessage = `Missing composite specification entry in composite type dictionary for type named "${childPropertySpec.valueSpec}" at property ${propertyPath.pathStringConcat(childPropertyName)}.`;
+              log(options, HttpPipelineLogLevel.ERROR, errorMessage);
+              throw new Error(errorMessage);
             }
             childPropertyValueSpec = options.compositeSpecDictionary[childPropertySpec.valueSpec];
           } else {
@@ -60,7 +66,9 @@ export function compositeSpec(typeName: string, propertySpecs: { [propertyName: 
           }
 
           if (childPropertyValue == undefined) {
+            const message = `Missing non-constant ${childPropertyValueSpec.specType} property at ${propertyPath.pathStringConcat(childPropertyName)}.`;
             if (childPropertySpec.required && !childPropertySpec.constant) {
+              log(options, HttpPipelineLogLevel.ERROR, message);
               throw new Error(`Missing non-constant ${childPropertyValueSpec.specType} property at ${propertyPath.pathStringConcat(childPropertyName)}.`);
             }
           } else if (!childPropertySpec.readonly) {
@@ -75,10 +83,14 @@ export function compositeSpec(typeName: string, propertySpecs: { [propertyName: 
               // XML
               if (childPropertySpec.xmlIsWrapped) {
                 if (!childPropertySpec.xmlName) {
-                  throw new Error(`When the serialization output type is XML, property specification for ${propertyPath.pathStringConcat(childPropertyName)} specified xmlIsWrapped but doesn't have an xmlName value.`);
+                  const errorMessage = `When the serialization output type is XML, property specification for ${propertyPath.pathStringConcat(childPropertyName)} specified xmlIsWrapped but doesn't have an xmlName value.`;
+                  log(options, HttpPipelineLogLevel.ERROR, errorMessage);
+                  throw new Error(errorMessage);
                 }
                 if (!childPropertySpec.xmlElementName) {
-                  throw new Error(`When the serialization output type is XML, property specification for ${propertyPath.pathStringConcat(childPropertyName)} specified xmlIsWrapped but doesn't have an xmlElementName value.`);
+                  const errorMessage = `When the serialization output type is XML, property specification for ${propertyPath.pathStringConcat(childPropertyName)} specified xmlIsWrapped but doesn't have an xmlElementName value.`;
+                  log(options, HttpPipelineLogLevel.ERROR, errorMessage);
+                  throw new Error(errorMessage);
                 }
                 serializedChildPropertyName = `${childPropertySpec.xmlName}.${childPropertySpec.xmlElementName}`;
               } else {
@@ -87,7 +99,9 @@ export function compositeSpec(typeName: string, propertySpecs: { [propertyName: 
                 } else if (childPropertySpec.xmlName) {
                   serializedChildPropertyName = childPropertySpec.xmlName;
                 } else {
-                  throw new Error(`When the serialization output type is XML, property specification for ${propertyPath.pathStringConcat(childPropertyName)} doesn't have a value for xmlElementName or xmlName.`);
+                  const errorMessage = `When the serialization output type is XML, property specification for ${propertyPath.pathStringConcat(childPropertyName)} doesn't have a value for xmlElementName or xmlName.`;
+                  log(options, HttpPipelineLogLevel.ERROR, errorMessage);
+                  throw new Error(errorMessage);
                 }
 
                 if (childPropertySpec.xmlIsAttribute) {
