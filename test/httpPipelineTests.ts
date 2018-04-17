@@ -10,7 +10,6 @@ import { InMemoryHttpResponse } from "../lib/inMemoryHttpResponse";
 import { userAgentPolicy } from "../lib/policies/userAgentPolicy";
 import { BaseRequestPolicy } from "../lib/requestPolicy";
 import { FakeHttpClient } from "./fakeHttpClient";
-import { HttpHeaders } from "../lib/httpHeaders";
 
 describe("HttpPipeline", () => {
   it("should send requests when no request policies are assigned", async () => {
