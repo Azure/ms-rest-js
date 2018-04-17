@@ -12,9 +12,9 @@ import { RequestPolicyOptions } from "../requestPolicyOptions";
  * Get a RequestPolicyFactory that creates RedirectPolicies.
  * @param maximumRedirections The maximum number of redirections to take before failing.
  */
-export function redirectPolicy(maximumRedirections = 20): RequestPolicyFactory {
+export function redirectPolicy(maximumRedirections?: number): RequestPolicyFactory {
   return (nextPolicy: RequestPolicy, options: RequestPolicyOptions) => {
-    return new RedirectPolicy(maximumRedirections, nextPolicy, options);
+    return new RedirectPolicy(maximumRedirections == undefined ? 20 : maximumRedirections, nextPolicy, options);
   };
 }
 
