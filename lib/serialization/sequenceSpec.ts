@@ -15,7 +15,7 @@ export interface SequenceTypeSpec<TSerializedValue, TDeserializedValue> extends 
 /**
  * A type specification that describes how to validate and serialize a Sequence of elements.
  */
-export default function sequenceSpec<TSerializedElement, TDeserializedElement>(elementSpec: TypeSpec<TSerializedElement, TDeserializedElement>): SequenceTypeSpec<TSerializedElement, TDeserializedElement> {
+export function sequenceSpec<TSerializedElement, TDeserializedElement>(elementSpec: TypeSpec<TSerializedElement, TDeserializedElement>): SequenceTypeSpec<TSerializedElement, TDeserializedElement> {
   return {
     specType: `Sequence`,
 

@@ -124,6 +124,10 @@ export class HttpPipeline {
    * @return A Promise that resolves to the HttpResponse from the targeted server.
    */
   public send(request: HttpRequest): Promise<HttpResponse> {
+    if (!(request instanceof HttpRequest)) {
+      throw new Error("request must be defined and an instanceof HttpRequest.");
+    }
+
     let requestPolicyChainHead: RequestPolicy = this._httpClient;
     if (this._requestPolicyFactories) {
       const requestPolicyFactoriesLength: number = this._requestPolicyFactories.length;
