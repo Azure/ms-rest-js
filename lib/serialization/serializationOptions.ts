@@ -3,6 +3,7 @@
 import { HttpPipelineLogLevel } from "../httpPipelineLogLevel";
 import { HttpPipelineLogger } from "../httpPipelineLogger";
 import { CompositeType } from "./compositeSpec";
+import { PropertyPath } from "./propertyPath";
 import { TypeSpec } from "./typeSpec";
 
 /**
@@ -76,6 +77,47 @@ export enum SerializationOutputType {
   XML
 }
 
+export function failSerializeTypeCheck(options: SerializationOptions, propertyPath: PropertyPath, value: any, expectedTypeDescription: string): void {
+  failTypeCheck(options && options.serializationStrictTypeChecking ? true : false, options, propertyPath, value, expectedTypeDescription);
+}
+
+export function failDeserializeTypeCheck(options: SerializationOptions, propertyPath: PropertyPath, value: any, expectedTypeDescription: string): void {
+  failTypeCheck(options && options.deserializationStrictTypeChecking ? true : false, options, propertyPath, value, expectedTypeDescription);
+}
+
+/**
+ * Log (and possibly throw an Error) when a value failed to pass its type-checking validation.
+ * @param isTypeCheckingStrict Whether or not type-checking is strict.
+ * @param options The serialization options.
+ * @param propertyPath The path to the property that is being serialized or deserialized.
+ * @param value The value that is being serialized or deserialized.
+ * @param expectedTypeDescription The description of the type that the value is expected to be.
+ */
+function failTypeCheck(isTypeCheckingStrict: boolean, options: SerializationOptions, propertyPath: PropertyPath, value: any, expectedTypeDescription: string): void {
+  if (isTypeCheckingStrict) {
+    throw logAndCreateError(options, `Property ${propertyPath} with value ${JSON.stringify(value)} must be ${expectedTypeDescription}.`);
+  } else {
+    log(options, HttpPipelineLogLevel.WARNING, `Property ${propertyPath} with value ${JSON.stringify(value)} should be ${expectedTypeDescription}.`);
+  }
+}
+
+export function failSerializeMissingRequiredPropertyCheck(options: SerializationOptions, childPropertyPath: PropertyPath, childPropertyValueSpec: TypeSpec<any, any>): void {
+  failMissingRequiredPropertyCheck(options && options.serializationStrictMissingProperties ? true : false, options, childPropertyPath, childPropertyValueSpec);
+}
+
+export function failDeserializeMissingRequiredPropertyCheck(options: SerializationOptions, childPropertyPath: PropertyPath, childPropertyValueSpec: TypeSpec<any, any>): void {
+  failMissingRequiredPropertyCheck(options && options.deserializationStrictMissingProperties ? true : false, options, childPropertyPath, childPropertyValueSpec);
+}
+
+function failMissingRequiredPropertyCheck(isMissingRequiredPropertyCheckingStrict: boolean, options: SerializationOptions, childPropertyPath: PropertyPath, childPropertyValueSpec: TypeSpec<any, any>): void {
+  const message = `Missing non-constant ${childPropertyValueSpec.specType} property at ${childPropertyPath}.`;
+  if (isMissingRequiredPropertyCheckingStrict) {
+    throw logAndCreateError(options, message);
+  } else {
+    log(options, HttpPipelineLogLevel.WARNING, message);
+  }
+}
+
 /**
  * Get whether or not a log with the provided log level should be logged.
  * @param logLevel The log level of the log that will be logged.
@@ -99,4 +141,27 @@ export function log(serializationOptions: SerializationOptions, logLevel: HttpPi
   if (logger && shouldLog(serializationOptions, logLevel)) {
     logger.log(logLevel, message);
   }
+}
+
+/**
+ * Log the provided error message and throw an error with the error message inside.
+ * @param serializationOptions The serializationOptions to use to log the provided error message.
+ * @param errorMessage The error message to log and throw inside of an Error.
+ */
+export function logAndCreateError(serializationOptions: SerializationOptions, errorMessage: string): Error {
+  log(serializationOptions, HttpPipelineLogLevel.ERROR, errorMessage);
+  return new Error(errorMessage);
+}
+
+export function resolveValueSpec<TSerialized, TDeserialized>(serializationOptions: SerializationOptions, path: PropertyPath, valueSpec: TypeSpec<TSerialized, TDeserialized> | string): TypeSpec<TSerialized, TDeserialized> {
+  let result: TypeSpec<TSerialized, TDeserialized>;
+  if (typeof valueSpec === "string") {
+    if (!serializationOptions.compositeSpecDictionary || !serializationOptions.compositeSpecDictionary[valueSpec]) {
+      throw logAndCreateError(serializationOptions, `Missing composite specification entry in composite type dictionary for type named "${valueSpec}" at ${path}.`);
+    }
+    result = serializationOptions.compositeSpecDictionary[valueSpec] as TypeSpec<TSerialized, TDeserialized>;
+  } else {
+    result = valueSpec;
+  }
+  return result;
 }
