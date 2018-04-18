@@ -152,3 +152,16 @@ export function logAndCreateError(serializationOptions: SerializationOptions, er
   log(serializationOptions, HttpPipelineLogLevel.ERROR, errorMessage);
   return new Error(errorMessage);
 }
+
+export function resolveValueSpec<TSerialized, TDeserialized>(serializationOptions: SerializationOptions, path: PropertyPath, valueSpec: TypeSpec<TSerialized, TDeserialized> | string): TypeSpec<TSerialized, TDeserialized> {
+  let result: TypeSpec<TSerialized, TDeserialized>;
+  if (typeof valueSpec === "string") {
+    if (!serializationOptions.compositeSpecDictionary || !serializationOptions.compositeSpecDictionary[valueSpec]) {
+      throw logAndCreateError(serializationOptions, `Missing composite specification entry in composite type dictionary for type named "${valueSpec}" at ${path}.`);
+    }
+    result = serializationOptions.compositeSpecDictionary[valueSpec] as TypeSpec<TSerialized, TDeserialized>;
+  } else {
+    result = valueSpec;
+  }
+  return result;
+}

@@ -5,6 +5,8 @@ import { DictionaryType, dictionarySpec } from "../../lib/serialization/dictiona
 import numberSpec from "../../lib/serialization/numberSpec";
 import { TypeSpec } from "../../lib/serialization/typeSpec";
 import { deserializeTest, serializeTest } from "./specTest";
+import { SerializationOptions } from "../../lib/serialization/serializationOptions";
+import { stringSpec, compositeSpec } from "../../lib/msRest";
 
 describe("dictionarySpec", () => {
   it("should have \"Dictionary<T>\" for its specType property", () => {
@@ -13,12 +15,14 @@ describe("dictionarySpec", () => {
 
   describe("serialize()", () => {
     describe("with strict type-checking", () => {
-      function dictionarySerializeWithStrictTypeCheckingTest<TSerialized, TDeserialized>(args: { valueSpec: TypeSpec<TSerialized, TDeserialized>, value: DictionaryType<TDeserialized>, expectedResult: DictionaryType<TSerialized> | Error, expectedLogs?: string[] }): void {
+      function dictionarySerializeWithStrictTypeCheckingTest<TSerialized, TDeserialized>(args: { testName?: string, valueSpec: TypeSpec<TSerialized, TDeserialized> | string, value: DictionaryType<TDeserialized>, options?: SerializationOptions, expectedResult: DictionaryType<TSerialized> | Error, expectedLogs?: string[] }): void {
+        const options: SerializationOptions = args.options || {};
+        options.serializationStrictTypeChecking = true;
+
         serializeTest({
+          testName: args.testName,
           typeSpec: dictionarySpec(args.valueSpec),
-          options: {
-            serializationStrictTypeChecking: true
-          },
+          options: options,
           value: args.value,
           expectedResult: args.expectedResult,
           expectedLogs: args.expectedLogs
@@ -64,71 +68,147 @@ describe("dictionarySpec", () => {
         value: { "1": 1, "2": 2 },
         expectedResult: { "1": 1, "2": 2 }
       });
+
+      dictionarySerializeWithStrictTypeCheckingTest({
+        valueSpec: "CompositeRef",
+        value: {
+          "A": {
+            "b": "B"
+          }
+        },
+        options: {
+          compositeSpecDictionary: {
+            "CompositeRef": compositeSpec("CompositeRef", {
+              "b": {
+                valueSpec: stringSpec
+              }
+            })
+          }
+        },
+        expectedResult: {
+          "A": {
+            "b": "B"
+          }
+        }
+      });
+
+      dictionarySerializeWithStrictTypeCheckingTest({
+        testName: "should log and throw an error when a composite spec reference doesn't exist in composite spec dictionary",
+        valueSpec: "NotFound",
+        value: {
+          "A": "B doesn't exist in the composite TypeSpec dictionary"
+        },
+        options: {
+          compositeSpecDictionary: {}
+        },
+        expectedResult: new Error(`Missing composite specification entry in composite type dictionary for type named "NotFound" at a.property.path.`),
+        expectedLogs: [`ERROR: Missing composite specification entry in composite type dictionary for type named "NotFound" at a.property.path.`]
+      });
     });
 
     describe("without strict type-checking", () => {
-      function dictionarySerializeWithStrictTypeCheckingTest<TSerialized, TDeserialized>(args: { valueSpec: TypeSpec<TSerialized, TDeserialized>, value: DictionaryType<TDeserialized>, expectedResult: DictionaryType<TSerialized> | Error, expectedLogs?: string[] }): void {
+      function dictionarySerializeWithoutStrictTypeCheckingTest<TSerialized, TDeserialized>(args: { testName?: string, valueSpec: TypeSpec<TSerialized, TDeserialized> | string, value: DictionaryType<TDeserialized>, options?: SerializationOptions, expectedResult: DictionaryType<TSerialized> | Error, expectedLogs?: string[] }): void {
+        const options: SerializationOptions = args.options || {};
+        options.serializationStrictTypeChecking = false;
+
         serializeTest({
+          testName: args.testName,
           typeSpec: dictionarySpec(args.valueSpec),
-          options: {
-            serializationStrictTypeChecking: false
-          },
+          options: options,
           value: args.value,
           expectedResult: args.expectedResult,
           expectedLogs: args.expectedLogs
         });
       }
 
-      dictionarySerializeWithStrictTypeCheckingTest({
+      dictionarySerializeWithoutStrictTypeCheckingTest({
         valueSpec: numberSpec,
         value: undefined as any,
         expectedResult: undefined as any,
         expectedLogs: [`WARNING: Property a.property.path with value undefined should be an object.`]
       });
 
-      dictionarySerializeWithStrictTypeCheckingTest({
+      dictionarySerializeWithoutStrictTypeCheckingTest({
         valueSpec: numberSpec,
         value: false as any,
         expectedResult: false as any,
         expectedLogs: [`WARNING: Property a.property.path with value false should be an object.`]
       });
 
-      dictionarySerializeWithStrictTypeCheckingTest({
+      dictionarySerializeWithoutStrictTypeCheckingTest({
         valueSpec: numberSpec,
         value: [] as any,
         expectedResult: [] as any,
         expectedLogs: [`WARNING: Property a.property.path with value [] should be an object.`]
       });
 
-      dictionarySerializeWithStrictTypeCheckingTest({
+      dictionarySerializeWithoutStrictTypeCheckingTest({
         valueSpec: numberSpec,
         value: {},
         expectedResult: {}
       });
 
-      dictionarySerializeWithStrictTypeCheckingTest({
+      dictionarySerializeWithoutStrictTypeCheckingTest({
         valueSpec: numberSpec,
         value: { "9": "9" } as any,
         expectedResult: { "9": "9" } as any,
         expectedLogs: [`WARNING: Property a.property.path.9 with value "9" should be a number.`]
       });
 
-      dictionarySerializeWithStrictTypeCheckingTest({
+      dictionarySerializeWithoutStrictTypeCheckingTest({
         valueSpec: numberSpec,
         value: { "1": 1, "2": 2 },
         expectedResult: { "1": 1, "2": 2 }
+      });
+
+      dictionarySerializeWithoutStrictTypeCheckingTest({
+        valueSpec: "CompositeRef",
+        value: {
+          "A": {
+            "b": "B"
+          }
+        },
+        options: {
+          compositeSpecDictionary: {
+            "CompositeRef": compositeSpec("CompositeRef", {
+              "b": {
+                valueSpec: stringSpec
+              }
+            })
+          }
+        },
+        expectedResult: {
+          "A": {
+            "b": "B"
+          }
+        }
+      });
+
+      dictionarySerializeWithoutStrictTypeCheckingTest({
+        testName: "should log and throw an error when a composite spec reference doesn't exist in composite spec dictionary",
+        valueSpec: "NotFound",
+        value: {
+          "A": "B doesn't exist in the composite TypeSpec dictionary"
+        },
+        options: {
+          compositeSpecDictionary: {}
+        },
+        expectedResult: new Error(`Missing composite specification entry in composite type dictionary for type named "NotFound" at a.property.path.`),
+        expectedLogs: [`ERROR: Missing composite specification entry in composite type dictionary for type named "NotFound" at a.property.path.`]
       });
     });
   });
 
   describe("deserialize()", () => {
     describe("with strict type-checking", () => {
-      function dictionaryDeserializeWithStrictTypeCheckingTest<TSerialized, TDeserialized>(args: { valueSpec: TypeSpec<TSerialized, TDeserialized>, value: DictionaryType<TSerialized>, expectedResult: DictionaryType<TDeserialized> | Error, expectedLogs?: string[] }): void {
+      function dictionaryDeserializeWithStrictTypeCheckingTest<TSerialized, TDeserialized>(args: { testName?: string, valueSpec: TypeSpec<TSerialized, TDeserialized> | string, value: DictionaryType<TSerialized>, options?: SerializationOptions, expectedResult: DictionaryType<TDeserialized> | Error, expectedLogs?: string[] }): void {
+        const options: SerializationOptions = args.options || {};
+        options.deserializationStrictTypeChecking = true;
+
         deserializeTest({
+          testName: args.testName,
           typeSpec: dictionarySpec(args.valueSpec),
-          options: {
-            deserializationStrictTypeChecking: true
-          },
+          options: options,
           value: args.value,
           expectedResult: args.expectedResult,
           expectedLogs: args.expectedLogs
@@ -174,15 +254,53 @@ describe("dictionarySpec", () => {
         value: { "1": 1, "2": 2 },
         expectedResult: { "1": 1, "2": 2 }
       });
+
+      dictionaryDeserializeWithStrictTypeCheckingTest({
+        valueSpec: "CompositeRef",
+        value: {
+          "A": {
+            "b": "B"
+          }
+        },
+        options: {
+          compositeSpecDictionary: {
+            "CompositeRef": compositeSpec("CompositeRef", {
+              "b": {
+                valueSpec: stringSpec
+              }
+            })
+          }
+        },
+        expectedResult: {
+          "A": {
+            "b": "B"
+          }
+        }
+      });
+
+      dictionaryDeserializeWithStrictTypeCheckingTest({
+        testName: "should log and throw an error when a composite spec reference doesn't exist in composite spec dictionary",
+        valueSpec: "NotFound",
+        value: {
+          "A": "B doesn't exist in the composite TypeSpec dictionary"
+        },
+        options: {
+          compositeSpecDictionary: {}
+        },
+        expectedResult: new Error(`Missing composite specification entry in composite type dictionary for type named "NotFound" at a.property.path.`),
+        expectedLogs: [`ERROR: Missing composite specification entry in composite type dictionary for type named "NotFound" at a.property.path.`]
+      });
     });
 
     describe("without strict type-checking", () => {
-      function dictionaryDeserializeWithoutStrictTypeCheckingTest<TSerialized, TDeserialized>(args: { valueSpec: TypeSpec<TSerialized, TDeserialized>, value: DictionaryType<TSerialized>, expectedResult: DictionaryType<TDeserialized> | Error, expectedLogs?: string[] }): void {
+      function dictionaryDeserializeWithoutStrictTypeCheckingTest<TSerialized, TDeserialized>(args: { testName?: string, valueSpec: TypeSpec<TSerialized, TDeserialized> | string, value: DictionaryType<TSerialized>, options?: SerializationOptions, expectedResult: DictionaryType<TDeserialized> | Error, expectedLogs?: string[] }): void {
+        const options: SerializationOptions = args.options || {};
+        options.deserializationStrictTypeChecking = false;
+
         deserializeTest({
+          testName: args.testName,
           typeSpec: dictionarySpec(args.valueSpec),
-          options: {
-            deserializationStrictTypeChecking: false
-          },
+          options: options,
           value: args.value,
           expectedResult: args.expectedResult,
           expectedLogs: args.expectedLogs
@@ -227,6 +345,42 @@ describe("dictionarySpec", () => {
         valueSpec: numberSpec,
         value: { "1": 1, "2": 2 },
         expectedResult: { "1": 1, "2": 2 }
+      });
+
+      dictionaryDeserializeWithoutStrictTypeCheckingTest({
+        valueSpec: "CompositeRef",
+        value: {
+          "A": {
+            "b": "B"
+          }
+        },
+        options: {
+          compositeSpecDictionary: {
+            "CompositeRef": compositeSpec("CompositeRef", {
+              "b": {
+                valueSpec: stringSpec
+              }
+            })
+          }
+        },
+        expectedResult: {
+          "A": {
+            "b": "B"
+          }
+        }
+      });
+
+      dictionaryDeserializeWithoutStrictTypeCheckingTest({
+        testName: "should log and throw an error when a composite spec reference doesn't exist in composite spec dictionary",
+        valueSpec: "NotFound",
+        value: {
+          "A": "B doesn't exist in the composite TypeSpec dictionary"
+        },
+        options: {
+          compositeSpecDictionary: {}
+        },
+        expectedResult: new Error(`Missing composite specification entry in composite type dictionary for type named "NotFound" at a.property.path.`),
+        expectedLogs: [`ERROR: Missing composite specification entry in composite type dictionary for type named "NotFound" at a.property.path.`]
       });
     });
   });

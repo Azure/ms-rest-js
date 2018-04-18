@@ -246,6 +246,20 @@ describe("compositeSpec", () => {
           }
         }
       });
+
+      compositeSerializeWithStrictTypeCheckingTest({
+        testName: "should log and throw an error when a composite spec reference doesn't exist in composite spec dictionary",
+        propertySpecs: {
+          "A": {
+            valueSpec: "B"
+          }
+        },
+        value: {
+          "A": "B doesn't exist in the composite TypeSpec dictionary"
+        },
+        expectedResult: new Error(`Missing composite specification entry in composite type dictionary for type named "B" at a.property.path.A.`),
+        expectedLogs: [`ERROR: Missing composite specification entry in composite type dictionary for type named "B" at a.property.path.A.`]
+      });
     });
 
     describe("without strict type-checking", () => {
@@ -474,6 +488,20 @@ describe("compositeSpec", () => {
             }
           }
         }
+      });
+
+      compositeSerializeWithoutStrictTypeCheckingTest({
+        testName: "should log and throw an error when a composite spec reference doesn't exist in composite spec dictionary",
+        propertySpecs: {
+          "A": {
+            valueSpec: "B"
+          }
+        },
+        value: {
+          "A": "B doesn't exist in the composite TypeSpec dictionary"
+        },
+        expectedResult: new Error(`Missing composite specification entry in composite type dictionary for type named "B" at a.property.path.A.`),
+        expectedLogs: [`ERROR: Missing composite specification entry in composite type dictionary for type named "B" at a.property.path.A.`]
       });
     });
   });
@@ -706,6 +734,20 @@ describe("compositeSpec", () => {
           }
         }
       });
+
+      compositeDeserializeWithStrictTypeCheckingTest({
+        testName: "should log and throw an error when a composite spec reference doesn't exist in composite spec dictionary",
+        propertySpecs: {
+          "A": {
+            valueSpec: "B"
+          }
+        },
+        value: {
+          "A": "B doesn't exist in the composite TypeSpec dictionary"
+        },
+        expectedResult: new Error(`Missing composite specification entry in composite type dictionary for type named "B" at a.property.path.A.`),
+        expectedLogs: [`ERROR: Missing composite specification entry in composite type dictionary for type named "B" at a.property.path.A.`]
+      });
     });
 
     describe("without strict type-checking", () => {
@@ -934,6 +976,20 @@ describe("compositeSpec", () => {
             }
           }
         }
+      });
+
+      compositeDeserializeWithoutStrictTypeCheckingTest({
+        testName: "should log and throw an error when a composite spec reference doesn't exist in composite spec dictionary",
+        propertySpecs: {
+          "A": {
+            valueSpec: "B"
+          }
+        },
+        value: {
+          "A": "B doesn't exist in the composite TypeSpec dictionary"
+        },
+        expectedResult: new Error(`Missing composite specification entry in composite type dictionary for type named "B" at a.property.path.A.`),
+        expectedLogs: [`ERROR: Missing composite specification entry in composite type dictionary for type named "B" at a.property.path.A.`]
       });
     });
   });

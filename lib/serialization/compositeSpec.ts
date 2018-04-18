@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 import { PropertyPath } from "./propertyPath";
-import { SerializationOptions, SerializationOutputType, failDeserializeMissingRequiredPropertyCheck, failDeserializeTypeCheck, failSerializeMissingRequiredPropertyCheck, failSerializeTypeCheck, logAndCreateError } from "./serializationOptions";
+import { SerializationOptions, SerializationOutputType, failDeserializeMissingRequiredPropertyCheck, failDeserializeTypeCheck, failSerializeMissingRequiredPropertyCheck, failSerializeTypeCheck, logAndCreateError, resolveValueSpec } from "./serializationOptions";
 import { TypeSpec } from "./typeSpec";
 
 export interface CompositeType {
@@ -45,20 +45,14 @@ export function compositeSpec(typeName: string, propertySpecs: { [propertyName: 
           const childPropertySpec: PropertySpec = propertySpecs[childPropertyName];
           const childPropertyValue: any = value[childPropertyName];
 
+          const childPropertyPath: PropertyPath = propertyPath.pathStringConcat(childPropertyName);
+
           // Get the child property's value spec.
-          let childPropertyValueSpec: TypeSpec<any, any>;
-          if (typeof childPropertySpec.valueSpec === "string") {
-            if (!options.compositeSpecDictionary || !options.compositeSpecDictionary[childPropertySpec.valueSpec]) {
-              throw logAndCreateError(options, `Missing composite specification entry in composite type dictionary for type named "${childPropertySpec.valueSpec}" at property ${propertyPath.pathStringConcat(childPropertyName)}.`);
-            }
-            childPropertyValueSpec = options.compositeSpecDictionary[childPropertySpec.valueSpec];
-          } else {
-            childPropertyValueSpec = childPropertySpec.valueSpec;
-          }
+          const childPropertyValueSpec: TypeSpec<any, any> = resolveValueSpec(options, childPropertyPath, childPropertySpec.valueSpec);
 
           if (childPropertyValue == undefined) {
             if (childPropertySpec.required && !childPropertySpec.constant) {
-              failSerializeMissingRequiredPropertyCheck(options, propertyPath.pathStringConcat(childPropertyName), childPropertyValueSpec);
+              failSerializeMissingRequiredPropertyCheck(options, childPropertyPath, childPropertyValueSpec);
             }
           } else if (!childPropertySpec.readonly) {
 
@@ -114,10 +108,10 @@ export function compositeSpec(typeName: string, propertySpecs: { [propertyName: 
               serializedChildPropertyName = serializedChildPropertyNameParts[serializedChildPropertyNameParts.length - 1];
             }
 
-            const childPropertyPath: PropertyPath = propertyPath.concat([childPropertyName], serializedChildPropertyNameParts);
+            const serializedChildPropertyPath: PropertyPath = propertyPath.concat([childPropertyName], serializedChildPropertyNameParts);
 
             // Write the serialized property value to its parent property container.
-            serializedPropertyParent[serializedChildPropertyName] = childPropertyValueSpec.serialize(childPropertyPath, childPropertyValue, options);
+            serializedPropertyParent[serializedChildPropertyName] = childPropertyValueSpec.serialize(serializedChildPropertyPath, childPropertyValue, options);
           }
         }
       }
@@ -188,18 +182,10 @@ export function compositeSpec(typeName: string, propertySpecs: { [propertyName: 
             }
           }
 
-          // Get the child property's value spec.
-          let childPropertyValueSpec: TypeSpec<any, any>;
-          if (typeof childPropertySpec.valueSpec === "string") {
-            if (!options.compositeSpecDictionary || !options.compositeSpecDictionary[childPropertySpec.valueSpec]) {
-              throw logAndCreateError(options, `Missing composite specification entry in composite type dictionary for type named "${childPropertySpec.valueSpec}" at property ${propertyPath.pathStringConcat(childPropertyName)}.`);
-            }
-            childPropertyValueSpec = options.compositeSpecDictionary[childPropertySpec.valueSpec];
-          } else {
-            childPropertyValueSpec = childPropertySpec.valueSpec;
-          }
-
           const childPropertyPath: PropertyPath = propertyPath.concat([childPropertyName], serializedChildPropertyNameParts);
+
+          // Get the child property's value spec.
+          const childPropertyValueSpec: TypeSpec<any, any> = resolveValueSpec(options, childPropertyPath, childPropertySpec.valueSpec);
 
           const serializedChildPropertyValue: any = (!serializedPropertyParent ? undefined : serializedPropertyParent[serializedChildPropertyName]);
           if (serializedChildPropertyValue != undefined) {
