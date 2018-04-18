@@ -30,23 +30,3 @@ export interface TypeSpec<TSerialized, TDeserialized> {
    */
   deserialize(propertyPath: PropertyPath, value: TSerialized, options: SerializationOptions): TDeserialized;
 }
-
-/**
- * Create an error message for an invalid serialization.
- * @param propertyPath The path to the property with the serialization error.
- * @param value The value that failed the serialization.
- * @param expectedConditionDescription A brief description of what type was expected.
- */
-export function createValidationErrorMessage(propertyPath: PropertyPath, value: any, expectedConditionDescription: string): string {
-  return `Property ${propertyPath} with value ${JSON.stringify(value)} must be ${expectedConditionDescription}.`;
-}
-
-/**
- * Create an warning message for an invalid serialization.
- * @param propertyPath The path to the property with the serialization warning.
- * @param value The value that failed the serialization.
- * @param expectedConditionDescription A brief description of what type was expected.
- */
-export function createValidationWarningMessage(propertyPath: PropertyPath, value: any, expectedConditionDescription: string): string {
-  return `Property ${propertyPath} with value ${JSON.stringify(value)} should be ${expectedConditionDescription}.`;
-}

@@ -1,9 +1,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
-import { TypeSpec, createValidationErrorMessage, createValidationWarningMessage } from "./typeSpec";
-import { SerializationOptions, log } from "./serializationOptions";
 import { PropertyPath } from "./propertyPath";
-import { HttpPipelineLogLevel } from "../httpPipelineLogLevel";
+import { SerializationOptions, failDeserializeTypeCheck, failSerializeTypeCheck, logAndCreateError } from "./serializationOptions";
+import { TypeSpec } from "./typeSpec";
 
 export interface SequenceTypeSpec<TSerializedElement, TDeserializedElement> extends TypeSpec<TSerializedElement[], TDeserializedElement[]> {
   /**
@@ -24,22 +23,13 @@ export function sequenceSpec<TSerializedElement, TDeserializedElement>(elementSp
     serialize(propertyPath: PropertyPath, value: TDeserializedElement[], options: SerializationOptions): TSerializedElement[] {
       let result: TSerializedElement[];
       if (!Array.isArray(value)) {
-        if (options && options.serializationStrictTypeChecking) {
-          const errorMessage: string = createValidationErrorMessage(propertyPath, value, "an Array");
-          log(options, HttpPipelineLogLevel.ERROR, errorMessage);
-          throw new Error(errorMessage);
-        } else {
-          log(options, HttpPipelineLogLevel.WARNING, createValidationWarningMessage(propertyPath, value, "an Array"));
-        }
-
+        failSerializeTypeCheck(options, propertyPath, value, "an Array");
         result = value;
       } else {
         let elementTypeSpec: TypeSpec<TSerializedElement, TDeserializedElement>;
         if (typeof elementSpec === "string") {
           if (!options.compositeSpecDictionary || !options.compositeSpecDictionary[elementSpec]) {
-            const errorMessage = `Missing composite specification entry in composite type dictionary for type named "${elementSpec}" at property ${propertyPath}.`;
-            log(options, HttpPipelineLogLevel.ERROR, errorMessage);
-            throw new Error(errorMessage);
+            throw logAndCreateError(options, `Missing composite specification entry in composite type dictionary for type named "${elementSpec}" at property ${propertyPath}.`);
           }
           elementTypeSpec = options.compositeSpecDictionary[elementSpec] as TypeSpec<TSerializedElement, TDeserializedElement>;
         } else {
@@ -57,22 +47,13 @@ export function sequenceSpec<TSerializedElement, TDeserializedElement>(elementSp
     deserialize(propertyPath: PropertyPath, value: TSerializedElement[], options: SerializationOptions): TDeserializedElement[] {
       let result: TDeserializedElement[];
       if (!Array.isArray(value)) {
-        if (options && options.deserializationStrictTypeChecking) {
-          const errorMessage: string = createValidationErrorMessage(propertyPath, value, "an Array");
-          log(options, HttpPipelineLogLevel.ERROR, errorMessage);
-          throw new Error(errorMessage);
-        } else {
-          log(options, HttpPipelineLogLevel.WARNING, createValidationWarningMessage(propertyPath, value, "an Array"));
-        }
-
+        failDeserializeTypeCheck(options, propertyPath, value, "an Array");
         result = value;
       } else {
         let elementTypeSpec: TypeSpec<TSerializedElement, TDeserializedElement>;
         if (typeof elementSpec === "string") {
           if (!options.compositeSpecDictionary || !options.compositeSpecDictionary[elementSpec]) {
-            const errorMessage = `Missing composite specification entry in composite type dictionary for type named "${elementSpec}" at property ${propertyPath}.`;
-            log(options, HttpPipelineLogLevel.ERROR, errorMessage);
-            throw new Error(errorMessage);
+            throw logAndCreateError(options, `Missing composite specification entry in composite type dictionary for type named "${elementSpec}" at property ${propertyPath}.`);
           }
           elementTypeSpec = options.compositeSpecDictionary[elementSpec] as TypeSpec<TSerializedElement, TDeserializedElement>;
         } else {

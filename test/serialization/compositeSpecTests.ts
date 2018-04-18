@@ -59,9 +59,23 @@ describe("compositeSpec", () => {
       });
 
       compositeSerializeWithStrictTypeCheckingTest({
-        testName: `should throw an error when a required property is missing`,
+        testName: `should log a warning when a required property is missing and strict missing properties is false`,
         propertySpecs: { "tasty?": { required: true, valueSpec: booleanSpec } },
         value: {},
+        options: {
+          serializationStrictMissingProperties: false
+        },
+        expectedResult: {},
+        expectedLogs: [`WARNING: Missing non-constant boolean property at a.property.path.tasty?.`]
+      });
+
+      compositeSerializeWithStrictTypeCheckingTest({
+        testName: `should throw an error when a required property is missing and strict missing properties is true`,
+        propertySpecs: { "tasty?": { required: true, valueSpec: booleanSpec } },
+        value: {},
+        options: {
+          serializationStrictMissingProperties: true
+        },
         expectedResult: new Error("Missing non-constant boolean property at a.property.path.tasty?."),
         expectedLogs: [`ERROR: Missing non-constant boolean property at a.property.path.tasty?.`]
       });
@@ -274,9 +288,23 @@ describe("compositeSpec", () => {
       });
 
       compositeSerializeWithoutStrictTypeCheckingTest({
-        testName: `should throw an error when a required property is missing`,
+        testName: `should log a warning when a required property is missing and strict missing properties is false`,
         propertySpecs: { "tasty?": { required: true, valueSpec: booleanSpec } },
         value: {},
+        options: {
+          serializationStrictMissingProperties: false
+        },
+        expectedResult: {},
+        expectedLogs: [`WARNING: Missing non-constant boolean property at a.property.path.tasty?.`]
+      });
+
+      compositeSerializeWithoutStrictTypeCheckingTest({
+        testName: `should throw an error when a required property is missing and strict missing properties is true`,
+        propertySpecs: { "tasty?": { required: true, valueSpec: booleanSpec } },
+        value: {},
+        options: {
+          serializationStrictMissingProperties: true
+        },
         expectedResult: new Error("Missing non-constant boolean property at a.property.path.tasty?."),
         expectedLogs: [`ERROR: Missing non-constant boolean property at a.property.path.tasty?.`]
       });
@@ -469,17 +497,20 @@ describe("compositeSpec", () => {
 
       compositeDeserializeWithStrictTypeCheckingTest({
         value: undefined as any,
-        expectedResult: new Error("Property a.property.path with value undefined must be an object.")
+        expectedResult: new Error("Property a.property.path with value undefined must be an object."),
+        expectedLogs: [`ERROR: Property a.property.path with value undefined must be an object.`]
       });
 
       compositeDeserializeWithStrictTypeCheckingTest({
         value: false as any,
-        expectedResult: new Error("Property a.property.path with value false must be an object.")
+        expectedResult: new Error("Property a.property.path with value false must be an object."),
+        expectedLogs: [`ERROR: Property a.property.path with value false must be an object.`]
       });
 
       compositeDeserializeWithStrictTypeCheckingTest({
         value: [],
-        expectedResult: new Error("Property a.property.path with value [] must be an object.")
+        expectedResult: new Error("Property a.property.path with value [] must be an object."),
+        expectedLogs: [`ERROR: Property a.property.path with value [] must be an object.`]
       });
 
       compositeDeserializeWithStrictTypeCheckingTest({
@@ -488,13 +519,25 @@ describe("compositeSpec", () => {
       });
 
       compositeDeserializeWithStrictTypeCheckingTest({
-        testName: "should throw an error when the value has a missing required property",
+        testName: `should log a warning when a required property is missing and strict missing properties is false`,
+        propertySpecs: { "tasty?": { required: true, valueSpec: booleanSpec } },
+        value: {},
+        options: {
+          deserializationStrictMissingProperties: false
+        },
+        expectedResult: {},
+        expectedLogs: [`WARNING: Missing non-constant boolean property at a.property.path.tasty?.`]
+      });
+
+      compositeDeserializeWithStrictTypeCheckingTest({
+        testName: `should throw an error when a required property is missing and strict missing properties is true`,
         propertySpecs: { "tasty?": { required: true, valueSpec: booleanSpec } },
         value: {},
         options: {
           deserializationStrictMissingProperties: true
         },
-        expectedResult: new Error("Missing non-constant boolean property at a.property.path.tasty?.")
+        expectedResult: new Error("Missing non-constant boolean property at a.property.path.tasty?."),
+        expectedLogs: [`ERROR: Missing non-constant boolean property at a.property.path.tasty?.`]
       });
 
       compositeDeserializeWithStrictTypeCheckingTest({
@@ -683,17 +726,20 @@ describe("compositeSpec", () => {
 
       compositeDeserializeWithoutStrictTypeCheckingTest({
         value: undefined as any,
-        expectedResult: undefined as any
+        expectedResult: undefined as any,
+        expectedLogs: [`WARNING: Property a.property.path with value undefined should be an object.`]
       });
 
       compositeDeserializeWithoutStrictTypeCheckingTest({
         value: false as any,
-        expectedResult: false as any
+        expectedResult: false as any,
+        expectedLogs: [`WARNING: Property a.property.path with value false should be an object.`]
       });
 
       compositeDeserializeWithoutStrictTypeCheckingTest({
         value: [],
-        expectedResult: []
+        expectedResult: [],
+        expectedLogs: [`WARNING: Property a.property.path with value [] should be an object.`]
       });
 
       compositeDeserializeWithoutStrictTypeCheckingTest({
@@ -702,13 +748,25 @@ describe("compositeSpec", () => {
       });
 
       compositeDeserializeWithoutStrictTypeCheckingTest({
-        testName: "should throw an error when the value has a missing required property",
+        testName: `should log a warning when a required property is missing and strict missing properties is false`,
+        propertySpecs: { "tasty?": { required: true, valueSpec: booleanSpec } },
+        value: {},
+        options: {
+          deserializationStrictMissingProperties: false
+        },
+        expectedResult: {},
+        expectedLogs: [`WARNING: Missing non-constant boolean property at a.property.path.tasty?.`]
+      });
+
+      compositeDeserializeWithoutStrictTypeCheckingTest({
+        testName: `should throw an error when a required property is missing and strict missing properties is true`,
         propertySpecs: { "tasty?": { required: true, valueSpec: booleanSpec } },
         value: {},
         options: {
           deserializationStrictMissingProperties: true
         },
-        expectedResult: new Error("Missing non-constant boolean property at a.property.path.tasty?.")
+        expectedResult: new Error("Missing non-constant boolean property at a.property.path.tasty?."),
+        expectedLogs: [`ERROR: Missing non-constant boolean property at a.property.path.tasty?.`]
       });
 
       compositeDeserializeWithoutStrictTypeCheckingTest({
