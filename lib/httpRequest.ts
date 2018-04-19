@@ -3,6 +3,12 @@
 import { HttpHeaders, RawHttpHeaders } from "./httpHeaders";
 import { HttpMethod } from "./httpMethod";
 import { OperationSpec } from "./operationSpec";
+import { BodyInit as NodeBodyInit } from "node-fetch";
+
+/**
+ * A value that can be used as an HTTP request body.
+ */
+export type HttpRequestBody = RequestInit["body"] | NodeBodyInit;
 
 /**
  * The parameters that can be set to create a new HttpRequest.
@@ -31,7 +37,7 @@ export interface HttpRequestParameters {
   /**
    * The body of the request after it has been serialized.
    */
-  serializedBody?: any;
+  serializedBody?: HttpRequestBody;
 
   /**
    * The specification that describes the operation that the request will perform.

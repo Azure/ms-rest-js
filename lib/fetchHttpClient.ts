@@ -36,7 +36,9 @@ export class FetchHttpClient implements HttpClient {
       statusCode: fetchResponse.status,
       headers: responseHeaders,
       textBody: async () => await fetchResponse.text(),
-      deserializedBody: async () => await fetchResponse.json()
+      deserializedBody: async () => await fetchResponse.json(),
+      blobBody: async () => await fetchResponse.blob(),
+      readableStreamBody: fetchResponse.body!
     };
   }
 }

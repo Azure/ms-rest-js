@@ -32,4 +32,14 @@ export interface HttpResponse {
    * Get the body of this HttpResponse after it has been deserialized.
    */
   deserializedBody(): Promise<any | undefined>;
+
+  /**
+   * Get the body of this HttpResponse as a Blob.
+   */
+  blobBody(): Promise<Blob>;
+
+  /**
+   * Get the body of this HttpResponse as a readable stream.
+   */
+  readableStreamBody: ReadableStream | NodeJS.ReadableStream | null;
 }

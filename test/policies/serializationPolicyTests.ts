@@ -36,14 +36,14 @@ describe("serializationPolicy", () => {
         "1": "one",
         "2": "2"
       },
-      body: {
+      body: JSON.stringify({
         "booleanProperty": false,
         "numberProperty": 20,
         "objectProperty": { "booleanProperty": true },
         "sequenceProperty": [],
         "dateProperty": new Date("2018-10-05"),
         "dateTimeRfc1123Property": new Date("2011-10-05T14:48:00.000Z")
-      },
+      }),
       operationSpec: {
         requestHttpMethod: HttpMethod.GET,
         requestBodySpec: compositeSpec("FakeRequestBody", {

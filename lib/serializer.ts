@@ -6,6 +6,7 @@ import { duration, isDuration } from "moment";
 import * as isStream from "is-stream";
 const isBuffer: (obj: any) => boolean = require("is-buffer");
 
+
 export class Serializer {
   modelMappers?: { [key: string]: any };
 
