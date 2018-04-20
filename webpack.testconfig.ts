@@ -3,7 +3,7 @@ import * as glob from 'glob';
 import * as path from 'path';
 
 const config: webpack.Configuration = {
-  entry: glob.sync('./test/*.ts'),
+  entry: [...glob.sync('./test/*.ts'), ...glob.sync('./test/browser/*.ts')],
   mode: 'development',
   devtool: 'source-map',
   devServer: {
@@ -46,4 +46,4 @@ const config: webpack.Configuration = {
   }
 };
 
-export default config;
+export = config;

@@ -1,25 +1,24 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 import * as assert from "assert";
+import * as should from "should";
 import { FetchHttpClient } from "../lib/fetchHttpClient";
 import { HttpMethod } from "../lib/httpMethod";
 import { HttpRequest } from "../lib/httpRequest";
 import { HttpResponse } from "../lib/httpResponse";
+import { baseURL } from "./testUtils";
 
 describe("fetchHttpClient", () => {
   it("should send HTTP requests", async () => {
-    const request = new HttpRequest({ method: HttpMethod.GET, url: "http://www.example.com" });
+    const request = new HttpRequest({ method: HttpMethod.GET, url: `${baseURL}/example-index.html` });
     const httpClient = new FetchHttpClient();
 
     const response: HttpResponse = await httpClient.send(request);
     assert.deepStrictEqual(response.request, request);
     assert.strictEqual(response.statusCode, 200);
     assert(response.headers);
-    assert.strictEqual(response.headers.get("connection"), "close");
-    assert.strictEqual(response.headers.get("content-encoding"), "gzip");
-    assert.strictEqual(response.headers.get("content-length"), "606");
-    assert.strictEqual(response.headers.get("content-type"), "text/html");
-    assert.strictEqual(response.headers.get("vary"), "Accept-Encoding");
+    assert.strictEqual(response.headers.get("content-length"), "1258");
+    assert.strictEqual(response.headers.get("content-type")!.split(";")[0], "text/html");
     const responseBody: string | undefined = await response.textBody();
     const expectedResponseBody =
       `<!doctype html>
@@ -36,7 +35,7 @@ describe("fetchHttpClient", () => {
         margin: 0;
         padding: 0;
         font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
-        
+
     }
     div {
         width: 600px;
@@ -60,7 +59,7 @@ describe("fetchHttpClient", () => {
             padding: 1em;
         }
     }
-    </style>    
+    </style>
 </head>
 
 <body>
@@ -77,21 +76,19 @@ describe("fetchHttpClient", () => {
   });
 
   it("should throw for awaited 404", async () => {
-    const request = new HttpRequest({ method: HttpMethod.GET, url: "http://www.notanexample.coms" });
+    const request = new HttpRequest({ method: HttpMethod.GET, url: `${baseURL}/nonexistent` });
     const httpClient = new FetchHttpClient();
 
     try {
       await httpClient.send(request);
       assert.fail("Expected error to be thrown.");
     } catch (error) {
-      assert.strictEqual(error.name, "FetchError");
-      assert.strictEqual(error.code, "ENOTFOUND");
-      assert.strictEqual(error.message, "request to http://www.notanexample.coms failed, reason: getaddrinfo ENOTFOUND www.notanexample.coms www.notanexample.coms:80");
+      should(error).be.instanceof(Error);
     }
   });
 
   it("should reject for promised 404", async () => {
-    const request = new HttpRequest({ method: HttpMethod.GET, url: "http://www.notanexample.coms" });
+    const request = new HttpRequest({ method: HttpMethod.GET, url: `${baseURL}/nonexistent` });
     const httpClient = new FetchHttpClient();
 
     return httpClient.send(request)
@@ -99,9 +96,7 @@ describe("fetchHttpClient", () => {
         assert.fail("Expected error to be thrown.");
       })
       .catch((error: any) => {
-        assert.strictEqual(error.name, "FetchError");
-        assert.strictEqual(error.code, "ENOTFOUND");
-        assert.strictEqual(error.message, "request to http://www.notanexample.coms failed, reason: getaddrinfo ENOTFOUND www.notanexample.coms www.notanexample.coms:80");
+        should(error).be.instanceof(Error);
       });
   });
 });

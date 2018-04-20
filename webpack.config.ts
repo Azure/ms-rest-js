@@ -40,4 +40,4 @@ const config: webpack.Configuration = {
   }
 };
 
-export default config;
+export = config;

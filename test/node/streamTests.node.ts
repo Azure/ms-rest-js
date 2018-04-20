@@ -5,21 +5,22 @@ import * as assert from "assert";
 import * as fs from "fs";
 import * as path from "path";
 import { FetchHttpClient, HttpRequest, HttpMethod } from "../../lib/msRest";
+import { baseURL } from "../testUtils";
 
 describe("msrest", function() {
     describe("nodejs streaming", function() {
         it("should stream a response body", async function() {
             const client = new FetchHttpClient();
-            const response = await client.send(new HttpRequest({ method: HttpMethod.GET, url: "http://example.com" }));
+            const response = await client.send(new HttpRequest({ method: HttpMethod.GET, url: `${baseURL}/example-index.html` }));
             const stream = response.readableStreamBody as NodeJS.ReadableStream;
-            let bufs: Buffer[] = [];
-            stream.on('data', function(buf: Buffer) {
+            const bufs: Buffer[] = [];
+            stream.on("data", function(buf: Buffer) {
                 bufs.push(buf);
             });
 
             await new Promise(function(resolve, reject) {
-                stream.on('end', resolve);
-                stream.on('error', reject);
+                stream.on("end", resolve);
+                stream.on("error", reject);
             });
 
             const expectedData = await new Promise<string>(function(resolve, reject) {

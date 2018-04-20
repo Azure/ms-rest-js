@@ -10,6 +10,7 @@ import { InMemoryHttpResponse } from "../lib/inMemoryHttpResponse";
 import { userAgentPolicy } from "../lib/policies/userAgentPolicy";
 import { BaseRequestPolicy } from "../lib/requestPolicy";
 import { FakeHttpClient } from "./fakeHttpClient";
+import { baseURL } from "./testUtils";
 
 describe("HttpPipeline", () => {
   it("should send requests when no request policies are assigned", async () => {
@@ -19,7 +20,7 @@ describe("HttpPipeline", () => {
 
     const httpPipeline = new HttpPipeline([], { httpClient: httpClient });
 
-    const httpRequest = new HttpRequest({ method: HttpMethod.GET, url: "http://www.example.com" });
+    const httpRequest = new HttpRequest({ method: HttpMethod.GET, url: `${baseURL}/example-index.html` });
     const response: HttpResponse = await httpPipeline.send(httpRequest);
     assert.deepStrictEqual(response.request, httpRequest);
     assert.strictEqual(response.statusCode, 200);
@@ -39,7 +40,7 @@ describe("HttpPipeline", () => {
       [userAgentPolicy("my user agent string")],
       { httpClient: httpClient });
 
-    const httpRequest = new HttpRequest({ method: HttpMethod.GET, url: "http://www.example.com" });
+    const httpRequest = new HttpRequest({ method: HttpMethod.GET, url: `${baseURL}/example-index.html` });
     const response: HttpResponse = await httpPipeline.send(httpRequest);
     assert.deepStrictEqual(response.request, httpRequest);
     assert.deepStrictEqual(response.request.headers.toJson(), { "User-Agent": "my user agent string" });
@@ -67,7 +68,7 @@ describe("HttpPipeline", () => {
       [(nextPolicy, options) => new ResponseModifyingRequestPolicy(nextPolicy, options)],
       { httpClient: httpClient });
 
-    const httpRequest = new HttpRequest({ method: HttpMethod.GET, url: "http://www.example.com" });
+    const httpRequest = new HttpRequest({ method: HttpMethod.GET, url: `${baseURL}/example-index.html` });
     const response: HttpResponse = await httpPipeline.send(httpRequest);
     assert.deepStrictEqual(response.request, httpRequest);
     assert.deepStrictEqual(response.request.headers.toJson(), {});
@@ -80,24 +81,17 @@ describe("HttpPipeline", () => {
   it("should send requests when using the default HTTP pipeline", async () => {
     const httpPipeline: HttpPipeline = createDefaultHttpPipeline();
 
-    const httpRequest = new HttpRequest({ method: HttpMethod.GET, url: "https://www.httpbin.org" });
+    const httpRequest = new HttpRequest({ method: HttpMethod.GET, url: `${baseURL}/httpbin-index.html` });
 
     const httpResponse: HttpResponse = await httpPipeline.send(httpRequest);
     assert(httpResponse);
 
-    assert.deepEqual(httpResponse.statusCode, 200);
+    assert.strictEqual(httpResponse.statusCode, 200);
 
     assert(httpResponse.headers);
-    assert.strictEqual(httpResponse.headers.get("access-control-allow-credentials"), "true");
-    assert.strictEqual(httpResponse.headers.get("access-control-allow-origin"), "*");
-    assert.strictEqual(httpResponse.headers.get("connection"), "close");
     assert.strictEqual(httpResponse.headers.get("content-length"), "13129");
-    assert.strictEqual(httpResponse.headers.get("content-type"), "text/html; charset=utf-8");
+    assert.strictEqual(httpResponse.headers.get("content-type"), "text/html; charset=UTF-8");
     assert(httpResponse.headers.get("date"));
-    assert.strictEqual(httpResponse.headers.get("server"), "meinheld/0.6.1");
-    assert.strictEqual(httpResponse.headers.get("via"), "1.1 vegur");
-    assert.strictEqual(httpResponse.headers.get("x-powered-by"), "Flask");
-    assert(httpResponse.headers.get("x-processed-time"));
 
     const textBody: string = await httpResponse.textBody() as string;
     assert(textBody);
