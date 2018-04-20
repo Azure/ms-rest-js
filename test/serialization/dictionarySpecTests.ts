@@ -78,9 +78,12 @@ describe("dictionarySpec", () => {
         },
         options: {
           compositeSpecDictionary: {
-            "CompositeRef": compositeSpec("CompositeRef", {
-              "b": {
-                valueSpec: stringSpec
+            "CompositeRef": compositeSpec({
+              typeName: "CompositeRef",
+              propertySpecs: {
+                "b": {
+                  valueSpec: stringSpec
+                }
               }
             })
           }
@@ -170,9 +173,12 @@ describe("dictionarySpec", () => {
         },
         options: {
           compositeSpecDictionary: {
-            "CompositeRef": compositeSpec("CompositeRef", {
-              "b": {
-                valueSpec: stringSpec
+            "CompositeRef": compositeSpec({
+              typeName: "CompositeRef",
+              propertySpecs: {
+                "b": {
+                  valueSpec: stringSpec
+                }
               }
             })
           }
@@ -264,9 +270,12 @@ describe("dictionarySpec", () => {
         },
         options: {
           compositeSpecDictionary: {
-            "CompositeRef": compositeSpec("CompositeRef", {
-              "b": {
-                valueSpec: stringSpec
+            "CompositeRef": compositeSpec({
+              typeName: "CompositeRef",
+              propertySpecs: {
+                "b": {
+                  valueSpec: stringSpec
+                }
               }
             })
           }
@@ -356,9 +365,12 @@ describe("dictionarySpec", () => {
         },
         options: {
           compositeSpecDictionary: {
-            "CompositeRef": compositeSpec("CompositeRef", {
-              "b": {
-                valueSpec: stringSpec
+            "CompositeRef": compositeSpec({
+              typeName: "CompositeRef",
+              propertySpecs: {
+                "b": {
+                  valueSpec: stringSpec
+                }
               }
             })
           }

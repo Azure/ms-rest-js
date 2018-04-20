@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 import { HttpPipelineLogLevel } from "../httpPipelineLogLevel";
 import { HttpPipelineLogger } from "../httpPipelineLogger";
-import { CompositeType } from "./compositeSpec";
+import { CompositeTypeSpec } from "./compositeSpec";
 import { PropertyPath } from "./propertyPath";
 import { TypeSpec } from "./typeSpec";
 
@@ -61,7 +61,7 @@ export interface SerializationOptions {
   /**
    * A dictionary of composite type specifications.
    */
-  compositeSpecDictionary?: { [typeName: string]: TypeSpec<CompositeType, CompositeType> };
+  compositeSpecDictionary?: { [typeName: string]: CompositeTypeSpec };
 
   /**
    * A logger that will log messages as serialization and deserialization occurs.
@@ -153,13 +153,13 @@ export function logAndCreateError(serializationOptions: SerializationOptions, er
   return new Error(errorMessage);
 }
 
-export function resolveValueSpec<TSerialized, TDeserialized>(serializationOptions: SerializationOptions, path: PropertyPath, valueSpec: TypeSpec<TSerialized, TDeserialized> | string): TypeSpec<TSerialized, TDeserialized> {
-  let result: TypeSpec<TSerialized, TDeserialized>;
+export function resolveValueSpec<T>(serializationOptions: SerializationOptions, path: PropertyPath, valueSpec: T | string): T {
+  let result: T;
   if (typeof valueSpec === "string") {
     if (!serializationOptions.compositeSpecDictionary || !serializationOptions.compositeSpecDictionary[valueSpec]) {
       throw logAndCreateError(serializationOptions, `Missing composite specification entry in composite type dictionary for type named "${valueSpec}" at ${path}.`);
     }
-    result = serializationOptions.compositeSpecDictionary[valueSpec] as TypeSpec<TSerialized, TDeserialized>;
+    result = serializationOptions.compositeSpecDictionary[valueSpec] as any;
   } else {
     result = valueSpec;
   }

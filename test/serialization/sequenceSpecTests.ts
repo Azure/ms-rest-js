@@ -71,23 +71,26 @@ describe("sequenceSpec", () => {
 
       sequenceSerializeWithStrictTypeCheckingTest({
         elementSpec: "CompositeRef",
-        value: [{"b": "B"}],
+        value: [{ "b": "B" }],
         options: {
           compositeSpecDictionary: {
-            "CompositeRef": compositeSpec("CompositeRef", {
-              "b": {
-                valueSpec: stringSpec
+            "CompositeRef": compositeSpec({
+              typeName: "CompositeRef",
+              propertySpecs: {
+                "b": {
+                  valueSpec: stringSpec
+                }
               }
             })
           }
         },
-        expectedResult: [{"b": "B"}]
+        expectedResult: [{ "b": "B" }]
       });
 
       sequenceSerializeWithStrictTypeCheckingTest({
         testName: "should log and throw an error when a composite spec reference doesn't exist in composite spec dictionary",
         elementSpec: "NotFound",
-        value: [{"A": "B doesn't exist in the composite TypeSpec dictionary"}],
+        value: [{ "A": "B doesn't exist in the composite TypeSpec dictionary" }],
         options: {
           compositeSpecDictionary: {}
         },
@@ -153,23 +156,26 @@ describe("sequenceSpec", () => {
 
       sequenceSerializeWithoutStrictTypeCheckingTest({
         elementSpec: "CompositeRef",
-        value: [{"b": "B"}],
+        value: [{ "b": "B" }],
         options: {
           compositeSpecDictionary: {
-            "CompositeRef": compositeSpec("CompositeRef", {
-              "b": {
-                valueSpec: stringSpec
+            "CompositeRef": compositeSpec({
+              typeName: "CompositeRef",
+              propertySpecs: {
+                "b": {
+                  valueSpec: stringSpec
+                }
               }
             })
           }
         },
-        expectedResult: [{"b": "B"}]
+        expectedResult: [{ "b": "B" }]
       });
 
       sequenceSerializeWithoutStrictTypeCheckingTest({
         testName: "should log and throw an error when a composite spec reference doesn't exist in composite spec dictionary",
         elementSpec: "NotFound",
-        value: [{"A": "B doesn't exist in the composite TypeSpec dictionary"}],
+        value: [{ "A": "B doesn't exist in the composite TypeSpec dictionary" }],
         options: {
           compositeSpecDictionary: {}
         },
@@ -237,23 +243,26 @@ describe("sequenceSpec", () => {
 
       sequenceDeserializeWithStrictTypeCheckingTest({
         elementSpec: "CompositeRef",
-        value: [{"b": "B"}],
+        value: [{ "b": "B" }],
         options: {
           compositeSpecDictionary: {
-            "CompositeRef": compositeSpec("CompositeRef", {
-              "b": {
-                valueSpec: stringSpec
+            "CompositeRef": compositeSpec({
+              typeName: "CompositeRef",
+              propertySpecs: {
+                "b": {
+                  valueSpec: stringSpec
+                }
               }
             })
           }
         },
-        expectedResult: [{"b": "B"}]
+        expectedResult: [{ "b": "B" }]
       });
 
       sequenceDeserializeWithStrictTypeCheckingTest({
         testName: "should log and throw an error when a composite spec reference doesn't exist in composite spec dictionary",
         elementSpec: "NotFound",
-        value: [{"A": "B doesn't exist in the composite TypeSpec dictionary"}],
+        value: [{ "A": "B doesn't exist in the composite TypeSpec dictionary" }],
         options: {
           compositeSpecDictionary: {}
         },
@@ -319,23 +328,26 @@ describe("sequenceSpec", () => {
 
       sequenceDeserializeWithoutStrictTypeCheckingTest({
         elementSpec: "CompositeRef",
-        value: [{"b": "B"}],
+        value: [{ "b": "B" }],
         options: {
           compositeSpecDictionary: {
-            "CompositeRef": compositeSpec("CompositeRef", {
-              "b": {
-                valueSpec: stringSpec
+            "CompositeRef": compositeSpec({
+              typeName: "CompositeRef",
+              propertySpecs: {
+                "b": {
+                  valueSpec: stringSpec
+                }
               }
             })
           }
         },
-        expectedResult: [{"b": "B"}]
+        expectedResult: [{ "b": "B" }]
       });
 
       sequenceDeserializeWithoutStrictTypeCheckingTest({
         testName: "should log and throw an error when a composite spec reference doesn't exist in composite spec dictionary",
         elementSpec: "NotFound",
-        value: [{"A": "B doesn't exist in the composite TypeSpec dictionary"}],
+        value: [{ "A": "B doesn't exist in the composite TypeSpec dictionary" }],
         options: {
           compositeSpecDictionary: {}
         },
