@@ -35,6 +35,7 @@ export interface HttpResponse {
 
   /**
    * Get the body of this HttpResponse as a Blob.
+   * Only available in browser.
    */
   blobBody(): Promise<Blob>;
 
