@@ -32,4 +32,16 @@ export interface HttpResponse {
    * Get the body of this HttpResponse after it has been deserialized.
    */
   deserializedBody(): Promise<any | undefined>;
+
+  /**
+   * Get the body of this HttpResponse as a Blob.
+   * Only available in browser.
+   */
+  blobBody(): Promise<Blob>;
+
+  /**
+   * Get the body of this HttpResponse as a readable stream.
+   * Always null when using the fetch polyfill.
+   */
+  readableStreamBody: ReadableStream | NodeJS.ReadableStream | null;
 }
