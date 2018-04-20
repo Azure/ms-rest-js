@@ -85,7 +85,7 @@
     "watch:browser": "webpack -w",
     "test": "run-p test:tslint test:nodejs-unit",
     "test:server": "ts-node testserver",
-    "test:tslint": "tslint -p . -c tslint.json --exclude test/**/*.ts",
+    "test:tslint": "tslint -p . -c tslint.json --exclude \"./test/**/*.ts\"",
     "test:nodejs-unit": "mocha",
     "test:chrome-unit": "mocha-chrome http://localhost:3000",
     "prepare": "npm run build"
