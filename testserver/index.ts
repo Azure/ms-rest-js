@@ -9,8 +9,7 @@ const app = express();
 
 if (process.argv.indexOf("--no-webpack") === -1) {
     app.use(webpackMiddleware(webpack(testconfig), {
-        publicPath: "/",
-        logLevel: "error"
+        publicPath: "/"
     }));
 }
 

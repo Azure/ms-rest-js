@@ -3,35 +3,35 @@
 import { PropertyPath } from "./propertyPath";
 import { SerializationOptions, failDeserializeTypeCheck, failSerializeTypeCheck } from "./serializationOptions";
 import { TypeSpec } from "./typeSpec";
+import { decodeByteArray, encodeByteArray } from "../util/base64";
 
 /**
  * A type specification that describes how to validate and serialize a ByteArray.
  */
-const byteArraySpec: TypeSpec<string, Buffer> = {
+const byteArraySpec: TypeSpec<string, Uint8Array> = {
   specType: "ByteArray",
 
-  serialize(propertyPath: PropertyPath, value: Buffer, options: SerializationOptions): string {
+  serialize(propertyPath: PropertyPath, value: Uint8Array, options: SerializationOptions): string {
     let result: string;
 
-    const anyValue: any = value;
-    if (!value || !anyValue.constructor || typeof anyValue.constructor.isBuffer !== "function" || !anyValue.constructor.isBuffer(value)) {
-      failSerializeTypeCheck(options, propertyPath, value, "a Buffer");
-      result = anyValue;
+    if (!(value instanceof Uint8Array)) {
+      failSerializeTypeCheck(options, propertyPath, value, "a Uint8Array");
+      result = value;
     } else {
-      result = value.toString("base64");
+      result = encodeByteArray(value);
     }
 
     return result;
   },
 
-  deserialize(propertyPath: PropertyPath, value: string, options: SerializationOptions): Buffer {
-    let result: Buffer;
+  deserialize(propertyPath: PropertyPath, value: string, options: SerializationOptions): Uint8Array {
+    let result: Uint8Array;
 
     if (typeof value !== "string") {
       failDeserializeTypeCheck(options, propertyPath, value, "a string");
       result = value as any;
     } else {
-      result = Buffer.from(value, "base64");
+      result = decodeByteArray(value);
     }
 
     return result;
