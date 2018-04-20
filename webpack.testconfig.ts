@@ -3,7 +3,7 @@ import * as glob from 'glob';
 import * as path from 'path';
 
 const config: webpack.Configuration = {
-  entry: [...glob.sync('./test/*.ts'), ...glob.sync('./test/browser/*.ts')],
+  entry: glob.sync('./test/**/*.ts').filter(filename => !filename.endsWith(".node.ts")),
   mode: 'development',
   devtool: 'source-map',
   devServer: {
