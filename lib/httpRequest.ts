@@ -7,6 +7,7 @@ import { BodyInit as NodeBodyInit } from "node-fetch";
 
 /**
  * A value that can be used as an HTTP request body.
+ * Allows any fetch request body type or a Node.js readable stream.
  */
 export type HttpRequestBody = RequestInit["body"] | NodeBodyInit;
 
