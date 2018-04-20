@@ -3,6 +3,13 @@
 import { HttpHeaders, RawHttpHeaders } from "./httpHeaders";
 import { HttpMethod } from "./httpMethod";
 import { OperationSpec } from "./operationSpec";
+import { BodyInit as NodeBodyInit } from "node-fetch";
+
+/**
+ * A value that can be used as an HTTP request body.
+ * Allows any fetch request body type or a Node.js readable stream.
+ */
+export type HttpRequestBody = RequestInit["body"] | NodeBodyInit;
 
 /**
  * The parameters that can be set to create a new HttpRequest.
@@ -11,7 +18,7 @@ export interface HttpRequestParameters {
   /**
    * The HTTP method of the request.
    */
-  method: HttpMethod;
+  method: HttpMethod | keyof typeof HttpMethod;
 
   /**
    * The URL that the request will be sent to.
@@ -31,7 +38,7 @@ export interface HttpRequestParameters {
   /**
    * The body of the request after it has been serialized.
    */
-  serializedBody?: any;
+  serializedBody?: HttpRequestBody;
 
   /**
    * The specification that describes the operation that the request will perform.
@@ -46,7 +53,7 @@ export class HttpRequest {
   /**
    * The HTTP method of this request.
    */
-  public method: HttpMethod;
+  public method: HttpMethod | keyof typeof HttpMethod;
 
   /**
    * The URL that this request will be sent to.
@@ -86,6 +93,7 @@ export class HttpRequest {
     this.url = args.url;
     this.headers = args.headers instanceof HttpHeaders ? args.headers : new HttpHeaders(args.headers);
     this.body = args.body;
+    this.serializedBody = args.serializedBody;
     this.operationSpec = args.operationSpec;
   }
 

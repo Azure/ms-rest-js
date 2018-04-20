@@ -3,7 +3,7 @@ import * as glob from 'glob';
 import * as path from 'path';
 
 const config: webpack.Configuration = {
-  entry: glob.sync('./test/*.ts'),
+  entry: [...glob.sync(path.join(__dirname, 'test/shared/**/*.ts')), ...glob.sync(path.join(__dirname, 'test/browser/**/*.ts'))],
   mode: 'development',
   devtool: 'source-map',
   devServer: {
@@ -28,11 +28,8 @@ const config: webpack.Configuration = {
   resolve: {
     extensions: [".tsx", ".ts", ".js"],
     alias: {
-      "moment": path.resolve('./node_modules/moment/min/moment.min.js')
+      "moment": path.join(__dirname, 'node_modules/moment/min/moment.min.js')
     }
-  },
-  externals: {
-    "ms-rest-js": "msRest"
   },
   node: {
     fs: false,
@@ -46,4 +43,4 @@ const config: webpack.Configuration = {
   }
 };
 
-export default config;
+export = config;
