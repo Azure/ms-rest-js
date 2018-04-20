@@ -37,7 +37,8 @@ const config: webpack.Configuration = {
     tty: false,
     v8: false,
     Buffer: false,
-    process: false
+    process: false,
+    stream: false
   }
 };
 
