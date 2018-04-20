@@ -16,6 +16,12 @@ if (process.argv.indexOf("--no-webpack") === -1) {
 
 app.use(express.static(path.join(__dirname, "../")));
 app.use(express.static(path.join(__dirname, "../test/resources/")));
+
+app.post("/fileupload", function(req, res) {
+    res.status(200);
+    req.pipe(res);
+});
+
 app.listen(port, function() {
     console.log(`ms-rest-js testserver listening on port ${port}...`);
 });

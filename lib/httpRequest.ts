@@ -93,6 +93,7 @@ export class HttpRequest {
     this.url = args.url;
     this.headers = args.headers instanceof HttpHeaders ? args.headers : new HttpHeaders(args.headers);
     this.body = args.body;
+    this.serializedBody = args.serializedBody;
     this.operationSpec = args.operationSpec;
   }
 

@@ -40,6 +40,7 @@ export interface HttpResponse {
 
   /**
    * Get the body of this HttpResponse as a readable stream.
+   * Always null when using the fetch polyfill.
    */
   readableStreamBody: ReadableStream | NodeJS.ReadableStream | null;
 }
