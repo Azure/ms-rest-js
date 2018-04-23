@@ -66,7 +66,13 @@ export interface Polymorphism {
 /**
  * The TypeSpec for serializing and deserializing a CompositeType.
  */
-export interface CompositeTypeSpec extends TypeSpec<CompositeType, CompositeType> {
+export interface CompositeTypeSpec extends TypeSpec<CompositeType, CompositeType>, CompositeSpecParameters {
+}
+
+/**
+ * The extra details that describe a CompositeTypeSpec.
+ */
+export interface CompositeSpecParameters {
   /**
    * The name of the composite type (class) that this CompositeTypeSpec describes.
    */
@@ -87,15 +93,15 @@ export interface CompositeTypeSpec extends TypeSpec<CompositeType, CompositeType
 /**
  * A type specification that describes how to validate and serialize a Composite value.
  */
-export function compositeSpec(args: { typeName: string, polymorphism?: Polymorphism, propertySpecs?: { [propertyName: string]: PropertySpec } }): CompositeTypeSpec {
+export function compositeSpec(parameters: CompositeSpecParameters): CompositeTypeSpec {
   return {
     specType: "Composite",
 
-    typeName: args.typeName,
+    typeName: parameters.typeName,
 
-    polymorphism: args.polymorphism,
+    polymorphism: parameters.polymorphism,
 
-    propertySpecs: args.propertySpecs,
+    propertySpecs: parameters.propertySpecs,
 
     serialize(propertyPath: PropertyPath, value: CompositeType, options: SerializationOptions): CompositeType {
       let result: CompositeType;
