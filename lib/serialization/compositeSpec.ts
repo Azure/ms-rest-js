@@ -16,7 +16,7 @@ export interface Polymorphism {
   /**
    * The CompositeTypeSpecs that this CompositeTypeSpec "inherits" from.
    */
-  inheritsFrom?: CompositeTypeSpec[];
+  inheritsFrom?: CompositeTypeSpec;
 
   /**
    * The names of the CompositeTypeSpecs that "inherit" from this CompositeTypeSpec.
@@ -24,9 +24,10 @@ export interface Polymorphism {
   inheritedBy?: string[];
 
   /**
-   * The name of the property that determines what the actual type the polymorphic object is.
+   * The name of the property that determines what the actual type the polymorphic object is. If
+   * this is not provided, then the discriminatorPropertyName of the parent type will be used.
    */
-  discriminatorPropertyName: string;
+  discriminatorPropertyName?: string;
 
   /**
    * The serialized name of the property that determines what the actual type of the polymorphic
@@ -269,6 +270,28 @@ export function compositeSpec(parameters: CompositeSpecParameters): CompositeTyp
   };
 }
 
+function getDiscriminatorPropertyName(compositeSpecPolymorphism: Polymorphism, compositeSpecName: string, options: SerializationOptions, isSerialization: boolean): string {
+  let currentPolymorphism: Polymorphism = compositeSpecPolymorphism;
+
+  let result: string | undefined = undefined;
+  while (!result) {
+    if (isSerialization) {
+      result = currentPolymorphism.discriminatorPropertyName;
+    } else {
+      result = currentPolymorphism.discriminatorPropertySerializedName || currentPolymorphism.discriminatorPropertyName;
+    }
+
+    if (!result) {
+      if (!currentPolymorphism.inheritsFrom || !currentPolymorphism.inheritsFrom.polymorphism) {
+        throw logAndCreateError(options, `No discriminator property name is specified in ${compositeSpecName} or any of its base types.`);
+      } else {
+        currentPolymorphism = currentPolymorphism.inheritsFrom.polymorphism;
+      }
+    }
+  }
+  return result;
+}
+
 /**
  * Get all of the CompositeTypeSpecs that the provided value must implement if the starting
  * CompositeTypeSpec is the provided compositeSpec.
@@ -284,9 +307,7 @@ function getAllPolymorphicCompositeTypeSpecs(value: CompositeType, propertyPath:
     // specify any derived type details, then we're done searching.
     const compositeSpecPolymorphism: Polymorphism | undefined = compositeSpec.polymorphism;
     if (compositeSpecPolymorphism) {
-      const rawDiscriminatorPropertyName: string = isSerialization
-        ? compositeSpecPolymorphism.discriminatorPropertyName
-        : compositeSpecPolymorphism.discriminatorPropertySerializedName || compositeSpecPolymorphism.discriminatorPropertyName;
+      const rawDiscriminatorPropertyName: string = getDiscriminatorPropertyName(compositeSpecPolymorphism, compositeSpec.typeName, options, isSerialization);
       const discriminatorPropertyPath: string[] = splitSerializeName(rawDiscriminatorPropertyName);
       const discriminatorPropertyValue: any = getPropertyValue(value, discriminatorPropertyPath);
 
@@ -318,7 +339,7 @@ function getAllPolymorphicCompositeTypeSpecs(value: CompositeType, propertyPath:
                 compositeSpec = derivedTypeSpec;
                 compositeSpecChanged = true;
                 break;
-              } else if (derivedTypeSpecPolymorphism.inheritedBy && derivedTypeSpecPolymorphism.discriminatorPropertyName === rawDiscriminatorPropertyName) {
+              } else if (derivedTypeSpecPolymorphism.inheritedBy && (!derivedTypeSpecPolymorphism.discriminatorPropertyName || derivedTypeSpecPolymorphism.discriminatorPropertyName === rawDiscriminatorPropertyName)) {
                 // Even though this particular derived typeSpec's polymorphic discriminator property
                 // value doesn't match the provided value's property value, it may have derived types
                 // that do. If the derived typeSpec's polymorphic discriminator property is the same
