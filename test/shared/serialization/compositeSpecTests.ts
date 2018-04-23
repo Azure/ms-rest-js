@@ -100,10 +100,10 @@ describe("compositeSpec", () => {
             derivedTypeSpec: "Cat",
             discriminatorPropertyValue: "cat"
           }
-        ],
-        discriminatorPropertyName: "animalType",
-        discriminatorPropertyValue: "animal"
-      }
+        ]
+      },
+      discriminatorPropertyName: "animalType",
+      discriminatorPropertyValue: "animal"
     },
     propertySpecs: {
       animalType: {
@@ -127,10 +127,10 @@ describe("compositeSpec", () => {
             derivedTypeSpec: "Tiger",
             discriminatorPropertyValue: "tiger"
           }
-        ],
-        discriminatorPropertyName: "animalType",
-        discriminatorPropertyValue: "cat"
-      }
+        ]
+      },
+      discriminatorPropertyName: "animalType",
+      discriminatorPropertyValue: "cat"
     },
     propertySpecs: {
       cuddly: {
@@ -151,10 +151,10 @@ describe("compositeSpec", () => {
             derivedTypeSpec: "Saber-toothed Tiger",
             discriminatorPropertyValue: "saber"
           }
-        ],
-        discriminatorPropertyName: "toothType",
-        discriminatorPropertyValue: "sharp"
-      }
+        ]
+      },
+      discriminatorPropertyName: "animalType",
+      discriminatorPropertyValue: "tiger"
     },
     propertySpecs: {
       stripes: {
@@ -171,7 +171,9 @@ describe("compositeSpec", () => {
   const saberToothedTiger: CompositeTypeSpec = compositeSpec({
     typeName: "Saber-toothed Tiger",
     polymorphism: {
-      inheritsFrom: [tiger]
+      inheritsFrom: [tiger],
+      discriminatorPropertyName: "animalType",
+      discriminatorPropertyValue: "saber-toothed tiger"
     }
   });
 
@@ -577,14 +579,14 @@ describe("compositeSpec", () => {
         },
         compositeSpec: animal,
         value: {
-          animalType: "tiger",
+          animalType: "lion",
           toothType: "terrifying",
           ageInYears: 12,
           stripes: 20,
           cuddly: true
         },
-        expectedResult: new Error(`Unrecognized polymorphic discriminator value terrifying for composite type Tiger at property a.property.path.toothType.`),
-        expectedLogs: [`ERROR: Unrecognized polymorphic discriminator value terrifying for composite type Tiger at property a.property.path.toothType.`]
+        expectedResult: new Error(`Unrecognized polymorphic discriminator value lion for composite type Animal at property a.property.path.animalType.`),
+        expectedLogs: [`ERROR: Unrecognized polymorphic discriminator value lion for composite type Animal at property a.property.path.animalType.`]
       });
 
       compositeSerializeWithStrictTypeCheckingTest({
@@ -596,20 +598,17 @@ describe("compositeSpec", () => {
         },
         compositeSpec: animal,
         value: {
-          animalType: "tiger",
+          animalType: "lion",
           toothType: "terrifying",
           ageInYears: 12,
           stripes: 20,
           cuddly: true
         },
         expectedResult: {
-          animalType: "tiger",
-          toothType: "terrifying",
-          ageInYears: 12,
-          stripes: 20,
-          cuddly: true
+          animalType: "lion",
+          ageInYears: 12
         },
-        expectedLogs: [`WARNING: Unrecognized polymorphic discriminator value terrifying for composite type Tiger at property a.property.path.toothType.`]
+        expectedLogs: [`WARNING: Unrecognized polymorphic discriminator value lion for composite type Animal at property a.property.path.animalType.`]
       });
 
       compositeSerializeWithStrictTypeCheckingTest({
@@ -1119,14 +1118,14 @@ describe("compositeSpec", () => {
         },
         compositeSpec: animal,
         value: {
-          animalType: "tiger",
+          animalType: "lion",
           toothType: "terrifying",
           ageInYears: 12,
           stripes: 20,
           cuddly: true
         },
-        expectedResult: new Error(`Unrecognized polymorphic discriminator value terrifying for composite type Tiger at property a.property.path.toothType.`),
-        expectedLogs: [`ERROR: Unrecognized polymorphic discriminator value terrifying for composite type Tiger at property a.property.path.toothType.`]
+        expectedResult: new Error(`Unrecognized polymorphic discriminator value lion for composite type Animal at property a.property.path.animalType.`),
+        expectedLogs: [`ERROR: Unrecognized polymorphic discriminator value lion for composite type Animal at property a.property.path.animalType.`]
       });
 
       compositeSerializeWithoutStrictTypeCheckingTest({
@@ -1138,20 +1137,17 @@ describe("compositeSpec", () => {
         },
         compositeSpec: animal,
         value: {
-          animalType: "tiger",
+          animalType: "lion",
           toothType: "terrifying",
           ageInYears: 12,
           stripes: 20,
           cuddly: true
         },
         expectedResult: {
-          animalType: "tiger",
-          toothType: "terrifying",
+          animalType: "lion",
           ageInYears: 12,
-          stripes: 20,
-          cuddly: true
         },
-        expectedLogs: [`WARNING: Unrecognized polymorphic discriminator value terrifying for composite type Tiger at property a.property.path.toothType.`]
+        expectedLogs: [`WARNING: Unrecognized polymorphic discriminator value lion for composite type Animal at property a.property.path.animalType.`]
       });
 
       compositeSerializeWithoutStrictTypeCheckingTest({
@@ -1671,14 +1667,14 @@ describe("compositeSpec", () => {
         },
         compositeSpec: animal,
         value: {
-          animalType: "tiger",
+          animalType: "lion",
           toothType: "terrifying",
           ageInYears: 12,
           stripes: 20,
           cuddly: true
         },
-        expectedResult: new Error(`Unrecognized polymorphic discriminator value terrifying for composite type Tiger at property a.property.path.toothType.`),
-        expectedLogs: [`ERROR: Unrecognized polymorphic discriminator value terrifying for composite type Tiger at property a.property.path.toothType.`]
+        expectedResult: new Error(`Unrecognized polymorphic discriminator value lion for composite type Animal at property a.property.path.animalType.`),
+        expectedLogs: [`ERROR: Unrecognized polymorphic discriminator value lion for composite type Animal at property a.property.path.animalType.`]
       });
 
       compositeDeserializeWithStrictTypeCheckingTest({
@@ -1690,20 +1686,17 @@ describe("compositeSpec", () => {
         },
         compositeSpec: animal,
         value: {
-          animalType: "tiger",
+          animalType: "lion",
           toothType: "terrifying",
           ageInYears: 12,
           stripes: 20,
           cuddly: true
         },
         expectedResult: {
-          animalType: "tiger",
-          toothType: "terrifying",
-          ageInYears: 12,
-          stripes: 20,
-          cuddly: true
+          animalType: "lion",
+          ageInYears: 12
         },
-        expectedLogs: [`WARNING: Unrecognized polymorphic discriminator value terrifying for composite type Tiger at property a.property.path.toothType.`]
+        expectedLogs: [`WARNING: Unrecognized polymorphic discriminator value lion for composite type Animal at property a.property.path.animalType.`]
       });
 
       compositeDeserializeWithStrictTypeCheckingTest({
@@ -2212,14 +2205,14 @@ describe("compositeSpec", () => {
         },
         compositeSpec: animal,
         value: {
-          animalType: "tiger",
+          animalType: "lion",
           toothType: "terrifying",
           ageInYears: 12,
           stripes: 20,
           cuddly: true
         },
-        expectedResult: new Error(`Unrecognized polymorphic discriminator value terrifying for composite type Tiger at property a.property.path.toothType.`),
-        expectedLogs: [`ERROR: Unrecognized polymorphic discriminator value terrifying for composite type Tiger at property a.property.path.toothType.`]
+        expectedResult: new Error(`Unrecognized polymorphic discriminator value lion for composite type Animal at property a.property.path.animalType.`),
+        expectedLogs: [`ERROR: Unrecognized polymorphic discriminator value lion for composite type Animal at property a.property.path.animalType.`]
       });
 
       compositeDeserializeWithoutStrictTypeCheckingTest({
@@ -2231,20 +2224,17 @@ describe("compositeSpec", () => {
         },
         compositeSpec: animal,
         value: {
-          animalType: "tiger",
+          animalType: "lion",
           toothType: "terrifying",
           ageInYears: 12,
           stripes: 20,
           cuddly: true
         },
         expectedResult: {
-          animalType: "tiger",
-          toothType: "terrifying",
-          ageInYears: 12,
-          stripes: 20,
-          cuddly: true
+          animalType: "lion",
+          ageInYears: 12
         },
-        expectedLogs: [`WARNING: Unrecognized polymorphic discriminator value terrifying for composite type Tiger at property a.property.path.toothType.`]
+        expectedLogs: [`WARNING: Unrecognized polymorphic discriminator value lion for composite type Animal at property a.property.path.animalType.`]
       });
 
       compositeDeserializeWithoutStrictTypeCheckingTest({

@@ -30,23 +30,6 @@ export interface PolymorphicDerivedTypes {
    * The CompositeTypeSpecs that "inherit" from this CompositeTypeSpec.
    */
   derivedTypes: PolymorphicDerivedType[];
-
-  /**
-   * The name of the property that determines what the actual type the polymorphic object is.
-   */
-  discriminatorPropertyName: string;
-
-  /**
-   * The serialized name of the property that determines what the actual type of the polymorphic
-   * object is. If this is not provided, then the discriminatorPropertyName should be used.
-   */
-  discriminatorPropertySerializedName?: string;
-
-  /**
-   * The value of the discriminator property that would indicate that this CompositeTypeSpec is the
-   * target TypeSpec for the value being serialized or deserialized.
-   */
-  discriminatorPropertyValue: any;
 }
 
 export type BaseTypeOrBaseTypeName = CompositeTypeSpec | string;
@@ -64,6 +47,23 @@ export interface Polymorphism {
    * The details of the derived types of this CompositeTypeSpec.
    */
   inheritedBy?: PolymorphicDerivedTypes;
+
+  /**
+   * The name of the property that determines what the actual type the polymorphic object is.
+   */
+  discriminatorPropertyName: string;
+
+  /**
+   * The serialized name of the property that determines what the actual type of the polymorphic
+   * object is. If this is not provided, then the discriminatorPropertyName should be used.
+   */
+  discriminatorPropertySerializedName?: string;
+
+  /**
+   * The value of the discriminator property that would indicate that this CompositeTypeSpec is the
+   * target TypeSpec for the value being serialized or deserialized.
+   */
+  discriminatorPropertyValue: any;
 }
 
 /**
@@ -307,54 +307,58 @@ function getAllPolymorphicCompositeTypeSpecs(value: CompositeType, propertyPath:
 
     // If the current compositeTypeSpec doesn't specify polymorphism details or if it doesn't
     // specify any derived type details, then we're done searching.
-    const compositeSpecInheritedBy: PolymorphicDerivedTypes | undefined = compositeSpec.polymorphism && compositeSpec.polymorphism.inheritedBy;
-    if (compositeSpecInheritedBy) {
-      // If the current compositeTypeSpec does have derived types, then start by getting the
-      // value for the polymorphic discriminator property.
+    const compositeSpecPolymorphism: Polymorphism | undefined = compositeSpec.polymorphism;
+    if (compositeSpecPolymorphism) {
       const rawDiscriminatorPropertyName: string = isSerialization
-        ? compositeSpecInheritedBy.discriminatorPropertyName
-        : compositeSpecInheritedBy.discriminatorPropertySerializedName || compositeSpecInheritedBy.discriminatorPropertyName;
+        ? compositeSpecPolymorphism.discriminatorPropertyName
+        : compositeSpecPolymorphism.discriminatorPropertySerializedName || compositeSpecPolymorphism.discriminatorPropertyName;
       const discriminatorPropertyPath: string[] = splitSerializeName(rawDiscriminatorPropertyName);
       const discriminatorPropertyValue: any = getPropertyValue(value, discriminatorPropertyPath);
-      if (discriminatorPropertyValue == undefined) {
-        throw logAndCreateError(options, `Missing polymorphic discriminator property at ${propertyPath.concat(discriminatorPropertyPath)} for composite type ${compositeSpec.typeName}.`);
-      } else if (discriminatorPropertyValue !== compositeSpecInheritedBy.discriminatorPropertyValue) {
-        // Iterate through each of the derived types of the current compositeSpec and find the one
-        // that matches the discriminator property value in the CompositeType value. Remember that
-        // if multiple levels of the type hierarchy use the same polymorphic discriminator property,
-        // then this may turn into a tree search instead of a list search.
-        const derivedTypeDetailsToCheck: PolymorphicDerivedType[] = [];
-        for (const derivedTypeDetails of compositeSpecInheritedBy.derivedTypes) {
-          derivedTypeDetailsToCheck.push(derivedTypeDetails);
-        }
 
-        while (derivedTypeDetailsToCheck.length > 0) {
-          const derivedTypeDetails: PolymorphicDerivedType | undefined = derivedTypeDetailsToCheck.pop();
-          if (derivedTypeDetails) {
-            const derivedTypeSpec: CompositeTypeSpec = resolveValueSpec(options, propertyPath, derivedTypeDetails.derivedTypeSpec);
-            if (discriminatorPropertyValue === derivedTypeDetails.discriminatorPropertyValue) {
-              compositeSpec = derivedTypeSpec;
-              compositeSpecChanged = true;
-              break;
-            } else if (derivedTypeSpec.polymorphism && derivedTypeSpec.polymorphism.inheritedBy && derivedTypeSpec.polymorphism.inheritedBy.discriminatorPropertyName === rawDiscriminatorPropertyName) {
-              // Even though this particular derived typeSpec's polymorphic discriminator property
-              // value doesn't match the provided value's property value, it may have derived types
-              // that do. If the derived typeSpec's polymorphic discriminator property is the same
-              // as the current compositeTypeSpec's polymorphic discriminator property, then add all
-              // of the derived typeSpec's derived types to the list of typeSpecs to check.
-              for (const childDerivedTypeDetails of derivedTypeSpec.polymorphism.inheritedBy.derivedTypes) {
-                derivedTypeDetailsToCheck.push(childDerivedTypeDetails);
+      const compositeSpecInheritedBy: PolymorphicDerivedTypes | undefined = compositeSpecPolymorphism.inheritedBy;
+      if (compositeSpecInheritedBy) {
+        // If the current compositeTypeSpec does have derived types, then start by getting the
+        // value for the polymorphic discriminator property.
+        if (discriminatorPropertyValue == undefined) {
+          throw logAndCreateError(options, `Missing polymorphic discriminator property at ${propertyPath.concat(discriminatorPropertyPath)} for composite type ${compositeSpec.typeName}.`);
+        } else if (discriminatorPropertyValue !== compositeSpecPolymorphism.discriminatorPropertyValue) {
+          // Iterate through each of the derived types of the current compositeSpec and find the one
+          // that matches the discriminator property value in the CompositeType value. Remember that
+          // if multiple levels of the type hierarchy use the same polymorphic discriminator property,
+          // then this may turn into a tree search instead of a list search.
+          const derivedTypeDetailsToCheck: PolymorphicDerivedType[] = [];
+          for (const derivedTypeDetails of compositeSpecInheritedBy.derivedTypes) {
+            derivedTypeDetailsToCheck.push(derivedTypeDetails);
+          }
+
+          while (derivedTypeDetailsToCheck.length > 0) {
+            const derivedTypeDetails: PolymorphicDerivedType | undefined = derivedTypeDetailsToCheck.pop();
+            if (derivedTypeDetails) {
+              const derivedTypeSpec: CompositeTypeSpec = resolveValueSpec(options, propertyPath, derivedTypeDetails.derivedTypeSpec);
+              if (discriminatorPropertyValue === derivedTypeDetails.discriminatorPropertyValue) {
+                compositeSpec = derivedTypeSpec;
+                compositeSpecChanged = true;
+                break;
+              } else if (derivedTypeSpec.polymorphism && derivedTypeSpec.polymorphism.inheritedBy && derivedTypeSpec.polymorphism.discriminatorPropertyName === rawDiscriminatorPropertyName) {
+                // Even though this particular derived typeSpec's polymorphic discriminator property
+                // value doesn't match the provided value's property value, it may have derived types
+                // that do. If the derived typeSpec's polymorphic discriminator property is the same
+                // as the current compositeTypeSpec's polymorphic discriminator property, then add all
+                // of the derived typeSpec's derived types to the list of typeSpecs to check.
+                for (const childDerivedTypeDetails of derivedTypeSpec.polymorphism.inheritedBy.derivedTypes) {
+                  derivedTypeDetailsToCheck.push(childDerivedTypeDetails);
+                }
               }
             }
           }
-        }
 
-        if (!compositeSpecChanged) {
-          const message = `Unrecognized polymorphic discriminator value ${discriminatorPropertyValue} for composite type ${compositeSpec.typeName} at property ${propertyPath.concat(discriminatorPropertyPath)}.`;
-          if (options && (isSerialization ? options.serializationStrictRequiredPolymorphicDiscriminator : options.deserializationStrictRequiredPolymorphicDiscriminator)) {
-            throw logAndCreateError(options, message);
-          } else {
-            log(options, HttpPipelineLogLevel.WARNING, message);
+          if (!compositeSpecChanged) {
+            const message = `Unrecognized polymorphic discriminator value ${discriminatorPropertyValue} for composite type ${compositeSpec.typeName} at property ${propertyPath.concat(discriminatorPropertyPath)}.`;
+            if (options && (isSerialization ? options.serializationStrictRequiredPolymorphicDiscriminator : options.deserializationStrictRequiredPolymorphicDiscriminator)) {
+              throw logAndCreateError(options, message);
+            } else {
+              log(options, HttpPipelineLogLevel.WARNING, message);
+            }
           }
         }
       }
