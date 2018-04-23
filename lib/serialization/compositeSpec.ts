@@ -55,7 +55,7 @@ export interface Polymorphism {
   /**
    * The base types for this CompositeTypeSpec.
    */
-  inheritsFrom?: (CompositeTypeSpec | string) | (CompositeTypeSpec | string)[];
+  inheritsFrom?: CompositeTypeSpec | string | (CompositeTypeSpec | string)[];
 
   /**
    * The details of the derived types of this CompositeTypeSpec.
