@@ -386,7 +386,7 @@ describe("compositeSpec", () => {
       });
 
       compositeSerializeWithStrictTypeCheckingTest({
-        testName: "should log and throw an error when a the composite spec is base type and value is missing property in base type",
+        testName: "should log and throw an error when the composite spec is base type and value is missing property in base type",
         options: {
           serializationStrictMissingProperties: true,
           compositeSpecDictionary: animalCompositeSpecDictionary
@@ -401,7 +401,7 @@ describe("compositeSpec", () => {
       });
 
       compositeSerializeWithStrictTypeCheckingTest({
-        testName: "should log and throw an error when a the composite spec is base type and value is missing property in derived type",
+        testName: "should log and throw an error when the composite spec is base type and value is missing property in derived type",
         options: {
           serializationStrictMissingProperties: true,
           compositeSpecDictionary: animalCompositeSpecDictionary
@@ -416,7 +416,7 @@ describe("compositeSpec", () => {
       });
 
       compositeSerializeWithStrictTypeCheckingTest({
-        testName: "should log and throw an error when a the composite spec is derived type and value is missing property in base type",
+        testName: "should log and throw an error when the composite spec is derived type and value is missing property in base type",
         options: {
           serializationStrictMissingProperties: true,
           compositeSpecDictionary: animalCompositeSpecDictionary
@@ -431,7 +431,7 @@ describe("compositeSpec", () => {
       });
 
       compositeSerializeWithStrictTypeCheckingTest({
-        testName: "should log and throw an error when a the composite spec is derived type and value is missing property in derived type",
+        testName: "should log and throw an error when the composite spec is derived type and value is missing property in derived type",
         options: {
           serializationStrictMissingProperties: true,
           compositeSpecDictionary: animalCompositeSpecDictionary
@@ -446,7 +446,7 @@ describe("compositeSpec", () => {
       });
 
       compositeSerializeWithStrictTypeCheckingTest({
-        testName: "should log and throw an error when a the composite spec is base type and value has wrong type for base type property",
+        testName: "should log and throw an error when the composite spec is base type and value has wrong type for base type property",
         options: {
           serializationStrictMissingProperties: true,
           compositeSpecDictionary: animalCompositeSpecDictionary
@@ -462,7 +462,7 @@ describe("compositeSpec", () => {
       });
 
       compositeSerializeWithStrictTypeCheckingTest({
-        testName: "should log and throw an error when a the composite spec is base type and value has wrong type for derived type property",
+        testName: "should log and throw an error when the composite spec is base type and value has wrong type for derived type property",
         options: {
           serializationStrictMissingProperties: true,
           compositeSpecDictionary: animalCompositeSpecDictionary
@@ -478,7 +478,7 @@ describe("compositeSpec", () => {
       });
 
       compositeSerializeWithStrictTypeCheckingTest({
-        testName: "should log and throw an error when a the composite spec is derived type and value has wrong type for base type property",
+        testName: "should log and throw an error when the composite spec is derived type and value has wrong type for base type property",
         options: {
           serializationStrictMissingProperties: true,
           compositeSpecDictionary: animalCompositeSpecDictionary
@@ -494,7 +494,7 @@ describe("compositeSpec", () => {
       });
 
       compositeSerializeWithStrictTypeCheckingTest({
-        testName: "should log and throw an error when a the composite spec is derived type and value is has wrong type for derived type property",
+        testName: "should log and throw an error when the composite spec is derived type and value is has wrong type for derived type property",
         options: {
           serializationStrictMissingProperties: true,
           compositeSpecDictionary: animalCompositeSpecDictionary
@@ -885,7 +885,7 @@ describe("compositeSpec", () => {
       });
 
       compositeSerializeWithoutStrictTypeCheckingTest({
-        testName: "should log and throw an error when a the composite spec is base type and value is missing property in base type",
+        testName: "should log and throw an error when the composite spec is base type and value is missing property in base type",
         options: {
           serializationStrictMissingProperties: true,
           compositeSpecDictionary: animalCompositeSpecDictionary
@@ -900,7 +900,7 @@ describe("compositeSpec", () => {
       });
 
       compositeSerializeWithoutStrictTypeCheckingTest({
-        testName: "should log and throw an error when a the composite spec is base type and value is missing property in derived type",
+        testName: "should log and throw an error when the composite spec is base type and value is missing property in derived type",
         options: {
           serializationStrictMissingProperties: true,
           compositeSpecDictionary: animalCompositeSpecDictionary
@@ -915,7 +915,7 @@ describe("compositeSpec", () => {
       });
 
       compositeSerializeWithoutStrictTypeCheckingTest({
-        testName: "should log and throw an error when a the composite spec is derived type and value is missing property in base type",
+        testName: "should log and throw an error when the composite spec is derived type and value is missing property in base type",
         options: {
           serializationStrictMissingProperties: true,
           compositeSpecDictionary: animalCompositeSpecDictionary
@@ -930,7 +930,7 @@ describe("compositeSpec", () => {
       });
 
       compositeSerializeWithoutStrictTypeCheckingTest({
-        testName: "should log and throw an error when a the composite spec is derived type and value is missing property in derived type",
+        testName: "should log and throw an error when the composite spec is derived type and value is missing property in derived type",
         options: {
           serializationStrictMissingProperties: true,
           compositeSpecDictionary: animalCompositeSpecDictionary
@@ -945,7 +945,7 @@ describe("compositeSpec", () => {
       });
 
       compositeSerializeWithoutStrictTypeCheckingTest({
-        testName: "should log a warning when a the composite spec is base type and value has wrong type for base type property",
+        testName: "should log a warning when the composite spec is base type and value has wrong type for base type property",
         options: {
           serializationStrictMissingProperties: true,
           compositeSpecDictionary: animalCompositeSpecDictionary
@@ -965,7 +965,7 @@ describe("compositeSpec", () => {
       });
 
       compositeSerializeWithoutStrictTypeCheckingTest({
-        testName: "should log a warning when a the composite spec is base type and value has wrong type for derived type property",
+        testName: "should log a warning when the composite spec is base type and value has wrong type for derived type property",
         options: {
           serializationStrictMissingProperties: true,
           compositeSpecDictionary: animalCompositeSpecDictionary
@@ -985,7 +985,7 @@ describe("compositeSpec", () => {
       });
 
       compositeSerializeWithoutStrictTypeCheckingTest({
-        testName: "should log a warning when a the composite spec is derived type and value has wrong type for base type property",
+        testName: "should log a warning when the composite spec is derived type and value has wrong type for base type property",
         options: {
           serializationStrictMissingProperties: true,
           compositeSpecDictionary: animalCompositeSpecDictionary
@@ -1005,7 +1005,7 @@ describe("compositeSpec", () => {
       });
 
       compositeSerializeWithoutStrictTypeCheckingTest({
-        testName: "should log a warning when a the composite spec is derived type and value is has wrong type for derived type property",
+        testName: "should log a warning when the composite spec is derived type and value is has wrong type for derived type property",
         options: {
           serializationStrictMissingProperties: true,
           compositeSpecDictionary: animalCompositeSpecDictionary
@@ -1426,7 +1426,7 @@ describe("compositeSpec", () => {
       });
 
       compositeDeserializeWithStrictTypeCheckingTest({
-        testName: "should log and throw an error when a the composite spec is base type and value is missing property in base type",
+        testName: "should log and throw an error when the composite spec is base type and value is missing property in base type",
         options: {
           deserializationStrictMissingProperties: true,
           compositeSpecDictionary: animalCompositeSpecDictionary
@@ -1441,7 +1441,7 @@ describe("compositeSpec", () => {
       });
 
       compositeDeserializeWithStrictTypeCheckingTest({
-        testName: "should log and throw an error when a the composite spec is base type and value is missing property in derived type",
+        testName: "should log and throw an error when the composite spec is base type and value is missing property in derived type",
         options: {
           deserializationStrictMissingProperties: true,
           compositeSpecDictionary: animalCompositeSpecDictionary
@@ -1456,7 +1456,7 @@ describe("compositeSpec", () => {
       });
 
       compositeDeserializeWithStrictTypeCheckingTest({
-        testName: "should log and throw an error when a the composite spec is derived type and value is missing property in base type",
+        testName: "should log and throw an error when the composite spec is derived type and value is missing property in base type",
         options: {
           deserializationStrictMissingProperties: true,
           compositeSpecDictionary: animalCompositeSpecDictionary
@@ -1471,7 +1471,7 @@ describe("compositeSpec", () => {
       });
 
       compositeDeserializeWithStrictTypeCheckingTest({
-        testName: "should log and throw an error when a the composite spec is derived type and value is missing property in derived type",
+        testName: "should log and throw an error when the composite spec is derived type and value is missing property in derived type",
         options: {
           deserializationStrictMissingProperties: true,
           compositeSpecDictionary: animalCompositeSpecDictionary
@@ -1486,7 +1486,7 @@ describe("compositeSpec", () => {
       });
 
       compositeDeserializeWithStrictTypeCheckingTest({
-        testName: "should log and throw an error when a the composite spec is base type and value has wrong type for base type property",
+        testName: "should log and throw an error when the composite spec is base type and value has wrong type for base type property",
         options: {
           deserializationStrictMissingProperties: true,
           compositeSpecDictionary: animalCompositeSpecDictionary
@@ -1502,7 +1502,7 @@ describe("compositeSpec", () => {
       });
 
       compositeDeserializeWithStrictTypeCheckingTest({
-        testName: "should log and throw an error when a the composite spec is base type and value has wrong type for derived type property",
+        testName: "should log and throw an error when the composite spec is base type and value has wrong type for derived type property",
         options: {
           deserializationStrictMissingProperties: true,
           compositeSpecDictionary: animalCompositeSpecDictionary
@@ -1518,7 +1518,7 @@ describe("compositeSpec", () => {
       });
 
       compositeDeserializeWithStrictTypeCheckingTest({
-        testName: "should log and throw an error when a the composite spec is derived type and value has wrong type for base type property",
+        testName: "should log and throw an error when the composite spec is derived type and value has wrong type for base type property",
         options: {
           deserializationStrictMissingProperties: true,
           compositeSpecDictionary: animalCompositeSpecDictionary
@@ -1534,7 +1534,7 @@ describe("compositeSpec", () => {
       });
 
       compositeDeserializeWithStrictTypeCheckingTest({
-        testName: "should log and throw an error when a the composite spec is derived type and value is has wrong type for derived type property",
+        testName: "should log and throw an error when the composite spec is derived type and value is has wrong type for derived type property",
         options: {
           deserializationStrictMissingProperties: true,
           compositeSpecDictionary: animalCompositeSpecDictionary
@@ -1907,7 +1907,7 @@ describe("compositeSpec", () => {
       });
 
       compositeDeserializeWithoutStrictTypeCheckingTest({
-        testName: "should log and throw an error when a the composite spec is base type and value is missing property in base type",
+        testName: "should log and throw an error when the composite spec is base type and value is missing property in base type",
         options: {
           deserializationStrictMissingProperties: true,
           compositeSpecDictionary: animalCompositeSpecDictionary
@@ -1922,7 +1922,7 @@ describe("compositeSpec", () => {
       });
 
       compositeDeserializeWithoutStrictTypeCheckingTest({
-        testName: "should log and throw an error when a the composite spec is base type and value is missing property in derived type",
+        testName: "should log and throw an error when the composite spec is base type and value is missing property in derived type",
         options: {
           deserializationStrictMissingProperties: true,
           compositeSpecDictionary: animalCompositeSpecDictionary
@@ -1937,7 +1937,7 @@ describe("compositeSpec", () => {
       });
 
       compositeDeserializeWithoutStrictTypeCheckingTest({
-        testName: "should log and throw an error when a the composite spec is derived type and value is missing property in base type",
+        testName: "should log and throw an error when the composite spec is derived type and value is missing property in base type",
         options: {
           deserializationStrictMissingProperties: true,
           compositeSpecDictionary: animalCompositeSpecDictionary
@@ -1952,7 +1952,7 @@ describe("compositeSpec", () => {
       });
 
       compositeDeserializeWithoutStrictTypeCheckingTest({
-        testName: "should log and throw an error when a the composite spec is derived type and value is missing property in derived type",
+        testName: "should log and throw an error when the composite spec is derived type and value is missing property in derived type",
         options: {
           deserializationStrictMissingProperties: true,
           compositeSpecDictionary: animalCompositeSpecDictionary
@@ -1967,7 +1967,7 @@ describe("compositeSpec", () => {
       });
 
       compositeDeserializeWithoutStrictTypeCheckingTest({
-        testName: "should log a warning when a the composite spec is base type and value has wrong type for base type property",
+        testName: "should log a warning when the composite spec is base type and value has wrong type for base type property",
         options: {
           deserializationStrictMissingProperties: true,
           compositeSpecDictionary: animalCompositeSpecDictionary
@@ -1987,7 +1987,7 @@ describe("compositeSpec", () => {
       });
 
       compositeDeserializeWithoutStrictTypeCheckingTest({
-        testName: "should log a warning when a the composite spec is base type and value has wrong type for derived type property",
+        testName: "should log a warning when the composite spec is base type and value has wrong type for derived type property",
         options: {
           deserializationStrictMissingProperties: true,
           compositeSpecDictionary: animalCompositeSpecDictionary
@@ -2007,7 +2007,7 @@ describe("compositeSpec", () => {
       });
 
       compositeDeserializeWithoutStrictTypeCheckingTest({
-        testName: "should log a warning when a the composite spec is derived type and value has wrong type for base type property",
+        testName: "should log a warning when the composite spec is derived type and value has wrong type for base type property",
         options: {
           deserializationStrictMissingProperties: true,
           compositeSpecDictionary: animalCompositeSpecDictionary
@@ -2027,7 +2027,7 @@ describe("compositeSpec", () => {
       });
 
       compositeDeserializeWithoutStrictTypeCheckingTest({
-        testName: "should log a warning when a the composite spec is derived type and value is has wrong type for derived type property",
+        testName: "should log a warning when the composite spec is derived type and value is has wrong type for derived type property",
         options: {
           deserializationStrictMissingProperties: true,
           compositeSpecDictionary: animalCompositeSpecDictionary
