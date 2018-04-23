@@ -30,14 +30,10 @@ export function dictionarySpec<TSerializedValue, TDeserializedValue>(valueSpec: 
         failSerializeTypeCheck(options, propertyPath, value, "an object");
         result = value as any;
       } else {
-        const valueTypeSpec: TypeSpec<TSerializedValue, TDeserializedValue> | undefined = resolveValueSpec(options, propertyPath, valueSpec, true);
-        if (!valueTypeSpec) {
-          result = value as any;
-        } else {
-          result = {};
-          for (const key in value) {
-            result[key] = valueTypeSpec.serialize(propertyPath.concat([key]), value[key], options);
-          }
+        const valueTypeSpec: TypeSpec<TSerializedValue, TDeserializedValue> = resolveValueSpec(options, propertyPath, valueSpec);
+        result = {};
+        for (const key in value) {
+          result[key] = valueTypeSpec.serialize(propertyPath.concat([key]), value[key], options);
         }
       }
 
@@ -50,14 +46,10 @@ export function dictionarySpec<TSerializedValue, TDeserializedValue>(valueSpec: 
         failDeserializeTypeCheck(options, propertyPath, value, "an object");
         result = value as any;
       } else {
-        const valueTypeSpec: TypeSpec<TSerializedValue, TDeserializedValue> | undefined = resolveValueSpec(options, propertyPath, valueSpec, false);
-        if (!valueTypeSpec) {
-          result = value as any;
-        } else {
-          result = {};
-          for (const key in value) {
-            result[key] = valueTypeSpec.deserialize(propertyPath.concat([key]), value[key], options);
-          }
+        const valueTypeSpec: TypeSpec<TSerializedValue, TDeserializedValue> = resolveValueSpec(options, propertyPath, valueSpec);
+        result = {};
+        for (const key in value) {
+          result[key] = valueTypeSpec.deserialize(propertyPath.concat([key]), value[key], options);
         }
       }
       return result;

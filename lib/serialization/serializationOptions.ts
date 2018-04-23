@@ -43,13 +43,6 @@ export interface SerializationOptions {
   serializationStrictRequiredPolymorphicDiscriminator?: boolean;
 
   /**
-   * Whether or not serialization will require that all CompositeTypeSpec links/name-references
-   * exist in the compositeSpecDictionary. If this is true and a CompositeTypeSpec
-   * link/name-reference doesn't exist, then an Error will be thrown.
-   */
-  serializationStrictCompositeLinkExists?: boolean;
-
-  /**
    * Whether or not deserialization will follow strict type-checking. If strict type-checking is
    * used, then an Error will be thrown if a value doesn't match the provided TypeSpec's expected
    * types.
@@ -77,13 +70,6 @@ export interface SerializationOptions {
    * doesn't have a value for the polymorphic discriminator property.
    */
   deserializationStrictRequiredPolymorphicDiscriminator?: boolean;
-
-  /**
-   * Whether or not deserialization will require that all CompositeTypeSpec links/name-references
-   * exist in the compositeSpecDictionary. If this is true and a CompositeTypeSpec
-   * link/name-reference doesn't exist, then an Error will be thrown.
-   */
-  deserializationStrictCompositeLinkExists?: boolean;
 
   /**
    * A dictionary of composite type specifications.
@@ -180,17 +166,11 @@ export function logAndCreateError(serializationOptions: SerializationOptions, er
   return new Error(errorMessage);
 }
 
-export function resolveValueSpec<T>(serializationOptions: SerializationOptions, path: PropertyPath, valueSpec: T | string, isSerialization: boolean): T | undefined {
-  let result: T | undefined;
+export function resolveValueSpec<T>(serializationOptions: SerializationOptions, path: PropertyPath, valueSpec: T | string): T {
+  let result: T;
   if (typeof valueSpec === "string") {
     if (!serializationOptions.compositeSpecDictionary || !serializationOptions.compositeSpecDictionary[valueSpec]) {
-      const message = `Missing composite specification entry in composite type dictionary for type named "${valueSpec}" at ${path}.`;
-      if (isSerialization ? serializationOptions.serializationStrictCompositeLinkExists : serializationOptions.deserializationStrictCompositeLinkExists) {
-        throw logAndCreateError(serializationOptions, message);
-      } else {
-        log(serializationOptions, HttpPipelineLogLevel.WARNING, message);
-      }
-      result = undefined;
+      throw logAndCreateError(serializationOptions, `Missing composite specification entry in composite type dictionary for type named "${valueSpec}" at ${path}.`);
     } else {
       result = serializationOptions.compositeSpecDictionary[valueSpec] as any;
     }
