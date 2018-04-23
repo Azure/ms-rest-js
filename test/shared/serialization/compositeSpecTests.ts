@@ -94,14 +94,7 @@ describe("compositeSpec", () => {
   const animal: CompositeTypeSpec = compositeSpec({
     typeName: "Animal",
     polymorphism: {
-      inheritedBy: {
-        derivedTypes: [
-          {
-            derivedTypeSpec: "Cat",
-            discriminatorPropertyValue: "cat"
-          }
-        ]
-      },
+      inheritedBy: ["Cat"],
       discriminatorPropertyName: "animalType",
       discriminatorPropertyValue: "animal"
     },
@@ -120,15 +113,8 @@ describe("compositeSpec", () => {
   const cat: CompositeTypeSpec = compositeSpec({
     typeName: "Cat",
     polymorphism: {
-      inheritsFrom: animal,
-      inheritedBy: {
-        derivedTypes: [
-          {
-            derivedTypeSpec: "Tiger",
-            discriminatorPropertyValue: "tiger"
-          }
-        ]
-      },
+      inheritsFrom: [animal],
+      inheritedBy: ["Tiger"],
       discriminatorPropertyName: "animalType",
       discriminatorPropertyValue: "cat"
     },
@@ -145,14 +131,7 @@ describe("compositeSpec", () => {
     polymorphism: {
       // This is just to make sure that a diamond inheritance model works.
       inheritsFrom: [cat, animal],
-      inheritedBy: {
-        derivedTypes: [
-          {
-            derivedTypeSpec: "Saber-toothed Tiger",
-            discriminatorPropertyValue: "saber"
-          }
-        ]
-      },
+      inheritedBy: ["Saber-toothed Tiger"],
       discriminatorPropertyName: "animalType",
       discriminatorPropertyValue: "tiger"
     },

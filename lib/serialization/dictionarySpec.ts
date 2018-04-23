@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 import { PropertyPath } from "./propertyPath";
-import { SerializationOptions, failDeserializeTypeCheck, failSerializeTypeCheck, resolveValueSpec } from "./serializationOptions";
+import { SerializationOptions, failDeserializeTypeCheck, failSerializeTypeCheck, resolveTypeSpec } from "./serializationOptions";
 import { TypeSpec } from "./typeSpec";
 
 export interface DictionaryType<T> {
@@ -30,7 +30,7 @@ export function dictionarySpec<TSerializedValue, TDeserializedValue>(valueSpec: 
         failSerializeTypeCheck(options, propertyPath, value, "an object");
         result = value as any;
       } else {
-        const valueTypeSpec: TypeSpec<TSerializedValue, TDeserializedValue> = resolveValueSpec(options, propertyPath, valueSpec);
+        const valueTypeSpec: TypeSpec<TSerializedValue, TDeserializedValue> = resolveTypeSpec(options, propertyPath, valueSpec);
         result = {};
         for (const key in value) {
           result[key] = valueTypeSpec.serialize(propertyPath.concat([key]), value[key], options);
@@ -46,7 +46,7 @@ export function dictionarySpec<TSerializedValue, TDeserializedValue>(valueSpec: 
         failDeserializeTypeCheck(options, propertyPath, value, "an object");
         result = value as any;
       } else {
-        const valueTypeSpec: TypeSpec<TSerializedValue, TDeserializedValue> = resolveValueSpec(options, propertyPath, valueSpec);
+        const valueTypeSpec: TypeSpec<TSerializedValue, TDeserializedValue> = resolveTypeSpec(options, propertyPath, valueSpec);
         result = {};
         for (const key in value) {
           result[key] = valueTypeSpec.deserialize(propertyPath.concat([key]), value[key], options);
