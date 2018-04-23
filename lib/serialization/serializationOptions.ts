@@ -4,6 +4,7 @@ import { HttpPipelineLogLevel } from "../httpPipelineLogLevel";
 import { HttpPipelineLogger } from "../httpPipelineLogger";
 import { CompositeTypeSpec } from "./compositeSpec";
 import { PropertyPath } from "./propertyPath";
+import { TypeSpec } from "./typeSpec";
 
 /**
  * Options that can be passed to a serialize() function.
@@ -166,16 +167,21 @@ export function logAndCreateError(serializationOptions: SerializationOptions, er
   return new Error(errorMessage);
 }
 
-export function resolveValueSpec<T>(serializationOptions: SerializationOptions, path: PropertyPath, valueSpec: T | string): T {
-  let result: T;
-  if (typeof valueSpec === "string") {
-    if (!serializationOptions.compositeSpecDictionary || !serializationOptions.compositeSpecDictionary[valueSpec]) {
-      throw logAndCreateError(serializationOptions, `Missing composite specification entry in composite type dictionary for type named "${valueSpec}" at ${path}.`);
+export function resolveTypeSpec<TSerialized, TDeserialized>(serializationOptions: SerializationOptions, path: PropertyPath, typeSpec: TypeSpec<TSerialized, TDeserialized> | string): TypeSpec<TSerialized, TDeserialized> {
+  let result: TypeSpec<TSerialized, TDeserialized>;
+  if (typeof typeSpec === "string") {
+    if (!serializationOptions.compositeSpecDictionary || !serializationOptions.compositeSpecDictionary[typeSpec]) {
+      throw logAndCreateError(serializationOptions, `Missing composite specification entry in composite type dictionary for type named "${typeSpec}" at ${path}.`);
     } else {
-      result = serializationOptions.compositeSpecDictionary[valueSpec] as any;
+      result = serializationOptions.compositeSpecDictionary[typeSpec] as any;
     }
   } else {
-    result = valueSpec;
+    result = typeSpec;
   }
   return result;
 }
+
+export function resolveCompositeTypeSpec(serializationOptions: SerializationOptions, path: PropertyPath, valueSpec: CompositeTypeSpec | string): CompositeTypeSpec {
+  return resolveTypeSpec(serializationOptions, path, valueSpec) as CompositeTypeSpec;
+}
+
