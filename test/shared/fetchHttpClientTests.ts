@@ -71,7 +71,7 @@ describe("fetchHttpClient", () => {
 </div>
 </body>
 </html>
-`;
+`.replace("\r\n", "\n");
     assert.strictEqual(responseBody, expectedResponseBody);
   });
 

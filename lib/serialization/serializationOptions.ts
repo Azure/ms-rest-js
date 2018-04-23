@@ -2,9 +2,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 import { HttpPipelineLogLevel } from "../httpPipelineLogLevel";
 import { HttpPipelineLogger } from "../httpPipelineLogger";
-import { CompositeType } from "./compositeSpec";
+import { CompositeTypeSpec } from "./compositeSpec";
 import { PropertyPath } from "./propertyPath";
-import { TypeSpec } from "./typeSpec";
 
 /**
  * Options that can be passed to a serialize() function.
@@ -37,6 +36,13 @@ export interface SerializationOptions {
   serializationStrictMissingProperties?: boolean;
 
   /**
+   * Whether or not serialization will require that a polymorphic discriminator property be present.
+   * If this option is set to true, then an Error will be thrown if a composite value doesn't have
+   * a value for the polymorphic discriminator property.
+   */
+  serializationStrictRequiredPolymorphicDiscriminator?: boolean;
+
+  /**
    * Whether or not deserialization will follow strict type-checking. If strict type-checking is
    * used, then an Error will be thrown if a value doesn't match the provided TypeSpec's expected
    * types.
@@ -59,9 +65,16 @@ export interface SerializationOptions {
   deserializationStrictMissingProperties?: boolean;
 
   /**
+   * Whether or not deserialization will require that a polymorphic discriminator property be
+   * present. If this option is set to true, then an Error will be thrown if a composite value
+   * doesn't have a value for the polymorphic discriminator property.
+   */
+  deserializationStrictRequiredPolymorphicDiscriminator?: boolean;
+
+  /**
    * A dictionary of composite type specifications.
    */
-  compositeSpecDictionary?: { [typeName: string]: TypeSpec<CompositeType, CompositeType> };
+  compositeSpecDictionary?: { [typeName: string]: CompositeTypeSpec };
 
   /**
    * A logger that will log messages as serialization and deserialization occurs.
@@ -101,16 +114,16 @@ function failTypeCheck(isTypeCheckingStrict: boolean, options: SerializationOpti
   }
 }
 
-export function failSerializeMissingRequiredPropertyCheck(options: SerializationOptions, childPropertyPath: PropertyPath, childPropertyValueSpec: TypeSpec<any, any>): void {
-  failMissingRequiredPropertyCheck(options && options.serializationStrictMissingProperties ? true : false, options, childPropertyPath, childPropertyValueSpec);
+export function failSerializeMissingRequiredPropertyCheck(options: SerializationOptions, childPropertyPath: PropertyPath, childPropertyValueTypeName: string): void {
+  failMissingRequiredPropertyCheck(options && options.serializationStrictMissingProperties ? true : false, options, childPropertyPath, childPropertyValueTypeName);
 }
 
-export function failDeserializeMissingRequiredPropertyCheck(options: SerializationOptions, childPropertyPath: PropertyPath, childPropertyValueSpec: TypeSpec<any, any>): void {
-  failMissingRequiredPropertyCheck(options && options.deserializationStrictMissingProperties ? true : false, options, childPropertyPath, childPropertyValueSpec);
+export function failDeserializeMissingRequiredPropertyCheck(options: SerializationOptions, childPropertyPath: PropertyPath, childPropertyValueTypeName: string): void {
+  failMissingRequiredPropertyCheck(options && options.deserializationStrictMissingProperties ? true : false, options, childPropertyPath, childPropertyValueTypeName);
 }
 
-function failMissingRequiredPropertyCheck(isMissingRequiredPropertyCheckingStrict: boolean, options: SerializationOptions, childPropertyPath: PropertyPath, childPropertyValueSpec: TypeSpec<any, any>): void {
-  const message = `Missing non-constant ${childPropertyValueSpec.specType} property at ${childPropertyPath}.`;
+function failMissingRequiredPropertyCheck(isMissingRequiredPropertyCheckingStrict: boolean, options: SerializationOptions, childPropertyPath: PropertyPath, childPropertyValueTypeName: string): void {
+  const message = `Missing non-constant ${childPropertyValueTypeName} property at ${childPropertyPath}.`;
   if (isMissingRequiredPropertyCheckingStrict) {
     throw logAndCreateError(options, message);
   } else {
@@ -153,13 +166,14 @@ export function logAndCreateError(serializationOptions: SerializationOptions, er
   return new Error(errorMessage);
 }
 
-export function resolveValueSpec<TSerialized, TDeserialized>(serializationOptions: SerializationOptions, path: PropertyPath, valueSpec: TypeSpec<TSerialized, TDeserialized> | string): TypeSpec<TSerialized, TDeserialized> {
-  let result: TypeSpec<TSerialized, TDeserialized>;
+export function resolveValueSpec<T>(serializationOptions: SerializationOptions, path: PropertyPath, valueSpec: T | string): T {
+  let result: T;
   if (typeof valueSpec === "string") {
     if (!serializationOptions.compositeSpecDictionary || !serializationOptions.compositeSpecDictionary[valueSpec]) {
       throw logAndCreateError(serializationOptions, `Missing composite specification entry in composite type dictionary for type named "${valueSpec}" at ${path}.`);
+    } else {
+      result = serializationOptions.compositeSpecDictionary[valueSpec] as any;
     }
-    result = serializationOptions.compositeSpecDictionary[valueSpec] as TypeSpec<TSerialized, TDeserialized>;
   } else {
     result = valueSpec;
   }

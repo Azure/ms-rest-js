@@ -46,56 +46,62 @@ describe("serializationPolicy", () => {
       },
       operationSpec: {
         requestHttpMethod: HttpMethod.GET,
-        requestBodySpec: compositeSpec("FakeRequestBody", {
-          "booleanProperty": {
-            required: true,
-            valueSpec: booleanSpec
-          },
-          "numberProperty": {
-            required: true,
-            valueSpec: numberSpec
-          },
-          "objectProperty": {
-            required: true,
-            valueSpec: objectSpec
-          },
-          "sequenceProperty": {
-            required: true,
-            valueSpec: sequenceSpec(booleanSpec)
-          },
-          "dateProperty": {
-            required: true,
-            valueSpec: dateSpec
-          },
-          "dateTimeRfc1123Property": {
-            required: true,
-            valueSpec: dateTimeRfc1123Spec
+        requestBodySpec: compositeSpec({
+          typeName: "FakeRequestBody",
+          propertySpecs: {
+            "booleanProperty": {
+              required: true,
+              valueSpec: booleanSpec
+            },
+            "numberProperty": {
+              required: true,
+              valueSpec: numberSpec
+            },
+            "objectProperty": {
+              required: true,
+              valueSpec: objectSpec
+            },
+            "sequenceProperty": {
+              required: true,
+              valueSpec: sequenceSpec(booleanSpec)
+            },
+            "dateProperty": {
+              required: true,
+              valueSpec: dateSpec
+            },
+            "dateTimeRfc1123Property": {
+              required: true,
+              valueSpec: dateTimeRfc1123Spec
+            }
           }
         }),
-        responseBodySpec: compositeSpec("FakeResponseBody", {
-          "booleanProperty": {
-            required: true,
-            valueSpec: booleanSpec
-          },
-          "numberProperty": {
-            required: true,
-            valueSpec: numberSpec
-          },
-          "objectProperty": {
-            required: true,
-            valueSpec: objectSpec
-          },
-          "sequenceProperty": {
-            required: true,
-            valueSpec: sequenceSpec(booleanSpec)
-          },
-          "dateProperty": {
-            required: true,
-            valueSpec: dateSpec
-          },
-          "dateTimeRfc1123Property": {
-            required: true,
-            valueSpec: dateTimeRfc1123Spec
+        responseBodySpec: compositeSpec({
+          typeName: "FakeResponseBody",
+          propertySpecs: {
+            "booleanProperty": {
+              required: true,
+              valueSpec: booleanSpec
+            },
+            "numberProperty": {
+              required: true,
+              valueSpec: numberSpec
+            },
+            "objectProperty": {
+              required: true,
+              valueSpec: objectSpec
+            },
+            "sequenceProperty": {
+              required: true,
+              valueSpec: sequenceSpec(booleanSpec)
+            },
+            "dateProperty": {
+              required: true,
+              valueSpec: dateSpec
+            },
+            "dateTimeRfc1123Property": {
+              required: true,
+              valueSpec: dateTimeRfc1123Spec
+            }
           }
         })
       }
