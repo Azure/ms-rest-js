@@ -49,6 +49,8 @@ export interface PolymorphicDerivedTypes {
   discriminatorPropertyValue: any;
 }
 
+export type BaseTypeOrBaseTypeName = CompositeTypeSpec | string;
+
 /**
  * The options that specify polymorphism for a CompositeTypeSpec.
  */
@@ -56,7 +58,7 @@ export interface Polymorphism {
   /**
    * The base types for this CompositeTypeSpec.
    */
-  inheritsFrom?: CompositeTypeSpec | string | (CompositeTypeSpec | string)[];
+  inheritsFrom?: BaseTypeOrBaseTypeName | BaseTypeOrBaseTypeName[];
 
   /**
    * The details of the derived types of this CompositeTypeSpec.
