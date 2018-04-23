@@ -1,7 +1,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
+import { HttpPipelineLogLevel } from "../httpPipelineLogLevel";
 import { PropertyPath } from "./propertyPath";
-import { SerializationOptions, SerializationOutputType, failDeserializeMissingRequiredPropertyCheck, failDeserializeTypeCheck, failSerializeMissingRequiredPropertyCheck, failSerializeTypeCheck, logAndCreateError, resolveValueSpec } from "./serializationOptions";
+import { SerializationOptions, SerializationOutputType, failDeserializeMissingRequiredPropertyCheck, failDeserializeTypeCheck, failSerializeMissingRequiredPropertyCheck, failSerializeTypeCheck, log, logAndCreateError, resolveValueSpec } from "./serializationOptions";
 import { TypeSpec } from "./typeSpec";
 
 export interface CompositeType {
@@ -113,7 +114,7 @@ export function compositeSpec(parameters: CompositeSpecParameters): CompositeTyp
 
         result = {};
 
-        const allCompositeTypeSpecs: CompositeType[] = getAllPolymorphicCompositeTypeSpecs(value, propertyPath, this, options, serializationDiscriminatorPropertyNameGetter);
+        const allCompositeTypeSpecs: CompositeType[] = getAllPolymorphicCompositeTypeSpecs(value, propertyPath, this, options, true);
 
         for (const compositeTypeSpec of allCompositeTypeSpecs) {
           if (compositeTypeSpec.propertySpecs) {
@@ -124,11 +125,12 @@ export function compositeSpec(parameters: CompositeSpecParameters): CompositeTyp
               const childPropertyPath: PropertyPath = propertyPath.pathStringConcat(childPropertyName);
 
               // Get the child property's value spec.
-              const childPropertyValueSpec: TypeSpec<any, any> = resolveValueSpec(options, childPropertyPath, childPropertySpec.valueSpec);
+              const childPropertyValueSpec: TypeSpec<any, any> | undefined = resolveValueSpec(options, childPropertyPath, childPropertySpec.valueSpec, true);
 
               if (childPropertyValue == undefined) {
                 if (childPropertySpec.required && !childPropertySpec.constant) {
-                  failSerializeMissingRequiredPropertyCheck(options, childPropertyPath, childPropertyValueSpec);
+                  const childPropertyValueTypeName: string = childPropertyValueSpec ? childPropertyValueSpec.specType : `unknown`;
+                  failSerializeMissingRequiredPropertyCheck(options, childPropertyPath, childPropertyValueTypeName);
                 }
               } else if (!childPropertySpec.readonly) {
 
@@ -187,7 +189,11 @@ export function compositeSpec(parameters: CompositeSpecParameters): CompositeTyp
                 const serializedChildPropertyPath: PropertyPath = propertyPath.concat([childPropertyName], serializedChildPropertyNameParts);
 
                 // Write the serialized property value to its parent property container.
-                serializedPropertyParent[serializedChildPropertyName] = childPropertyValueSpec.serialize(serializedChildPropertyPath, childPropertyValue, options);
+                if (!childPropertyValueSpec) {
+                  serializedPropertyParent[serializedChildPropertyName] = childPropertyValue;
+                } else {
+                  serializedPropertyParent[serializedChildPropertyName] = childPropertyValueSpec.serialize(serializedChildPropertyPath, childPropertyValue, options);
+                }
               }
             }
           }
@@ -208,7 +214,7 @@ export function compositeSpec(parameters: CompositeSpecParameters): CompositeTyp
 
         result = {};
 
-        const allCompositeTypeSpecs: CompositeType[] = getAllPolymorphicCompositeTypeSpecs(value, propertyPath, this, options, deserializationDiscriminatorPropertyNameGetter);
+        const allCompositeTypeSpecs: CompositeType[] = getAllPolymorphicCompositeTypeSpecs(value, propertyPath, this, options, false);
 
         for (const compositeTypeSpec of allCompositeTypeSpecs) {
           if (compositeTypeSpec.propertySpecs) {
@@ -268,13 +274,18 @@ export function compositeSpec(parameters: CompositeSpecParameters): CompositeTyp
               const childPropertyPath: PropertyPath = propertyPath.concat([childPropertyName], serializedChildPropertyNameParts);
 
               // Get the child property's value spec.
-              const childPropertyValueSpec: TypeSpec<any, any> = resolveValueSpec(options, childPropertyPath, childPropertySpec.valueSpec);
-
+              const childPropertyValueSpec: TypeSpec<any, any> | undefined = resolveValueSpec(options, childPropertyPath, childPropertySpec.valueSpec, false);
               const serializedChildPropertyValue: any = (!serializedPropertyParent ? undefined : serializedPropertyParent[serializedChildPropertyName]);
+
               if (serializedChildPropertyValue != undefined) {
-                result[childPropertyName] = childPropertyValueSpec.deserialize(childPropertyPath, serializedChildPropertyValue, options);
+                if (!childPropertyValueSpec) {
+                  result[childPropertyName] = serializedChildPropertyValue;
+                } else {
+                  result[childPropertyName] = childPropertyValueSpec.deserialize(childPropertyPath, serializedChildPropertyValue, options);
+                }
               } else if (childPropertySpec.required && !childPropertySpec.constant) {
-                failDeserializeMissingRequiredPropertyCheck(options, childPropertyPath, childPropertyValueSpec);
+                const childPropertyValueTypeName: string = childPropertyValueSpec ? childPropertyValueSpec.specType : `unknown`;
+                failDeserializeMissingRequiredPropertyCheck(options, childPropertyPath, childPropertyValueTypeName);
               }
             }
           }
@@ -286,19 +297,11 @@ export function compositeSpec(parameters: CompositeSpecParameters): CompositeTyp
   };
 }
 
-function serializationDiscriminatorPropertyNameGetter(derivedTypes: PolymorphicDerivedTypes): string {
-  return derivedTypes.discriminatorPropertyName;
-}
-
-function deserializationDiscriminatorPropertyNameGetter(derivedTypes: PolymorphicDerivedTypes): string {
-  return derivedTypes.discriminatorPropertySerializedName || derivedTypes.discriminatorPropertyName;
-}
-
 /**
  * Get all of the CompositeTypeSpecs that the provided value must implement if the starting
  * CompositeTypeSpec is the provided compositeSpec.
  */
-function getAllPolymorphicCompositeTypeSpecs(value: CompositeType, propertyPath: PropertyPath, compositeSpec: CompositeTypeSpec, options: SerializationOptions, discriminatorPropertyNameGetter: (derivedTypes: PolymorphicDerivedTypes) => string): CompositeTypeSpec[] {
+function getAllPolymorphicCompositeTypeSpecs(value: CompositeType, propertyPath: PropertyPath, compositeSpec: CompositeTypeSpec, options: SerializationOptions, isSerialization: boolean): CompositeTypeSpec[] {
   const result: CompositeTypeSpec[] = [];
 
   let compositeSpecChanged = true;
@@ -311,7 +314,9 @@ function getAllPolymorphicCompositeTypeSpecs(value: CompositeType, propertyPath:
     if (compositeSpecInheritedBy) {
       // If the current compositeTypeSpec does have derived types, then start by getting the
       // value for the polymorphic discriminator property.
-      const rawDiscriminatorPropertyName: string = discriminatorPropertyNameGetter(compositeSpecInheritedBy);
+      const rawDiscriminatorPropertyName: string = isSerialization
+        ? compositeSpecInheritedBy.discriminatorPropertyName
+        : compositeSpecInheritedBy.discriminatorPropertySerializedName || compositeSpecInheritedBy.discriminatorPropertyName;
       const discriminatorPropertyPath: string[] = splitSerializeName(rawDiscriminatorPropertyName);
       const discriminatorPropertyValue: any = getPropertyValue(value, discriminatorPropertyPath);
       if (discriminatorPropertyValue == undefined) {
@@ -329,26 +334,33 @@ function getAllPolymorphicCompositeTypeSpecs(value: CompositeType, propertyPath:
         while (derivedTypeDetailsToCheck.length > 0) {
           const derivedTypeDetails: PolymorphicDerivedType | undefined = derivedTypeDetailsToCheck.pop();
           if (derivedTypeDetails) {
-            const derivedTypeSpec: CompositeTypeSpec = resolveValueSpec(options, propertyPath, derivedTypeDetails.derivedTypeSpec);
-            if (discriminatorPropertyValue === derivedTypeDetails.discriminatorPropertyValue) {
-              compositeSpec = derivedTypeSpec;
-              compositeSpecChanged = true;
-              break;
-            } else if (derivedTypeSpec.polymorphism && derivedTypeSpec.polymorphism.inheritedBy && derivedTypeSpec.polymorphism.inheritedBy.discriminatorPropertyName === rawDiscriminatorPropertyName) {
-              // Even though this particular derived typeSpec's polymorphic discriminator property
-              // value doesn't match the provided value's property value, it may have derived types
-              // that do. If the derived typeSpec's polymorphic discriminator property is the same
-              // as the current compositeTypeSpec's polymorphic discriminator property, then add all
-              // of the derived typeSpec's derived types to the list of typeSpecs to check.
-              for (const childDerivedTypeDetails of derivedTypeSpec.polymorphism.inheritedBy.derivedTypes) {
-                derivedTypeDetailsToCheck.push(childDerivedTypeDetails);
+            const derivedTypeSpec: CompositeTypeSpec | undefined = resolveValueSpec(options, propertyPath, derivedTypeDetails.derivedTypeSpec, isSerialization);
+            if (derivedTypeSpec) {
+              if (discriminatorPropertyValue === derivedTypeDetails.discriminatorPropertyValue) {
+                compositeSpec = derivedTypeSpec;
+                compositeSpecChanged = true;
+                break;
+              } else if (derivedTypeSpec.polymorphism && derivedTypeSpec.polymorphism.inheritedBy && derivedTypeSpec.polymorphism.inheritedBy.discriminatorPropertyName === rawDiscriminatorPropertyName) {
+                // Even though this particular derived typeSpec's polymorphic discriminator property
+                // value doesn't match the provided value's property value, it may have derived types
+                // that do. If the derived typeSpec's polymorphic discriminator property is the same
+                // as the current compositeTypeSpec's polymorphic discriminator property, then add all
+                // of the derived typeSpec's derived types to the list of typeSpecs to check.
+                for (const childDerivedTypeDetails of derivedTypeSpec.polymorphism.inheritedBy.derivedTypes) {
+                  derivedTypeDetailsToCheck.push(childDerivedTypeDetails);
+                }
               }
             }
           }
         }
 
         if (!compositeSpecChanged) {
-          throw logAndCreateError(options, `Unrecognized polymorphic discriminator value ${discriminatorPropertyValue} for composite type ${compositeSpec.typeName} at property ${propertyPath.concat(discriminatorPropertyPath)}.`);
+          const message = `Unrecognized polymorphic discriminator value ${discriminatorPropertyValue} for composite type ${compositeSpec.typeName} at property ${propertyPath.concat(discriminatorPropertyPath)}.`;
+          if (options && (isSerialization ? options.serializationStrictRequiredPolymorphicDiscriminator : options.deserializationStrictRequiredPolymorphicDiscriminator)) {
+            throw logAndCreateError(options, message);
+          } else {
+            log(options, HttpPipelineLogLevel.WARNING, message);
+          }
         }
       }
     }
@@ -369,7 +381,10 @@ function getAllPolymorphicCompositeTypeSpecs(value: CompositeType, propertyPath:
         }
 
         for (const baseCompositeTypeSpec of inheritsFrom) {
-          toVisit.push(resolveValueSpec(options, propertyPath, baseCompositeTypeSpec));
+          const resolvedBaseCompositeTypeSpec: CompositeTypeSpec | undefined = resolveValueSpec(options, propertyPath, baseCompositeTypeSpec, isSerialization);
+          if (resolvedBaseCompositeTypeSpec) {
+            toVisit.push(resolvedBaseCompositeTypeSpec);
+          }
         }
       }
     }

@@ -26,10 +26,14 @@ export function sequenceSpec<TSerializedElement, TDeserializedElement>(elementSp
         failSerializeTypeCheck(options, propertyPath, value, "an Array");
         result = value;
       } else {
-        const elementTypeSpec: TypeSpec<TSerializedElement, TDeserializedElement> = resolveValueSpec(options, propertyPath, elementSpec);
-        result = [];
-        for (let i = 0; i < value.length; i++) {
-          result[i] = elementTypeSpec.serialize(propertyPath.concat([i.toString()]), value[i], options);
+        const elementTypeSpec: TypeSpec<TSerializedElement, TDeserializedElement> | undefined = resolveValueSpec(options, propertyPath, elementSpec, true);
+        if (!elementTypeSpec) {
+          result = value as any;
+        } else {
+          result = [];
+          for (let i = 0; i < value.length; i++) {
+            result[i] = elementTypeSpec.serialize(propertyPath.concat([i.toString()]), value[i], options);
+          }
         }
       }
       return result;
@@ -41,10 +45,14 @@ export function sequenceSpec<TSerializedElement, TDeserializedElement>(elementSp
         failDeserializeTypeCheck(options, propertyPath, value, "an Array");
         result = value;
       } else {
-        const elementTypeSpec: TypeSpec<TSerializedElement, TDeserializedElement> = resolveValueSpec(options, propertyPath, elementSpec);
-        result = [];
-        for (let i = 0; i < value.length; i++) {
-          result[i] = elementTypeSpec.deserialize(propertyPath.concat([i.toString()]), value[i], options);
+        const elementTypeSpec: TypeSpec<TSerializedElement, TDeserializedElement> | undefined = resolveValueSpec(options, propertyPath, elementSpec, false);
+        if (!elementTypeSpec) {
+          result = value as any;
+        } else {
+          result = [];
+          for (let i = 0; i < value.length; i++) {
+            result[i] = elementTypeSpec.deserialize(propertyPath.concat([i.toString()]), value[i], options);
+          }
         }
       }
       return result;

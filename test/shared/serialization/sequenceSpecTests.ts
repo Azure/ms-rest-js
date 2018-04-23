@@ -88,10 +88,23 @@ describe("sequenceSpec", () => {
       });
 
       sequenceSerializeWithStrictTypeCheckingTest({
-        testName: "should log and throw an error when a composite spec reference doesn't exist in composite spec dictionary",
+        testName: "should log a warning when a composite spec reference doesn't exist in composite spec dictionary and serializationStrictCompositeLinkExists is false",
         elementSpec: "NotFound",
         value: [{ "A": "B doesn't exist in the composite TypeSpec dictionary" }],
         options: {
+          serializationStrictCompositeLinkExists: false,
+          compositeSpecDictionary: {}
+        },
+        expectedResult: [{ "A": "B doesn't exist in the composite TypeSpec dictionary" }],
+        expectedLogs: [`WARNING: Missing composite specification entry in composite type dictionary for type named "NotFound" at a.property.path.`]
+      });
+
+      sequenceSerializeWithStrictTypeCheckingTest({
+        testName: "should log and throw an error when a composite spec reference doesn't exist in composite spec dictionary and serializationStrictCompositeLinkExists is true",
+        elementSpec: "NotFound",
+        value: [{ "A": "B doesn't exist in the composite TypeSpec dictionary" }],
+        options: {
+          serializationStrictCompositeLinkExists: true,
           compositeSpecDictionary: {}
         },
         expectedResult: new Error(`Missing composite specification entry in composite type dictionary for type named "NotFound" at a.property.path.`),
@@ -173,10 +186,23 @@ describe("sequenceSpec", () => {
       });
 
       sequenceSerializeWithoutStrictTypeCheckingTest({
-        testName: "should log and throw an error when a composite spec reference doesn't exist in composite spec dictionary",
+        testName: "should log a warning when a composite spec reference doesn't exist in composite spec dictionary and serializationStrictCompositeLinkExists is false",
         elementSpec: "NotFound",
         value: [{ "A": "B doesn't exist in the composite TypeSpec dictionary" }],
         options: {
+          serializationStrictCompositeLinkExists: false,
+          compositeSpecDictionary: {}
+        },
+        expectedResult: [{ "A": "B doesn't exist in the composite TypeSpec dictionary" }],
+        expectedLogs: [`WARNING: Missing composite specification entry in composite type dictionary for type named "NotFound" at a.property.path.`]
+      });
+
+      sequenceSerializeWithoutStrictTypeCheckingTest({
+        testName: "should log and throw an error when a composite spec reference doesn't exist in composite spec dictionary and serializationStrictCompositeLinkExists is true",
+        elementSpec: "NotFound",
+        value: [{ "A": "B doesn't exist in the composite TypeSpec dictionary" }],
+        options: {
+          serializationStrictCompositeLinkExists: true,
           compositeSpecDictionary: {}
         },
         expectedResult: new Error(`Missing composite specification entry in composite type dictionary for type named "NotFound" at a.property.path.`),
@@ -260,10 +286,23 @@ describe("sequenceSpec", () => {
       });
 
       sequenceDeserializeWithStrictTypeCheckingTest({
-        testName: "should log and throw an error when a composite spec reference doesn't exist in composite spec dictionary",
+        testName: "should log a warning when a composite spec reference doesn't exist in composite spec dictionary and deserializationStrictCompositeLinkExists is false",
         elementSpec: "NotFound",
         value: [{ "A": "B doesn't exist in the composite TypeSpec dictionary" }],
         options: {
+          deserializationStrictCompositeLinkExists: false,
+          compositeSpecDictionary: {}
+        },
+        expectedResult: [{ "A": "B doesn't exist in the composite TypeSpec dictionary" }],
+        expectedLogs: [`WARNING: Missing composite specification entry in composite type dictionary for type named "NotFound" at a.property.path.`]
+      });
+
+      sequenceDeserializeWithStrictTypeCheckingTest({
+        testName: "should log and throw an error when a composite spec reference doesn't exist in composite spec dictionary and deserializationStrictCompositeLinkExists is true",
+        elementSpec: "NotFound",
+        value: [{ "A": "B doesn't exist in the composite TypeSpec dictionary" }],
+        options: {
+          deserializationStrictCompositeLinkExists: true,
           compositeSpecDictionary: {}
         },
         expectedResult: new Error(`Missing composite specification entry in composite type dictionary for type named "NotFound" at a.property.path.`),
@@ -345,10 +384,23 @@ describe("sequenceSpec", () => {
       });
 
       sequenceDeserializeWithoutStrictTypeCheckingTest({
-        testName: "should log and throw an error when a composite spec reference doesn't exist in composite spec dictionary",
+        testName: "should log a warning when a composite spec reference doesn't exist in composite spec dictionary and deserializationStrictCompositeLinkExists is false",
         elementSpec: "NotFound",
         value: [{ "A": "B doesn't exist in the composite TypeSpec dictionary" }],
         options: {
+          deserializationStrictCompositeLinkExists: false,
+          compositeSpecDictionary: {}
+        },
+        expectedResult: [{ "A": "B doesn't exist in the composite TypeSpec dictionary" }],
+        expectedLogs: [`WARNING: Missing composite specification entry in composite type dictionary for type named "NotFound" at a.property.path.`]
+      });
+
+      sequenceDeserializeWithoutStrictTypeCheckingTest({
+        testName: "should log and throw an error when a composite spec reference doesn't exist in composite spec dictionary and deserializationStrictCompositeLinkExists is true",
+        elementSpec: "NotFound",
+        value: [{ "A": "B doesn't exist in the composite TypeSpec dictionary" }],
+        options: {
+          deserializationStrictCompositeLinkExists: true,
           compositeSpecDictionary: {}
         },
         expectedResult: new Error(`Missing composite specification entry in composite type dictionary for type named "NotFound" at a.property.path.`),

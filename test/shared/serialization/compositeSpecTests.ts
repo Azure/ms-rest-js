@@ -369,7 +369,7 @@ describe("compositeSpec", () => {
       });
 
       compositeSerializeWithStrictTypeCheckingTest({
-        testName: "should log and throw an error when a composite spec reference doesn't exist in composite spec dictionary",
+        testName: "should log and throw an error when a composite spec reference doesn't exist in composite spec dictionary and serializationStrictCompositeLinkExists is false",
         compositeSpec: compositeSpec({
           typeName: "Spam",
           propertySpecs: {
@@ -380,6 +380,31 @@ describe("compositeSpec", () => {
         }),
         value: {
           "A": "B doesn't exist in the composite TypeSpec dictionary"
+        },
+        options: {
+          serializationStrictCompositeLinkExists: false
+        },
+        expectedResult: {
+          "A": "B doesn't exist in the composite TypeSpec dictionary"
+        },
+        expectedLogs: [`WARNING: Missing composite specification entry in composite type dictionary for type named "B" at a.property.path.A.`]
+      });
+
+      compositeSerializeWithStrictTypeCheckingTest({
+        testName: "should log and throw an error when a composite spec reference doesn't exist in composite spec dictionary and serializationStrictCompositeLinkExists is true",
+        compositeSpec: compositeSpec({
+          typeName: "Spam",
+          propertySpecs: {
+            "A": {
+              valueSpec: "B"
+            }
+          }
+        }),
+        value: {
+          "A": "B doesn't exist in the composite TypeSpec dictionary"
+        },
+        options: {
+          serializationStrictCompositeLinkExists: true
         },
         expectedResult: new Error(`Missing composite specification entry in composite type dictionary for type named "B" at a.property.path.A.`),
         expectedLogs: [`ERROR: Missing composite specification entry in composite type dictionary for type named "B" at a.property.path.A.`]
@@ -569,9 +594,10 @@ describe("compositeSpec", () => {
       });
 
       compositeSerializeWithStrictTypeCheckingTest({
-        testName: "should log and throw an error with unrecognized polymorphic discriminator value",
+        testName: "should log and throw an error with unrecognized polymorphic discriminator value when serializationStrictRequiredPolymorphicDiscriminator is true",
         options: {
           serializationStrictMissingProperties: true,
+          serializationStrictRequiredPolymorphicDiscriminator: true,
           compositeSpecDictionary: animalCompositeSpecDictionary
         },
         compositeSpec: animal,
@@ -579,10 +605,36 @@ describe("compositeSpec", () => {
           animalType: "tiger",
           toothType: "terrifying",
           ageInYears: 12,
+          stripes: 20,
           cuddly: true
         },
         expectedResult: new Error(`Unrecognized polymorphic discriminator value terrifying for composite type Tiger at property a.property.path.toothType.`),
         expectedLogs: [`ERROR: Unrecognized polymorphic discriminator value terrifying for composite type Tiger at property a.property.path.toothType.`]
+      });
+
+      compositeSerializeWithStrictTypeCheckingTest({
+        testName: "should log a warning with unrecognized polymorphic discriminator value when serializationStrictRequiredPolymorphicDiscriminator is false",
+        options: {
+          serializationStrictMissingProperties: true,
+          serializationStrictRequiredPolymorphicDiscriminator: false,
+          compositeSpecDictionary: animalCompositeSpecDictionary
+        },
+        compositeSpec: animal,
+        value: {
+          animalType: "tiger",
+          toothType: "terrifying",
+          ageInYears: 12,
+          stripes: 20,
+          cuddly: true
+        },
+        expectedResult: {
+          animalType: "tiger",
+          toothType: "terrifying",
+          ageInYears: 12,
+          stripes: 20,
+          cuddly: true
+        },
+        expectedLogs: [`WARNING: Unrecognized polymorphic discriminator value terrifying for composite type Tiger at property a.property.path.toothType.`]
       });
 
       compositeSerializeWithStrictTypeCheckingTest({
@@ -868,7 +920,7 @@ describe("compositeSpec", () => {
       });
 
       compositeSerializeWithoutStrictTypeCheckingTest({
-        testName: "should log and throw an error when a composite spec reference doesn't exist in composite spec dictionary",
+        testName: "should log and throw an error when a composite spec reference doesn't exist in composite spec dictionary and serializationStrictCompositeLinkExists is false",
         compositeSpec: compositeSpec({
           typeName: "Spam",
           propertySpecs: {
@@ -879,6 +931,31 @@ describe("compositeSpec", () => {
         }),
         value: {
           "A": "B doesn't exist in the composite TypeSpec dictionary"
+        },
+        options: {
+          serializationStrictCompositeLinkExists: false
+        },
+        expectedResult: {
+          "A": "B doesn't exist in the composite TypeSpec dictionary"
+        },
+        expectedLogs: [`WARNING: Missing composite specification entry in composite type dictionary for type named "B" at a.property.path.A.`]
+      });
+
+      compositeSerializeWithoutStrictTypeCheckingTest({
+        testName: "should log and throw an error when a composite spec reference doesn't exist in composite spec dictionary and serializationStrictCompositeLinkExists is true",
+        compositeSpec: compositeSpec({
+          typeName: "Spam",
+          propertySpecs: {
+            "A": {
+              valueSpec: "B"
+            }
+          }
+        }),
+        value: {
+          "A": "B doesn't exist in the composite TypeSpec dictionary"
+        },
+        options: {
+          serializationStrictCompositeLinkExists: true
         },
         expectedResult: new Error(`Missing composite specification entry in composite type dictionary for type named "B" at a.property.path.A.`),
         expectedLogs: [`ERROR: Missing composite specification entry in composite type dictionary for type named "B" at a.property.path.A.`]
@@ -1084,9 +1161,10 @@ describe("compositeSpec", () => {
       });
 
       compositeSerializeWithoutStrictTypeCheckingTest({
-        testName: "should log and throw an error with unrecognized polymorphic discriminator value",
+        testName: "should log and throw an error with unrecognized polymorphic discriminator value when serializationStrictRequiredPolymorphicDiscriminator is true",
         options: {
           serializationStrictMissingProperties: true,
+          serializationStrictRequiredPolymorphicDiscriminator: true,
           compositeSpecDictionary: animalCompositeSpecDictionary
         },
         compositeSpec: animal,
@@ -1094,10 +1172,36 @@ describe("compositeSpec", () => {
           animalType: "tiger",
           toothType: "terrifying",
           ageInYears: 12,
+          stripes: 20,
           cuddly: true
         },
         expectedResult: new Error(`Unrecognized polymorphic discriminator value terrifying for composite type Tiger at property a.property.path.toothType.`),
         expectedLogs: [`ERROR: Unrecognized polymorphic discriminator value terrifying for composite type Tiger at property a.property.path.toothType.`]
+      });
+
+      compositeSerializeWithoutStrictTypeCheckingTest({
+        testName: "should log a warning with unrecognized polymorphic discriminator value when serializationStrictRequiredPolymorphicDiscriminator is false",
+        options: {
+          serializationStrictMissingProperties: true,
+          serializationStrictRequiredPolymorphicDiscriminator: false,
+          compositeSpecDictionary: animalCompositeSpecDictionary
+        },
+        compositeSpec: animal,
+        value: {
+          animalType: "tiger",
+          toothType: "terrifying",
+          ageInYears: 12,
+          stripes: 20,
+          cuddly: true
+        },
+        expectedResult: {
+          animalType: "tiger",
+          toothType: "terrifying",
+          ageInYears: 12,
+          stripes: 20,
+          cuddly: true
+        },
+        expectedLogs: [`WARNING: Unrecognized polymorphic discriminator value terrifying for composite type Tiger at property a.property.path.toothType.`]
       });
 
       compositeSerializeWithoutStrictTypeCheckingTest({
@@ -1409,7 +1513,7 @@ describe("compositeSpec", () => {
       });
 
       compositeDeserializeWithStrictTypeCheckingTest({
-        testName: "should log and throw an error when a composite spec reference doesn't exist in composite spec dictionary",
+        testName: "should log and throw an error when a composite spec reference doesn't exist in composite spec dictionary and deserializationStrictCompositeLinkExists is false",
         compositeSpec: compositeSpec({
           typeName: "Spam",
           propertySpecs: {
@@ -1420,6 +1524,31 @@ describe("compositeSpec", () => {
         }),
         value: {
           "A": "B doesn't exist in the composite TypeSpec dictionary"
+        },
+        options: {
+          deserializationStrictCompositeLinkExists: false
+        },
+        expectedResult: {
+          "A": "B doesn't exist in the composite TypeSpec dictionary"
+        },
+        expectedLogs: [`WARNING: Missing composite specification entry in composite type dictionary for type named "B" at a.property.path.A.`]
+      });
+
+      compositeDeserializeWithStrictTypeCheckingTest({
+        testName: "should log and throw an error when a composite spec reference doesn't exist in composite spec dictionary and deserializationStrictCompositeLinkExists is true",
+        compositeSpec: compositeSpec({
+          typeName: "Spam",
+          propertySpecs: {
+            "A": {
+              valueSpec: "B"
+            }
+          }
+        }),
+        value: {
+          "A": "B doesn't exist in the composite TypeSpec dictionary"
+        },
+        options: {
+          deserializationStrictCompositeLinkExists: true
         },
         expectedResult: new Error(`Missing composite specification entry in composite type dictionary for type named "B" at a.property.path.A.`),
         expectedLogs: [`ERROR: Missing composite specification entry in composite type dictionary for type named "B" at a.property.path.A.`]
@@ -1606,6 +1735,50 @@ describe("compositeSpec", () => {
           cuddly: false,
           stripes: 43
         }
+      });
+
+      compositeDeserializeWithStrictTypeCheckingTest({
+        testName: "should log and throw an error with unrecognized polymorphic discriminator value when deserializationStrictRequiredPolymorphicDiscriminator is true",
+        options: {
+          deserializationStrictMissingProperties: true,
+          deserializationStrictRequiredPolymorphicDiscriminator: true,
+          compositeSpecDictionary: animalCompositeSpecDictionary
+        },
+        compositeSpec: animal,
+        value: {
+          animalType: "tiger",
+          toothType: "terrifying",
+          ageInYears: 12,
+          stripes: 20,
+          cuddly: true
+        },
+        expectedResult: new Error(`Unrecognized polymorphic discriminator value terrifying for composite type Tiger at property a.property.path.toothType.`),
+        expectedLogs: [`ERROR: Unrecognized polymorphic discriminator value terrifying for composite type Tiger at property a.property.path.toothType.`]
+      });
+
+      compositeDeserializeWithStrictTypeCheckingTest({
+        testName: "should log a warning with unrecognized polymorphic discriminator value when deserializationStrictRequiredPolymorphicDiscriminator is false",
+        options: {
+          deserializationStrictMissingProperties: true,
+          deserializationStrictRequiredPolymorphicDiscriminator: false,
+          compositeSpecDictionary: animalCompositeSpecDictionary
+        },
+        compositeSpec: animal,
+        value: {
+          animalType: "tiger",
+          toothType: "terrifying",
+          ageInYears: 12,
+          stripes: 20,
+          cuddly: true
+        },
+        expectedResult: {
+          animalType: "tiger",
+          toothType: "terrifying",
+          ageInYears: 12,
+          stripes: 20,
+          cuddly: true
+        },
+        expectedLogs: [`WARNING: Unrecognized polymorphic discriminator value terrifying for composite type Tiger at property a.property.path.toothType.`]
       });
 
       compositeDeserializeWithStrictTypeCheckingTest({
@@ -1890,7 +2063,7 @@ describe("compositeSpec", () => {
       });
 
       compositeDeserializeWithoutStrictTypeCheckingTest({
-        testName: "should log and throw an error when a composite spec reference doesn't exist in composite spec dictionary",
+        testName: "should log and throw an error when a composite spec reference doesn't exist in composite spec dictionary and deserializationStrictCompositeLinkExists is false",
         compositeSpec: compositeSpec({
           typeName: "Spam",
           propertySpecs: {
@@ -1901,6 +2074,31 @@ describe("compositeSpec", () => {
         }),
         value: {
           "A": "B doesn't exist in the composite TypeSpec dictionary"
+        },
+        options: {
+          deserializationStrictCompositeLinkExists: false
+        },
+        expectedResult: {
+          "A": "B doesn't exist in the composite TypeSpec dictionary"
+        },
+        expectedLogs: [`WARNING: Missing composite specification entry in composite type dictionary for type named "B" at a.property.path.A.`]
+      });
+
+      compositeDeserializeWithoutStrictTypeCheckingTest({
+        testName: "should log and throw an error when a composite spec reference doesn't exist in composite spec dictionary and deserializationStrictCompositeLinkExists is true",
+        compositeSpec: compositeSpec({
+          typeName: "Spam",
+          propertySpecs: {
+            "A": {
+              valueSpec: "B"
+            }
+          }
+        }),
+        value: {
+          "A": "B doesn't exist in the composite TypeSpec dictionary"
+        },
+        options: {
+          deserializationStrictCompositeLinkExists: true
         },
         expectedResult: new Error(`Missing composite specification entry in composite type dictionary for type named "B" at a.property.path.A.`),
         expectedLogs: [`ERROR: Missing composite specification entry in composite type dictionary for type named "B" at a.property.path.A.`]
@@ -2103,6 +2301,50 @@ describe("compositeSpec", () => {
           cuddly: false,
           stripes: 43
         }
+      });
+
+      compositeDeserializeWithoutStrictTypeCheckingTest({
+        testName: "should log and throw an error with unrecognized polymorphic discriminator value when deserializationStrictRequiredPolymorphicDiscriminator is true",
+        options: {
+          deserializationStrictMissingProperties: true,
+          deserializationStrictRequiredPolymorphicDiscriminator: true,
+          compositeSpecDictionary: animalCompositeSpecDictionary
+        },
+        compositeSpec: animal,
+        value: {
+          animalType: "tiger",
+          toothType: "terrifying",
+          ageInYears: 12,
+          stripes: 20,
+          cuddly: true
+        },
+        expectedResult: new Error(`Unrecognized polymorphic discriminator value terrifying for composite type Tiger at property a.property.path.toothType.`),
+        expectedLogs: [`ERROR: Unrecognized polymorphic discriminator value terrifying for composite type Tiger at property a.property.path.toothType.`]
+      });
+
+      compositeDeserializeWithoutStrictTypeCheckingTest({
+        testName: "should log a warning with unrecognized polymorphic discriminator value when deserializationStrictRequiredPolymorphicDiscriminator is false",
+        options: {
+          deserializationStrictMissingProperties: true,
+          deserializationStrictRequiredPolymorphicDiscriminator: false,
+          compositeSpecDictionary: animalCompositeSpecDictionary
+        },
+        compositeSpec: animal,
+        value: {
+          animalType: "tiger",
+          toothType: "terrifying",
+          ageInYears: 12,
+          stripes: 20,
+          cuddly: true
+        },
+        expectedResult: {
+          animalType: "tiger",
+          toothType: "terrifying",
+          ageInYears: 12,
+          stripes: 20,
+          cuddly: true
+        },
+        expectedLogs: [`WARNING: Unrecognized polymorphic discriminator value terrifying for composite type Tiger at property a.property.path.toothType.`]
       });
 
       compositeDeserializeWithoutStrictTypeCheckingTest({
