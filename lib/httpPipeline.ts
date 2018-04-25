@@ -20,10 +20,11 @@ import { RequestPolicyOptions } from "./requestPolicyOptions";
 import { SerializationOptions } from "./serialization/serializationOptions";
 import { Constants } from "./util/constants";
 import { isNode } from "./util/utils";
+import { generateClientRequestIdPolicy } from "./policies/generateClientRequestIdPolicy";
 
 let defaultHttpClient: HttpClient;
 
-function getDefaultHttpClient(): HttpClient {
+export function getDefaultHttpClient(): HttpClient {
   if (!defaultHttpClient) {
     defaultHttpClient = new FetchHttpClient();
   }
@@ -43,6 +44,17 @@ export interface DefaultHttpPipelineOptions {
    * The number of seconds to wait on a resource provider registration request before timing out.
    */
   rpRegistrationRetryTimeoutInSeconds?: number;
+
+  /**
+   * The package information that will be added as the User-Agent header when running under Node.js.
+   */
+  nodeJsUserAgentPackage?: string;
+
+  /**
+   * @property {boolean} [options.generateClientRequestId] - When set to true a unique x-ms-client-request-id value
+   * is generated and included in each request. Default is true.
+   */
+  generateClientRequestId?: boolean;
 
   /**
    * Whether or not to add the retry policies to the HttpPipeline.
@@ -69,29 +81,40 @@ export interface DefaultHttpPipelineOptions {
  * Get the default HttpPipeline.
  */
 export function createDefaultHttpPipeline(options?: DefaultHttpPipelineOptions): HttpPipeline {
+  if (!options) {
+    options = {};
+  }
+
   const requestPolicyFactories: RequestPolicyFactory[] = [];
 
-  if (options && options.credentials) {
+  if (options.credentials) {
     requestPolicyFactories.push(signingPolicy(options.credentials));
   }
 
-  if (isNode) {
-    requestPolicyFactories.push(msRestNodeJsUserAgentPolicy([`ms-rest-js/${Constants.msRestVersion}`]));
+  if (options.generateClientRequestId) {
+    requestPolicyFactories.push(generateClientRequestIdPolicy());
   }
 
-  requestPolicyFactories.push(serializationPolicy(options && options.serializationOptions));
+  if (isNode) {
+    if (!options.nodeJsUserAgentPackage) {
+      options.nodeJsUserAgentPackage = `ms-rest-js/${Constants.msRestVersion}`;
+    }
+    requestPolicyFactories.push(msRestNodeJsUserAgentPolicy([options.nodeJsUserAgentPackage]));
+  }
+
+  requestPolicyFactories.push(serializationPolicy(options.serializationOptions));
 
   requestPolicyFactories.push(redirectPolicy());
-  requestPolicyFactories.push(rpRegistrationPolicy(options && options.rpRegistrationRetryTimeoutInSeconds != undefined ? options.rpRegistrationRetryTimeoutInSeconds : undefined));
+  requestPolicyFactories.push(rpRegistrationPolicy(options.rpRegistrationRetryTimeoutInSeconds));
 
-  if (options && options.addRetryPolicies) {
+  if (options.addRetryPolicies) {
     requestPolicyFactories.push(exponentialRetryPolicy());
     requestPolicyFactories.push(systemErrorRetryPolicy());
   }
 
   const httpPipelineOptions: HttpPipelineOptions = {
-    httpClient: options && options.httpClient ? options.httpClient : getDefaultHttpClient(),
-    pipelineLogger: options && options.logger ? options.logger : undefined
+    httpClient: options.httpClient || getDefaultHttpClient(),
+    pipelineLogger: options.logger
   };
 
   return new HttpPipeline(requestPolicyFactories, httpPipelineOptions);

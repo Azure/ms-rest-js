@@ -12,9 +12,10 @@ import * as utils from "../util/utils";
  * Get a RequestPolicyFactory that creates rpRegistrationPolicies.
  * @param retryTimeoutInSeconds The number of seconds to wait before retrying.
  */
-export function rpRegistrationPolicy(retryTimeoutInSeconds = 30): RequestPolicyFactory {
+export function rpRegistrationPolicy(retryTimeoutInSeconds?: number): RequestPolicyFactory {
+  const setRetryTimeoutInSeconds: number = (retryTimeoutInSeconds == undefined ? 30 : retryTimeoutInSeconds);
   return (nextPolicy: RequestPolicy, options: RequestPolicyOptions) => {
-    return new RpRegistrationPolicy(retryTimeoutInSeconds, nextPolicy, options);
+    return new RpRegistrationPolicy(setRetryTimeoutInSeconds, nextPolicy, options);
   };
 }
 
