@@ -18,7 +18,7 @@ export interface HttpRequestParameters {
   /**
    * The HTTP method of the request.
    */
-  method: HttpMethod;
+  method: HttpMethod | keyof typeof HttpMethod;
 
   /**
    * The URL that the request will be sent to.
@@ -53,7 +53,7 @@ export class HttpRequest {
   /**
    * The HTTP method of this request.
    */
-  public method: HttpMethod;
+  public method: HttpMethod | keyof typeof HttpMethod;
 
   /**
    * The URL that this request will be sent to.
