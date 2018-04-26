@@ -71,6 +71,17 @@ export class HttpHeaders {
   }
 
   /**
+   * Remove the header with the provided headerName. Return whether or not the header existed and
+   * was removed.
+   * @param headerName The name of the header to remove.
+   */
+  public remove(headerName: string): boolean {
+    const result: boolean = this.contains(headerName);
+    delete this._headersMap[getHeaderKey(headerName)];
+    return result;
+  }
+
+  /**
    * Get the headers that are contained this collection as an object.
    */
   public rawHeaders(): RawHttpHeaders {
