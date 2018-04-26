@@ -77,7 +77,7 @@ import {
   SequenceMapper, Serializer, UrlParameterValue, serializeObject
 } from "./serializer";
 import {
-  stripRequest, stripResponse, delay,
+  stripResponse, delay,
   executePromisesSequentially, generateUuid, encodeUri, ServiceCallback,
   promiseToCallback, promiseToServiceCallback, isValidUuid, dispatchRequest,
   applyMixins, isNode, stringifyXML, prepareXMLRootList
@@ -110,7 +110,7 @@ export {
   PolymorphicDiscriminator, SequenceMapper, UrlParameterValue, Serializer, serializeObject,
   WebResource, RequestPrepareOptions, HttpMethods, ParameterValue, HttpOperationResponse, ServiceClient, Constants, RequestPipeline,
   ServiceClientCredentials, BaseFilter, LogFilter, ExponentialRetryPolicyFilter,
-  SystemErrorRetryPolicyFilter, SigningFilter, MsRestUserAgentFilter, stripRequest, stripResponse, delay, executePromisesSequentially,
+  SystemErrorRetryPolicyFilter, SigningFilter, MsRestUserAgentFilter, stripResponse, delay, executePromisesSequentially,
   generateUuid, isValidUuid, encodeUri, RestError, RequestOptionsBase, RequestFunction, ServiceCallback, promiseToCallback,
   promiseToServiceCallback, isStream, dispatchRequest, RedirectFilter, applyMixins, isNode, stringifyXML, prepareXMLRootList
 };
