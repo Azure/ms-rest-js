@@ -60,6 +60,10 @@ describe("HttpRequest", () => {
       assert.strictEqual(httpRequest.method, "DELETE");
       assert(httpRequest.method === HttpMethod.DELETE);
       assert(httpRequest.method === "DELETE");
+
+      const method: HttpMethod = httpRequest.method as HttpMethod;
+      assert(method === HttpMethod.DELETE);
+      assert(method === "DELETE");
     });
 
     it("should allow string versions of HttpMethod enum values", () => {
@@ -68,6 +72,10 @@ describe("HttpRequest", () => {
       assert.strictEqual(httpRequest.method, "DELETE");
       assert(httpRequest.method === HttpMethod.DELETE);
       assert(httpRequest.method === "DELETE");
+
+      const method: HttpMethod = httpRequest.method as HttpMethod;
+      assert(method === HttpMethod.DELETE);
+      assert(method === "DELETE");
     });
   });
 });
