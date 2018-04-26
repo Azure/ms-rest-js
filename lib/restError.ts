@@ -24,6 +24,10 @@ export class RestError extends Error implements RestErrorProperties {
       this.code = properties.code;
       this.statusCode = properties.statusCode;
       this.request = properties.request;
+      if (this.request && this.request.headers.contains("authorization")) {
+        this.request = this.request.clone();
+        this.request.headers.remove("authorization");
+      }
       this.response = properties.response;
       this.body = properties.body;
     }
