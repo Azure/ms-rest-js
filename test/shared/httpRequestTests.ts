@@ -52,4 +52,30 @@ describe("HttpRequest", () => {
       assert.strictEqual(httpRequest.serializedBody, undefined);
     });
   });
+
+  describe("method", () => {
+    it("should allow HttpMethod enum values", () => {
+      const httpRequest = new HttpRequest({ method: HttpMethod.DELETE, url: "www.example.com" });
+      assert.strictEqual(httpRequest.method, HttpMethod.DELETE);
+      assert.strictEqual(httpRequest.method, "DELETE");
+      assert(httpRequest.method === HttpMethod.DELETE);
+      assert(httpRequest.method === "DELETE");
+
+      const method: HttpMethod = httpRequest.method as HttpMethod;
+      assert(method === HttpMethod.DELETE);
+      assert(method === "DELETE");
+    });
+
+    it("should allow string versions of HttpMethod enum values", () => {
+      const httpRequest = new HttpRequest({ method: "DELETE", url: "www.example.com" });
+      assert.strictEqual(httpRequest.method, HttpMethod.DELETE);
+      assert.strictEqual(httpRequest.method, "DELETE");
+      assert(httpRequest.method === HttpMethod.DELETE);
+      assert(httpRequest.method === "DELETE");
+
+      const method: HttpMethod = httpRequest.method as HttpMethod;
+      assert(method === HttpMethod.DELETE);
+      assert(method === "DELETE");
+    });
+  });
 });
