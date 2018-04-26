@@ -64,6 +64,13 @@ export class HttpHeaders {
   }
 
   /**
+   * Get whether or not this header collection contains a header entry for the provided header name.
+   */
+  public contains(headerName: string): boolean {
+    return !!this._headersMap[getHeaderKey(headerName)];
+  }
+
+  /**
    * Get the headers that are contained this collection as an object.
    */
   public rawHeaders(): RawHttpHeaders {
