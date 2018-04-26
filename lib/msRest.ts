@@ -12,7 +12,7 @@ import { FetchHttpClient } from "./fetchHttpClient";
 import { HttpClient } from "./httpClient";
 import { HttpHeaders, HttpHeader, RawHttpHeaders } from "./httpHeaders";
 import { HttpMethod } from "./httpMethod";
-import { HttpPipeline, DefaultHttpPipelineOptions } from "./httpPipeline";
+import { HttpPipeline, DefaultHttpPipelineOptions, getDefaultHttpClient } from "./httpPipeline";
 import { HttpPipelineLogger } from "./httpPipelineLogger";
 import { HttpPipelineLogLevel } from "./httpPipelineLogLevel";
 import { HttpPipelineOptions } from "./httpPipelineOptions";
@@ -22,10 +22,12 @@ import { InMemoryHttpResponse } from "./inMemoryHttpResponse";
 
 // Request Policies
 import { exponentialRetryPolicy } from "./policies/exponentialRetryPolicy";
-import { RequestPolicy } from "./requestPolicy";
+import { generateClientRequestIdPolicy } from "./policies/generateClientRequestIdPolicy";
+import { BaseRequestPolicy, RequestPolicy } from "./requestPolicy";
 import { RequestPolicyFactory } from "./requestPolicyFactory";
 import { RequestPolicyOptions } from "./requestPolicyOptions";
 import { logPolicy } from "./policies/logPolicy";
+import { msRestNodeJsUserAgentPolicy } from "./policies/msRestNodeJsUserAgentPolicy";
 import { redirectPolicy } from "./policies/redirectPolicy";
 import { rpRegistrationPolicy } from "./policies/rpRegistrationPolicy";
 import { serializationPolicy } from "./policies/serializationPolicy";
@@ -89,10 +91,11 @@ export {
   // HTTP Pipeline
   FetchHttpClient, HttpClient, HttpHeaders, HttpHeader, RawHttpHeaders, HttpMethod,
   HttpPipeline, DefaultHttpPipelineOptions, HttpPipelineLogger, HttpPipelineLogLevel,
-  HttpPipelineOptions, HttpRequest, HttpResponse, InMemoryHttpResponse,
+  HttpPipelineOptions, HttpRequest, HttpResponse, InMemoryHttpResponse, getDefaultHttpClient,
 
   // Request Policies
-  RequestPolicy, RequestPolicyFactory, RequestPolicyOptions, exponentialRetryPolicy, logPolicy,
+  BaseRequestPolicy, RequestPolicy, RequestPolicyFactory, RequestPolicyOptions,
+  exponentialRetryPolicy, generateClientRequestIdPolicy, logPolicy, msRestNodeJsUserAgentPolicy,
   redirectPolicy, rpRegistrationPolicy, serializationPolicy, signingPolicy, systemErrorRetryPolicy,
   userAgentPolicy,
 
