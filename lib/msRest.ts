@@ -12,7 +12,7 @@ import { FetchHttpClient } from "./fetchHttpClient";
 import { HttpClient } from "./httpClient";
 import { HttpHeaders, HttpHeader, RawHttpHeaders } from "./httpHeaders";
 import { HttpMethod } from "./httpMethod";
-import { HttpPipeline, DefaultHttpPipelineOptions, getDefaultHttpClient } from "./httpPipeline";
+import { HttpPipeline, DefaultHttpPipelineOptions, createDefaultHttpPipeline, getDefaultHttpClient } from "./httpPipeline";
 import { HttpPipelineLogger } from "./httpPipelineLogger";
 import { HttpPipelineLogLevel } from "./httpPipelineLogLevel";
 import { HttpPipelineOptions } from "./httpPipelineOptions";
@@ -91,7 +91,8 @@ export {
   // HTTP Pipeline
   FetchHttpClient, HttpClient, HttpHeaders, HttpHeader, RawHttpHeaders, HttpMethod,
   HttpPipeline, DefaultHttpPipelineOptions, HttpPipelineLogger, HttpPipelineLogLevel,
-  HttpPipelineOptions, HttpRequest, HttpResponse, InMemoryHttpResponse, getDefaultHttpClient,
+  HttpPipelineOptions, HttpRequest, HttpResponse, InMemoryHttpResponse, createDefaultHttpPipeline,
+  getDefaultHttpClient,
 
   // Request Policies
   BaseRequestPolicy, RequestPolicy, RequestPolicyFactory, RequestPolicyOptions,
