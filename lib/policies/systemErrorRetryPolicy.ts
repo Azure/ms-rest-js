@@ -16,7 +16,7 @@ export function systemErrorRetryPolicy(retryOptions?: RetryOptions): RequestPoli
   };
 }
 
-class SystemErrorRetryPolicy extends ExponentialRetryPolicy {
+export class SystemErrorRetryPolicy extends ExponentialRetryPolicy {
   constructor(retryOptions: RetryOptions, nextPolicy: RequestPolicy, options: RequestPolicyOptions) {
     super(retryOptions, nextPolicy, options);
   }
@@ -25,8 +25,8 @@ class SystemErrorRetryPolicy extends ExponentialRetryPolicy {
    * Get whether or not we should retry the request based on the provided response.
    * @param response The response to read to determine whether or not we should retry.
    */
-  protected shouldRetry(details: { response?: HttpResponse, responseError?: RetryError }): boolean {
-    let result = true;
+  public shouldRetry(details: { response?: HttpResponse, responseError?: RetryError }): boolean {
+    let result = false;
 
     if (details.responseError && details.responseError.code) {
       switch (details.responseError.code) {
@@ -35,7 +35,7 @@ class SystemErrorRetryPolicy extends ExponentialRetryPolicy {
         case "ECONNREFUSED":
         case "ECONNRESET":
         case "ENOENT":
-          result = false;
+          result = true;
           break;
       }
     }

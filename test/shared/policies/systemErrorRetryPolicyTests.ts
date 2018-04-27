@@ -5,52 +5,65 @@ import { HttpMethod } from "../../../lib/httpMethod";
 import { HttpRequest } from "../../../lib/httpRequest";
 import { HttpResponse } from "../../../lib/httpResponse";
 import { InMemoryHttpResponse } from "../../../lib/inMemoryHttpResponse";
-import { ExponentialRetryPolicy, exponentialRetryPolicy } from "../../../lib/policies/exponentialRetryPolicy";
 import { RequestPolicy } from "../../../lib/requestPolicy";
 import { RequestPolicyFactory } from "../../../lib/requestPolicyFactory";
 import { RequestPolicyOptions } from "../../../lib/requestPolicyOptions";
+import { SystemErrorRetryPolicy, systemErrorRetryPolicy } from "../../../lib/policies/systemErrorRetryPolicy";
+import { RestError } from "../../../lib/msRest";
 
-describe("exponentialRetryPolicy", () => {
+describe("SystemErrorRetryPolicy", () => {
   describe("shouldRetry()", () => {
     const nextPolicy: RequestPolicy = {
       send: (request: HttpRequest) => {
         return Promise.resolve(new InMemoryHttpResponse(request, 200, {}));
       }
     };
-    const policy = new ExponentialRetryPolicy({}, nextPolicy, new RequestPolicyOptions());
+    const policy = new SystemErrorRetryPolicy({}, nextPolicy, new RequestPolicyOptions());
     const request = new HttpRequest({ method: "GET", url: "https://www.example.com" });
 
-    it("should return when no response is given", () => {
-      assert.strictEqual(policy.shouldRetry({}), true);
+    it("should return when no response or error is given", () => {
+      assert.strictEqual(policy.shouldRetry({}), false);
     });
 
     it("should not retry when response status code is 200", () => {
       assert.strictEqual(policy.shouldRetry({ response: new InMemoryHttpResponse(request, 200, {})}), false);
     });
 
-    it("should not retry when response status code is 300", () => {
-      assert.strictEqual(policy.shouldRetry({ response: new InMemoryHttpResponse(request, 300, {})}), false);
-    });
-
-    it("should retry when response status code is 408", () => {
-      assert.strictEqual(policy.shouldRetry({ response: new InMemoryHttpResponse(request, 408, {})}), true);
+    it("should not retry when response status code is 500", () => {
+      assert.strictEqual(policy.shouldRetry({ response: new InMemoryHttpResponse(request, 500, {})}), false);
     });
 
     it("should not retry when response status code is 500", () => {
-      assert.strictEqual(policy.shouldRetry({ response: new InMemoryHttpResponse(request, 500, {})}), true);
+      assert.strictEqual(policy.shouldRetry({ response: new InMemoryHttpResponse(request, 500, {})}), false);
     });
 
-    it("should retry when response status code is 501", () => {
-      assert.strictEqual(policy.shouldRetry({ response: new InMemoryHttpResponse(request, 501, {})}), false);
+    it("should retry when response error code is ETIMEDOUT", () => {
+      assert.strictEqual(policy.shouldRetry({ responseError: new RestError("error message", { code: "ETIMEDOUT" })}), true);
     });
 
-    it("should retry when response status code is 505", () => {
-      assert.strictEqual(policy.shouldRetry({ response: new InMemoryHttpResponse(request, 505, {})}), false);
+    it("should retry when response error code is ESOCKETTIMEDOUT", () => {
+      assert.strictEqual(policy.shouldRetry({ responseError: new RestError("error message", { code: "ESOCKETTIMEDOUT" })}), true);
+    });
+
+    it("should retry when response error code is ECONNREFUSED", () => {
+      assert.strictEqual(policy.shouldRetry({ responseError: new RestError("error message", { code: "ECONNREFUSED" })}), true);
+    });
+
+    it("should retry when response error code is ECONNRESET", () => {
+      assert.strictEqual(policy.shouldRetry({ responseError: new RestError("error message", { code: "ECONNRESET" })}), true);
+    });
+
+    it("should retry when response error code is ENOENT", () => {
+      assert.strictEqual(policy.shouldRetry({ responseError: new RestError("error message", { code: "ENOENT" })}), true);
+    });
+
+    it("should not retry when response error code is ESPAM", () => {
+      assert.strictEqual(policy.shouldRetry({ responseError: new RestError("error message", { code: "ESPAM" })}), false);
     });
   });
 
   it("should do nothing if no error occurs", async () => {
-    const policyFactory: RequestPolicyFactory = exponentialRetryPolicy({
+    const policyFactory: RequestPolicyFactory = systemErrorRetryPolicy({
       maximumAttempts: 3,
       initialRetryDelayInMilliseconds: 100,
       maximumRetryIntervalInMilliseconds: 1000
@@ -71,10 +84,10 @@ describe("exponentialRetryPolicy", () => {
     assert.deepStrictEqual(response.request, new HttpRequest({ method: HttpMethod.GET, url: "https://spam.com", headers: { "A": "B" } }), "The request associated with the response should have the modified header.");
   });
 
-  it("should retry if an undefined HttpResponse is returned", async () => {
+  it("should retry if an ETIMEDOUT error code is returned", async () => {
     let millisecondsDelayed = 0;
 
-    const policyFactory: RequestPolicyFactory = exponentialRetryPolicy({
+    const policyFactory: RequestPolicyFactory = systemErrorRetryPolicy({
       maximumAttempts: 3,
       initialRetryDelayInMilliseconds: 30 * 1000,
       maximumRetryIntervalInMilliseconds: 90 * 1000,
@@ -90,7 +103,7 @@ describe("exponentialRetryPolicy", () => {
       send: (request: HttpRequest) => {
         ++attempt;
         request.headers.set("A", attempt);
-        return Promise.resolve(attempt === 1 ? <any>undefined : new InMemoryHttpResponse(request, 200, {}));
+        return attempt === 1 ? Promise.reject(new RestError("error message", { code: "ETIMEDOUT" })) : Promise.resolve(new InMemoryHttpResponse(request, 200, {}));
       }
     };
 

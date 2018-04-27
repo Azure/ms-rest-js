@@ -76,7 +76,7 @@ export class ExponentialRetryPolicy extends BaseRequestPolicy {
    * Get whether or not we should retry the request based on the provided response.
    * @param response The response to read to determine whether or not we should retry.
    */
-  protected shouldRetry(details: { response?: HttpResponse, responseError?: RetryError }): boolean {
+  public shouldRetry(details: { response?: HttpResponse, responseError?: RetryError }): boolean {
     let result = true;
 
     if (details.response) {
