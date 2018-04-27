@@ -89,32 +89,6 @@ export function stripResponse(response: Response) {
 }
 
 /**
- * Returns a stripped version of the Http Request that does not contain the
- * Authorization header.
- *
- * @param {object} request - The Http Request object
- *
- * @return {object} strippedRequest - The stripped version of Http Request.
- */
-export function stripRequest(request: WebResource): WebResource {
-  let strippedRequest = new WebResource();
-  try {
-    strippedRequest = JSON.parse(JSON.stringify(request));
-    if (strippedRequest.headers && strippedRequest.headers.Authorization) {
-      delete strippedRequest.headers.Authorization;
-    } else if (strippedRequest.headers && strippedRequest.headers.authorization) {
-      delete strippedRequest.headers.authorization;
-    }
-  } catch (err) {
-    const errMsg = err.message;
-    err.message = `Error - "${errMsg}" occured while creating a stripped version of the request object - "${request}".`;
-    return err;
-  }
-
-  return strippedRequest;
-}
-
-/**
  * Validates the given uuid as a string
  *
  * @param {string} uuid - The uuid as a string that needs to be validated
@@ -329,7 +303,11 @@ export async function dispatchRequest(options: WebResource): Promise<HttpOperati
     } catch (err) {
       const msg = `Error "${err}" occured while converting the raw response body into string.`;
       const errCode = err.code || "RAWTEXT_CONVERSION_ERROR";
-      const e = new RestError(msg, errCode, res.status, options, res, res.body);
+      const e = new RestError(msg, {
+        code: errCode,
+        statusCode: res.status,
+        body: res.body
+      });
       return Promise.reject(e);
     }
 
@@ -356,7 +334,11 @@ export async function dispatchRequest(options: WebResource): Promise<HttpOperati
     } catch (err) {
       const msg = `Error "${err}" occured while executing JSON.parse on the response body - ${operationResponse.bodyAsText}.`;
       const errCode = err.code || "JSON_PARSE_ERROR";
-      const e = new RestError(msg, errCode, res.status, options, res, operationResponse.bodyAsText);
+      const e = new RestError(msg, {
+        code: errCode,
+        statusCode: res.status,
+        body: operationResponse.bodyAsText
+      });
       return Promise.reject(e);
     }
   }
