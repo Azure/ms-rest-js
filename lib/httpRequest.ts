@@ -68,7 +68,7 @@ export class HttpRequest {
   /**
    * The body that will be sent with this request.
    */
-  public readonly body?: any;
+  public body?: any;
 
   /**
    * The specification that describes the operation that this request will perform.
