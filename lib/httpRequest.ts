@@ -67,6 +67,7 @@ export class HttpRequest {
 
   /**
    * The body that will be sent with this request.
+   * Can be either an object tree which will get stringified or a raw type such as a string, Blob, or NodeJS.ReadableStream.
    */
   public readonly body?: any;
 
@@ -78,7 +79,7 @@ export class HttpRequest {
   /**
    * The body of this HttpRequest after it has been serialized.
    */
-  public serializedBody?: any;
+  public serializedBody?: HttpRequestBody;
 
   /**
    * Create a new HTTP request using the provided properties.

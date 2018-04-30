@@ -58,6 +58,11 @@ export interface CompositeSpecParameters {
   typeName: string;
 
   /**
+   * The name of the root XML element (if this CompositeTypeSpec is the root of the object tree).
+   */
+  xmlRootName?: string;
+
+  /**
    * The options that specify polymorphism for this CompositeTypeSpec.
    */
   polymorphism?: Polymorphism;
@@ -75,12 +80,7 @@ export interface CompositeSpecParameters {
 export function compositeSpec(parameters: CompositeSpecParameters): CompositeTypeSpec {
   return {
     specType: "Composite",
-
-    typeName: parameters.typeName,
-
-    polymorphism: parameters.polymorphism,
-
-    propertySpecs: parameters.propertySpecs,
+    ...parameters,
 
     serialize(propertyPath: PropertyPath, value: CompositeType, options: SerializationOptions): CompositeType {
       let result: CompositeType;

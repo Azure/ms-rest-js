@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 import { PropertyPath } from "./propertyPath";
-import { SerializationOptions, failDeserializeTypeCheck, failSerializeTypeCheck } from "./serializationOptions";
+import { SerializationOptions, failDeserializeTypeCheck, failSerializeTypeCheck, SerializationOutputType } from "./serializationOptions";
 import { TypeSpec } from "./typeSpec";
 
 /**
@@ -18,6 +18,14 @@ const booleanSpec: TypeSpec<boolean, boolean> = {
   },
 
   deserialize(propertyPath: PropertyPath, value: boolean, options: SerializationOptions): boolean {
+    if (typeof value === "string" && options.outputType === SerializationOutputType.XML) {
+      if (value === "true") {
+        value = true;
+      } else if (value === "false") {
+        value = false;
+      }
+    }
+
     if (typeof value !== "boolean") {
       failDeserializeTypeCheck(options, propertyPath, value, "a boolean");
     }

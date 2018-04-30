@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 import { PropertyPath } from "./propertyPath";
-import { SerializationOptions, failDeserializeTypeCheck, failSerializeTypeCheck } from "./serializationOptions";
+import { SerializationOptions, failDeserializeTypeCheck, failSerializeTypeCheck, SerializationOutputType } from "./serializationOptions";
 import { TypeSpec } from "./typeSpec";
 
 /**
@@ -18,6 +18,13 @@ const numberSpec: TypeSpec<number, number> = {
   },
 
   deserialize(propertyPath: PropertyPath, value: number, options: SerializationOptions): number {
+    if (typeof value === "string" && options.outputType === SerializationOutputType.XML) {
+      const parsedValue = parseFloat(value);
+      if (!isNaN(parsedValue)) {
+        value = parsedValue;
+      }
+    }
+
     if (typeof value !== "number") {
       failDeserializeTypeCheck(options, propertyPath, value, "a number");
     }
