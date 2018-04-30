@@ -8,6 +8,8 @@ import { Constants } from "./constants";
 import { RestError } from "../restError";
 import { HttpOperationResponse } from "../httpOperationResponse";
 import * as xml2js from "xml2js";
+import { HttpRequest } from "../httpRequest";
+import { HttpResponse } from "../httpResponse";
 
 /**
  * Provides the fetch() method based on the environment.
@@ -181,10 +183,10 @@ export function delay<T>(t: number, value?: T): Promise<T> {
  *
  * @property {Error|RestError} err         - The error occurred if any, while executing the request; otherwise null
  * @property {TResult} result                 - The deserialized response body if an error did not occur.
- * @property {WebResource}  request           - The raw/actual request sent to the server if an error did not occur.
- * @property {Response} response  - The raw/actual response from the server if an error did not occur.
+ * @property {HttpRequest}  request           - The raw/actual request sent to the server if an error did not occur.
+ * @property {HttpResponse} response  - The raw/actual response from the server if an error did not occur.
  */
-export interface ServiceCallback<TResult> { (err: Error | RestError, result?: TResult, request?: WebResource, response?: Response): void; }
+export interface ServiceCallback<TResult> { (err: Error | RestError, result?: TResult, request?: HttpRequest, response?: HttpResponse): void; }
 
 /**
  * Converts a Promise to a callback.
