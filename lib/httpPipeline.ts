@@ -43,7 +43,7 @@ export interface DefaultHttpPipelineOptions {
   /**
    * The number of seconds to wait on a resource provider registration request before timing out.
    */
-  rpRegistrationRetryTimeoutInSeconds?: number;
+  rpRegistrationRetryTimeout?: number;
 
   /**
    * The package information that will be added as the User-Agent header when running under Node.js.
@@ -105,7 +105,7 @@ export function createDefaultHttpPipeline(options?: DefaultHttpPipelineOptions):
   requestPolicyFactories.push(serializationPolicy(options.serializationOptions));
 
   requestPolicyFactories.push(redirectPolicy());
-  requestPolicyFactories.push(rpRegistrationPolicy(options.rpRegistrationRetryTimeoutInSeconds));
+  requestPolicyFactories.push(rpRegistrationPolicy(options.rpRegistrationRetryTimeout));
 
   if (options.addRetryPolicies) {
     requestPolicyFactories.push(exponentialRetryPolicy());
