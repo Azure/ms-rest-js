@@ -17,7 +17,7 @@ const booleanSpec: TypeSpec<boolean, boolean> = {
     return value;
   },
 
-  deserialize(propertyPath: PropertyPath, value: boolean, options: SerializationOptions): boolean {
+  deserialize(propertyPath: PropertyPath, value: boolean | string, options: SerializationOptions): boolean {
     if (typeof value === "string" && options.outputType === SerializationOutputType.XML) {
       if (value === "true") {
         value = true;
@@ -29,7 +29,7 @@ const booleanSpec: TypeSpec<boolean, boolean> = {
     if (typeof value !== "boolean") {
       failDeserializeTypeCheck(options, propertyPath, value, "a boolean");
     }
-    return value;
+    return value as boolean;
   }
 };
 

@@ -22,7 +22,7 @@ const unixTimeSpec: TypeSpec<number, Date> = {
     return result;
   },
 
-  deserialize(propertyPath: PropertyPath, value: number, options: SerializationOptions): Date {
+  deserialize(propertyPath: PropertyPath, value: number | string, options: SerializationOptions): Date {
     if (typeof value === "string" && options.outputType === SerializationOutputType.XML) {
       const parsedValue = parseFloat(value);
       if (!isNaN(parsedValue)) {

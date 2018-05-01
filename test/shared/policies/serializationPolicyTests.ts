@@ -164,13 +164,17 @@ describe("serializationPolicy", () => {
       xmlRootName: "my-root",
       propertySpecs: {
         "foo": {
-          xmlName: "foo",
+          xmlName: "my-foo",
           valueSpec: numberSpec
+        },
+        "bar": {
+          valueSpec: booleanSpec
         }
       }
     });
+    const expectedBody = { foo: 123, bar: true };
     const request = new HttpRequest({
-      body: { foo: 123 },
+      body: expectedBody,
       method: "POST",
       url: "/",
       headers: { "Content-Type": "application/xml" },
@@ -184,8 +188,7 @@ describe("serializationPolicy", () => {
 
     const response = await policy.send(request);
     const body = await response.deserializedBody();
-    assert(body);
-    assert.equal(body.foo, 123);
+    assert.deepEqual(body, expectedBody);
   });
 
   it("[de]serializes XML root lists", async () => {

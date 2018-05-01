@@ -134,7 +134,7 @@ export function compositeSpec(parameters: CompositeSpecParameters): CompositeTyp
                     } else if (childPropertySpec.xmlName) {
                       serializedChildPropertyName = childPropertySpec.xmlName;
                     } else {
-                      throw logAndCreateError(options, `When the serialization output type is XML, property specification for ${propertyPath.pathStringConcat(childPropertyName)} doesn't have a value for xmlElementName or xmlName.`);
+                      serializedChildPropertyName = childPropertyName;
                     }
 
                     if (childPropertySpec.xmlIsAttribute) {
@@ -218,7 +218,7 @@ export function compositeSpec(parameters: CompositeSpecParameters): CompositeTyp
                   } else if (childPropertySpec.xmlName) {
                     serializedChildPropertyName = childPropertySpec.xmlName;
                   } else {
-                    throw logAndCreateError(options, `When the serialization output type is XML, property specification for ${propertyPath.pathStringConcat(childPropertyName)} doesn't have a value for xmlElementName or xmlName.`);
+                    serializedChildPropertyName = childPropertyName;
                   }
 
                   if (childPropertySpec.xmlIsAttribute) {

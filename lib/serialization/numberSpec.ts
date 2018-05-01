@@ -17,7 +17,7 @@ const numberSpec: TypeSpec<number, number> = {
     return value;
   },
 
-  deserialize(propertyPath: PropertyPath, value: number, options: SerializationOptions): number {
+  deserialize(propertyPath: PropertyPath, value: number | string, options: SerializationOptions): number {
     if (typeof value === "string" && options.outputType === SerializationOutputType.XML) {
       const parsedValue = parseFloat(value);
       if (!isNaN(parsedValue)) {
@@ -28,7 +28,7 @@ const numberSpec: TypeSpec<number, number> = {
     if (typeof value !== "number") {
       failDeserializeTypeCheck(options, propertyPath, value, "a number");
     }
-    return value;
+    return value as number;
   }
 };
 
