@@ -36,6 +36,7 @@ export class InMemoryHttpResponse implements HttpResponse {
   }
 
   get readableStreamBody(): ReadableStream | NodeJS.ReadableStream | null {
+    // tslint:disable-next-line no-null-keyword
     return null;
   }
 
