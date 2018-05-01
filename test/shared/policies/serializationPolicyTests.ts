@@ -16,21 +16,23 @@ import dateTimeRfc1123Spec from "../../../lib/serialization/dateTimeRfc1123Spec"
 import numberSpec from "../../../lib/serialization/numberSpec";
 import objectSpec from "../../../lib/serialization/objectSpec";
 import { sequenceSpec } from "../../../lib/serialization/sequenceSpec";
+import { SerializationOutputType } from "../../../lib/serialization/serializationOptions";
+import stringSpec from "../../../lib/serialization/stringSpec";
 
 describe("serializationPolicy", () => {
   it("serializes request and response bodies", async () => {
-    const policyFactory: RequestPolicyFactory = serializationPolicy();
+    const policyFactory: RequestPolicyFactory = serializationPolicy({ outputType: SerializationOutputType.JSON });
 
     const inMemoryEchoServer: RequestPolicy = {
       send: (request: HttpRequest) => {
-        return Promise.resolve(new InMemoryHttpResponse(request, 200, request.headers, JSON.stringify(request.serializedBody)));
+        return Promise.resolve(new InMemoryHttpResponse(request, 200, request.headers, request.serializedBody as string));
       }
     };
 
     const policy: RequestPolicy = policyFactory(inMemoryEchoServer, new RequestPolicyOptions());
 
     const request = new HttpRequest({
-      method: HttpMethod.GET,
+      method: HttpMethod.POST,
       url: "https://spam.com",
       headers: {
         "1": "one",
@@ -117,17 +119,18 @@ describe("serializationPolicy", () => {
       "dateProperty": new Date("2018-10-05"),
       "dateTimeRfc1123Property": new Date("2011-10-05T14:48:00.000Z")
     });
-    assert.deepEqual(request.serializedBody, {
+    assert.deepEqual(request.serializedBody, JSON.stringify({
       "booleanProperty": false,
       "numberProperty": 20,
       "objectProperty": { "booleanProperty": true },
       "sequenceProperty": [],
       "dateProperty": "2018-10-05",
       "dateTimeRfc1123Property": "Wed, 05 Oct 2011 14:48:00 GMT"
-    });
+    }));
 
     assert(response instanceof InMemoryHttpResponse);
-    assert.deepEqual(JSON.parse(await response.textBody() as string), {
+    const stringBody = await response.textBody() as string;
+    assert.deepEqual(JSON.parse(stringBody), {
       "booleanProperty": false,
       "numberProperty": 20,
       "objectProperty": { "booleanProperty": true },
@@ -143,5 +146,95 @@ describe("serializationPolicy", () => {
       "dateProperty": new Date("2018-10-05"),
       "dateTimeRfc1123Property": new Date("2011-10-05T14:48:00.000Z")
     });
+  });
+
+  it("[de]serializes XML request and response bodies", async () => {
+    const policyFactory: RequestPolicyFactory = serializationPolicy({ outputType: SerializationOutputType.XML });
+
+    const inMemoryEchoServer: RequestPolicy = {
+      send: async (request: HttpRequest) => {
+        return new InMemoryHttpResponse(request, 200, request.headers, request.serializedBody as string);
+      }
+    };
+
+    const policy: RequestPolicy = policyFactory(inMemoryEchoServer, new RequestPolicyOptions());
+
+    const bodySpec = compositeSpec({
+      typeName: "Root",
+      xmlRootName: "my-root",
+      propertySpecs: {
+        "foo": {
+          xmlName: "my-foo",
+          valueSpec: numberSpec
+        },
+        "bar": {
+          valueSpec: booleanSpec
+        }
+      }
+    });
+    const expectedBody = { foo: 123, bar: true };
+    const request = new HttpRequest({
+      body: expectedBody,
+      method: "POST",
+      url: "/",
+      headers: { "Content-Type": "application/xml" },
+
+      operationSpec: {
+        requestHttpMethod: HttpMethod.GET,
+        requestBodySpec: bodySpec,
+        responseBodySpec: bodySpec
+      }
+    });
+
+    const response = await policy.send(request);
+    const body = await response.deserializedBody();
+    assert.deepEqual(body, expectedBody);
+  });
+
+  it("[de]serializes XML root lists", async () => {
+    const policyFactory: RequestPolicyFactory = serializationPolicy({ outputType: SerializationOutputType.XML });
+
+    const inMemoryEchoServer: RequestPolicy = {
+      send: async (request: HttpRequest) => {
+        return new InMemoryHttpResponse(request, 200, request.headers, request.serializedBody as string);
+      }
+    };
+
+    const policy: RequestPolicy = policyFactory(inMemoryEchoServer, new RequestPolicyOptions());
+    const bodySpec = sequenceSpec(stringSpec, { xmlRootName: "my-root", xmlElementName: "item" });
+    const request = new HttpRequest({
+      method: "POST",
+      url: "/",
+      headers: { "Content-Type": "application/xml" },
+
+      operationSpec: {
+        requestHttpMethod: HttpMethod.GET,
+        requestBodySpec: bodySpec,
+        responseBodySpec: bodySpec
+      },
+      body: ["foo", "bar", "baz"]
+    });
+    const response = await policy.send(request);
+    assert.deepEqual(await response.deserializedBody(), ["foo", "bar", "baz"]);
+  });
+
+  it("ignores bodies when no bodySpec is provided", async () => {
+    const policyFactory: RequestPolicyFactory = serializationPolicy();
+    const inMemoryEchoServer: RequestPolicy = {
+      send: async (request: HttpRequest) => {
+        return new InMemoryHttpResponse(request, 200, request.headers, request.serializedBody || request.body)
+      }
+    };
+
+    const policy: RequestPolicy = policyFactory(inMemoryEchoServer, new RequestPolicyOptions());
+    const expectedBody = "This is my body";
+    const request = new HttpRequest({
+      method: "POST",
+      url: "/",
+      body: expectedBody
+    });
+    const response = await policy.send(request);
+    const responseBody = await response.textBody();
+    assert.strictEqual(responseBody, expectedBody);
   });
 });

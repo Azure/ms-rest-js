@@ -231,6 +231,20 @@ const XML2JS_PARSER_OPTS: xml2js.OptionsV2 = {
   explicitRoot: false
 };
 
+// TODO: remove xml2js, use synchronous parsing, remove dispatchRequest()
+export function parseXML(xmlString: string): Promise<any> {
+  const xmlParser = new xml2js.Parser(XML2JS_PARSER_OPTS);
+  return new Promise(function(resolve: (result: any) => void, reject: (err: any) => void) {
+    xmlParser.parseString(xmlString, function(err: any, result: any) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(result);
+      }
+    });
+  });
+}
+
 export function stringifyXML(obj: any, opts?: { rootName?: string }) {
   const builder = new xml2js.Builder({
     explicitArray: false,

@@ -6,7 +6,16 @@ import { PropertyPath } from "../../../lib/serialization/propertyPath";
 import { TypeSpec } from "../../../lib/serialization/typeSpec";
 import { InMemoryHttpPipelineLogger } from "../inMemoryHttpPipelineLogger";
 
-export function serializeTest<TSerialized, TDeserialized>(args: { testName?: string, typeSpec: TypeSpec<TSerialized, TDeserialized>, propertyPath?: string[], value: TDeserialized, options?: SerializationOptions, expectedResult: TSerialized | Error, expectedLogs?: string[] }): void {
+export interface TestArgs<TSerialized, TDeserialized> {
+  testName?: string,
+  typeSpec: TypeSpec<TSerialized, TDeserialized>,
+  propertyPath?: string[], value: any,
+  options?: SerializationOptions,
+  expectedResult: any,
+  expectedLogs?: string[]
+}
+
+export function serializeTest<TSerialized, TDeserialized>(args: TestArgs<TSerialized, TDeserialized>): void {
   const propertyPath: string[] = args.propertyPath || ["a", "property", "path"];
 
   const logger = new InMemoryHttpPipelineLogger();
@@ -34,7 +43,7 @@ export function serializeTest<TSerialized, TDeserialized>(args: { testName?: str
   }
 }
 
-export function deserializeTest<TSerialized, TDeserialized>(args: { testName?: string, typeSpec: TypeSpec<TSerialized, TDeserialized>, propertyPath?: string[], value: TSerialized, options?: SerializationOptions, expectedResult: TDeserialized | Error, expectedLogs?: string[] }): void {
+export function deserializeTest<TSerialized, TDeserialized>(args: TestArgs<TSerialized, TDeserialized>): void {
   const propertyPath: string[] = args.propertyPath || ["a", "property", "path"];
 
   const logger = new InMemoryHttpPipelineLogger();
