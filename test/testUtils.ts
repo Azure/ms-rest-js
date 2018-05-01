@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 // parseInt just gives NaN (falsy) for undefined/null
-const port = parseInt(process.env.PORT!) || 3000;
+const port = parseInt(process.env.PORT!) || 3001;
 
 /**
  * Base URL for the ms-rest-js testserver.
