@@ -40,7 +40,7 @@ class SerializationPolicy extends BaseRequestPolicy {
   }
 
   async send(request: HttpRequest): Promise<HttpResponse> {
-    const requestBodySpec = request.operationSpec && request.operationSpec.requestBodySpec;
+    const requestBodySpec: TypeSpec<any, any> | undefined = request.operationSpec && request.operationSpec.requestBodySpec;
     if (requestBodySpec) {
       let serializedBody = requestBodySpec.serialize(new PropertyPath([]), request.body, this._serializationOptions);
       if (this._serializationOptions.outputType === SerializationOutputType.XML) {
@@ -60,7 +60,7 @@ class SerializationPolicy extends BaseRequestPolicy {
 
     let response: HttpResponse = await this._nextPolicy.send(request);
 
-    const responseBodySpec = request.operationSpec && request.operationSpec.responseBodySpec;
+    const responseBodySpec: TypeSpec<any, any> | undefined = request.operationSpec && request.operationSpec.responseBodySpec;
     if (responseBodySpec) {
       const responseTextBody: string | undefined = await response.textBody();
       if (responseTextBody != undefined) {

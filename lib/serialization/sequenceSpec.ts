@@ -11,14 +11,14 @@ export interface SequenceTypeSpec<TSerializedElement, TDeserializedElement> exte
   elementSpec: TypeSpec<TSerializedElement, TDeserializedElement> | string;
 
   /**
-   * The element name of the list elements.
+   * The element name of the list elements. Only used when this is a root list.
    */
   xmlElementName?: string;
 }
 
 export interface SequenceSpecOptions {
   /**
-   * The element name of the root element.
+   * The element name of the root element. Only used when this is a root list.
    */
   xmlRootName: string;
 

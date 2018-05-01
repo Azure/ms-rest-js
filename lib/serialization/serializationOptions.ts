@@ -87,8 +87,6 @@ export interface SerializationOptions {
  * The different types of output that can be produced by serialization.
  */
 export enum SerializationOutputType {
-  // TODO: maybe replace this enum with Content-Type checks?
-
   JSON,
   XML
 }
