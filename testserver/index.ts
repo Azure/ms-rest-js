@@ -4,7 +4,7 @@ import webpack = require("webpack");
 import express = require("express");
 import testconfig = require("../webpack.testconfig");
 
-const port = parseInt(process.env.PORT) || 3000;
+const port = parseInt(process.env.PORT) || 3001;
 const app = express();
 
 if (process.argv.indexOf("--no-webpack") === -1) {
