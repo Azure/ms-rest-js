@@ -6,11 +6,15 @@ import { BaseRequestPolicy, RequestPolicy } from "../requestPolicy";
 import { RequestPolicyFactory } from "../requestPolicyFactory";
 import { RequestPolicyOptions } from "../requestPolicyOptions";
 import { PropertyPath } from "../serialization/propertyPath";
-import { SerializationOptions } from "../serialization/serializationOptions";
+import { SerializationOptions, SerializationOutputType } from "../serialization/serializationOptions";
 import { TypeSpec } from "../serialization/typeSpec";
 import { InMemoryHttpResponse } from "../inMemoryHttpResponse";
+import { parseXML, stringifyXML } from "../util/utils";
+import { SequenceTypeSpec } from "../msRest";
 
 const defaultSerializationOptions: SerializationOptions = {
+  outputType: SerializationOutputType.JSON,
+
   serializationStrictTypeChecking: true,
   serializationStrictAllowedProperties: true,
   serializationStrictMissingProperties: true,
@@ -26,7 +30,7 @@ const defaultSerializationOptions: SerializationOptions = {
  */
 export function serializationPolicy(serializationOptions?: SerializationOptions): RequestPolicyFactory {
   return (nextPolicy: RequestPolicy, options: RequestPolicyOptions) => {
-    return new SerializationPolicy(serializationOptions || defaultSerializationOptions, nextPolicy, options);
+    return new SerializationPolicy({ ...defaultSerializationOptions, ...serializationOptions }, nextPolicy, options);
   };
 }
 
@@ -38,7 +42,20 @@ class SerializationPolicy extends BaseRequestPolicy {
   async send(request: HttpRequest): Promise<HttpResponse> {
     const requestBodySpec: TypeSpec<any, any> | undefined = request.operationSpec && request.operationSpec.requestBodySpec;
     if (requestBodySpec) {
-      request.serializedBody = requestBodySpec.serialize(new PropertyPath([]), request.body, this._serializationOptions);
+      let serializedBody = requestBodySpec.serialize(new PropertyPath([]), request.body, this._serializationOptions);
+      if (this._serializationOptions.outputType === SerializationOutputType.XML) {
+        // Handle XML root list
+        if (requestBodySpec.specType === "Sequence") {
+          const sequenceSpec = requestBodySpec as SequenceTypeSpec<any, any>;
+          if (!sequenceSpec.xmlElementName) {
+            throw new Error(`sequenceSpec must have xmlElementName when used as a root model spec:\n${JSON.stringify(requestBodySpec, undefined, 2)}`);
+          }
+          serializedBody = { [sequenceSpec.xmlElementName!]: serializedBody };
+        }
+        request.serializedBody = stringifyXML(serializedBody, { rootName: requestBodySpec.xmlRootName });
+      } else {
+        request.serializedBody = JSON.stringify(serializedBody);
+      }
     }
 
     let response: HttpResponse = await this._nextPolicy.send(request);
@@ -46,10 +63,26 @@ class SerializationPolicy extends BaseRequestPolicy {
     const responseBodySpec: TypeSpec<any, any> | undefined = request.operationSpec && request.operationSpec.responseBodySpec;
     if (responseBodySpec) {
       const responseTextBody: string | undefined = await response.textBody();
-      const responseBody: any = responseTextBody == undefined ? undefined : JSON.parse(responseTextBody);
-      const responseDeserializedBody: any = responseBodySpec.deserialize(new PropertyPath([]), responseBody, this._serializationOptions);
+      if (responseTextBody != undefined) {
+        let responseBody: any;
+        const responseContentType = response.headers.get("Content-Type");
+        if (responseContentType === "application/xml" || responseContentType === "text/xml") {
+          responseBody = await parseXML(responseTextBody);
 
-      response = new InMemoryHttpResponse(response.request, response.statusCode, response.headers, responseTextBody, responseDeserializedBody);
+          // Handle XML root list
+          if (responseBodySpec.specType === "Sequence") {
+            const sequenceSpec = responseBodySpec as SequenceTypeSpec<any, any>;
+            if (!sequenceSpec.xmlElementName) {
+              throw new Error(`sequenceSpec must have xmlElementName when used as a root model spec:\n${JSON.stringify(responseBodySpec, undefined, 2)}`);
+            }
+            responseBody = responseBody && responseBody[sequenceSpec.xmlElementName];
+          }
+        } else {
+          responseBody = JSON.parse(responseTextBody);
+        }
+        const responseDeserializedBody = responseBodySpec.deserialize(new PropertyPath([]), responseBody, this._serializationOptions);
+        response = new InMemoryHttpResponse(response.request, response.statusCode, response.headers, responseTextBody, responseDeserializedBody);
+      }
     }
 
     return response;

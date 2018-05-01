@@ -13,6 +13,11 @@ export interface TypeSpec<TSerialized, TDeserialized> {
   specType: string;
 
   /**
+   * The name of the root element when this type spec is serialized with XML.
+   */
+  xmlRootName?: string;
+
+  /**
    * Validate and serialize the provided value into the return type TSerialized.
    * @param propertyPath The path from the root of the type being serialized down to this
    * property.
