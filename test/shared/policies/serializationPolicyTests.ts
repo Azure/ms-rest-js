@@ -32,7 +32,7 @@ describe("serializationPolicy", () => {
     const policy: RequestPolicy = policyFactory(inMemoryEchoServer, new RequestPolicyOptions());
 
     const request = new HttpRequest({
-      method: HttpMethod.GET,
+      method: HttpMethod.POST,
       url: "https://spam.com",
       headers: {
         "1": "one",
@@ -171,8 +171,9 @@ describe("serializationPolicy", () => {
     });
     const request = new HttpRequest({
       body: { foo: 123 },
-      method: "GET",
+      method: "POST",
       url: "/",
+      headers: { "Content-Type": "application/xml" },
 
       operationSpec: {
         requestHttpMethod: HttpMethod.GET,
@@ -199,8 +200,10 @@ describe("serializationPolicy", () => {
     const policy: RequestPolicy = policyFactory(inMemoryEchoServer, new RequestPolicyOptions());
     const bodySpec = sequenceSpec(stringSpec, { xmlRootName: "my-root", xmlElementName: "item" });
     const request = new HttpRequest({
-      method: "GET",
+      method: "POST",
       url: "/",
+      headers: { "Content-Type": "application/xml" },
+
       operationSpec: {
         requestHttpMethod: HttpMethod.GET,
         requestBodySpec: bodySpec,
@@ -210,5 +213,25 @@ describe("serializationPolicy", () => {
     });
     const response = await policy.send(request);
     assert.deepEqual(await response.deserializedBody(), ["foo", "bar", "baz"]);
+  });
+
+  it("ignores bodies when no bodySpec is provided", async () => {
+    const policyFactory: RequestPolicyFactory = serializationPolicy();
+    const inMemoryEchoServer: RequestPolicy = {
+      send: async (request: HttpRequest) => {
+        return new InMemoryHttpResponse(request, 200, request.headers, request.serializedBody || request.body)
+      }
+    };
+
+    const policy: RequestPolicy = policyFactory(inMemoryEchoServer, new RequestPolicyOptions());
+    const expectedBody = "This is my body";
+    const request = new HttpRequest({
+      method: "POST",
+      url: "/",
+      body: expectedBody
+    });
+    const response = await policy.send(request);
+    const responseBody = await response.textBody();
+    assert.strictEqual(responseBody, expectedBody);
   });
 });

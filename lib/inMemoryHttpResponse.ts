@@ -36,8 +36,7 @@ export class InMemoryHttpResponse implements HttpResponse {
   }
 
   get readableStreamBody(): ReadableStream | NodeJS.ReadableStream | null {
-    // TODO: create appropriate stream type based on environment
-    throw new Error("Stream body not supported in InMemoryHttpResponse");
+    return null;
   }
 
   blobBody(): Promise<Blob> {
