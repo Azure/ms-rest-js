@@ -1,5 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
+import * as FormData from "form-data";
 import { HttpHeaders, RawHttpHeaders } from "./httpHeaders";
 import { HttpMethod } from "./httpMethod";
 import { OperationSpec } from "./operationSpec";
@@ -96,6 +97,40 @@ export class HttpRequest {
     this.body = args.body;
     this.serializedBody = args.serializedBody;
     this.operationSpec = args.operationSpec;
+  }
+
+  /**
+   * Update this HttpRequest from the provided form data.
+   */
+  public updateFromFormData(formData: any): void {
+    const requestForm = new FormData();
+    const appendFormValue = (key: string, value: any) => {
+      if (value && value.hasOwnProperty("value") && value.hasOwnProperty("options")) {
+        requestForm.append(key, value.value, value.options);
+      } else {
+        requestForm.append(key, value);
+      }
+    };
+    for (const formKey in formData) {
+      if (formData.hasOwnProperty(formKey)) {
+        const formValue: any = formData[formKey];
+        if (formValue instanceof Array) {
+          for (let j = 0; j < formValue.length; j++) {
+            appendFormValue(formKey, formValue[j]);
+          }
+        } else {
+          appendFormValue(formKey, formValue);
+        }
+      }
+    }
+    this.body = requestForm;
+
+    if (typeof requestForm.getBoundary === "function") {
+      const contentType: string | undefined = this.headers.get("Content-Type");
+      if (contentType && contentType.indexOf("multipart/form-data") > -1) {
+        this.headers.set("Content-Type", `multipart/form-data; boundary=${requestForm.getBoundary()}`);
+      }
+    }
   }
 
   /**
