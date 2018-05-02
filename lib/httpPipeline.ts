@@ -102,7 +102,8 @@ export function createDefaultHttpPipeline(options?: DefaultHttpPipelineOptions):
     requestPolicyFactories.push(msRestNodeJsUserAgentPolicy([options.nodeJsUserAgentPackage]));
   }
 
-  requestPolicyFactories.push(serializationPolicy(options.serializationOptions));
+  // Disable serializationPolicy until OperationSpecs are working.
+  // requestPolicyFactories.push(serializationPolicy(options.serializationOptions));
 
   requestPolicyFactories.push(redirectPolicy());
   requestPolicyFactories.push(rpRegistrationPolicy(options.rpRegistrationRetryTimeout));
