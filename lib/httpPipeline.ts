@@ -62,6 +62,11 @@ export interface DefaultHttpPipelineOptions {
   addRetryPolicies?: boolean;
 
   /**
+   * Whether or not to add the serialization policy to the HttpPipeline.
+   */
+  addSerializationPolicy?: boolean;
+
+  /**
    * Options to pass to the SerializationPolicy.
    */
   serializationOptions?: SerializationOptions;
@@ -102,8 +107,9 @@ export function createDefaultHttpPipeline(options?: DefaultHttpPipelineOptions):
     requestPolicyFactories.push(msRestNodeJsUserAgentPolicy([options.nodeJsUserAgentPackage]));
   }
 
-  // Disable serializationPolicy until OperationSpecs are working.
-  // requestPolicyFactories.push(serializationPolicy(options.serializationOptions));
+  if (options.addSerializationPolicy) {
+    requestPolicyFactories.push(serializationPolicy(options.serializationOptions));
+  }
 
   requestPolicyFactories.push(redirectPolicy());
   requestPolicyFactories.push(rpRegistrationPolicy(options.rpRegistrationRetryTimeout));
