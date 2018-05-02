@@ -5,6 +5,17 @@ import { HttpRequest } from "./httpRequest";
 import { HttpResponse } from "./httpResponse";
 
 /**
+ * Options that can be used to configure a ServiceClient.
+ */
+export interface ServiceClientOptions {
+  /**
+   * The HttpPipeline that this ServiceClient will use, or the options that will be used to create
+   * the default HttpPipeline.
+   */
+  httpPipeline?: HttpPipeline | DefaultHttpPipelineOptions;
+}
+
+/**
  * An abstract type that encapsulates a HttpPipeline for derived ServiceClient types.
  */
 export abstract class ServiceClient {
@@ -12,15 +23,14 @@ export abstract class ServiceClient {
 
   /**
    * The ServiceClient constructor
-   * @param httpPipeline The HttpPipeline that this ServiceClient will use, or the options that will
-   * be used to create the default HttpPipeline.
+   * @param httpPipeline
    */
-  constructor(httpPipeline?: HttpPipeline | DefaultHttpPipelineOptions) {
-    if (httpPipeline) {
-      if (httpPipeline instanceof HttpPipeline) {
-        this._httpPipeline = httpPipeline;
+  constructor(options?: ServiceClientOptions) {
+    if (options && options.httpPipeline) {
+      if (options.httpPipeline instanceof HttpPipeline) {
+        this._httpPipeline = options.httpPipeline;
       } else {
-        this._httpPipeline = createDefaultHttpPipeline(httpPipeline);
+        this._httpPipeline = createDefaultHttpPipeline(options.httpPipeline);
       }
     } else {
       this._httpPipeline = createDefaultHttpPipeline();

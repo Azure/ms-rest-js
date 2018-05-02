@@ -39,8 +39,8 @@ class TestClient extends msRest.ServiceClient {
   acceptLanguage?: string;
   models?: any;
   serializer: msRest.Serializer;
-  constructor(baseUri: string, httpPipeline?: msRest.HttpPipeline | msRest.DefaultHttpPipelineOptions) {
-    super(httpPipeline);
+  constructor(baseUri: string, options?: msRest.ServiceClientOptions) {
+    super(options);
 
     this.baseUri = baseUri;
     if (!this.baseUri) {

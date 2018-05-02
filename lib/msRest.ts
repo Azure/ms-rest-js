@@ -61,7 +61,7 @@ import uuidSpec from "./serialization/uuidSpec";
 import { WebResource, RequestPrepareOptions, HttpMethods, ParameterValue, RequestOptionsBase } from "./webResource";
 import { HttpOperationResponse } from "./httpOperationResponse";
 import { RestError } from "./restError";
-import { ServiceClient } from "./serviceClient";
+import { ServiceClient, ServiceClientOptions } from "./serviceClient";
 import { Constants } from "./util/constants";
 import { RequestPipeline, RequestFunction } from "./requestPipeline";
 import { LogFilter } from "./filters/logFilter";
@@ -107,11 +107,13 @@ export {
   SerializationOptions, streamSpec, stringSpec, timeSpanSpec, TypeSpec, unixTimeSpec, uuidSpec,
 
   // Legacy
-  BaseMapperType, CompositeMapper, DictionaryMapper, EnumMapper, Mapper, MapperConstraints, MapperType,
-  PolymorphicDiscriminator, SequenceMapper, UrlParameterValue, Serializer, serializeObject,
-  WebResource, RequestPrepareOptions, HttpMethods, ParameterValue, HttpOperationResponse, ServiceClient, Constants, RequestPipeline,
+  BaseMapperType, CompositeMapper, DictionaryMapper, EnumMapper, Mapper, MapperConstraints,
+  MapperType, PolymorphicDiscriminator, SequenceMapper, UrlParameterValue, Serializer,
+  serializeObject, WebResource, RequestPrepareOptions, HttpMethods, ParameterValue,
+  HttpOperationResponse, ServiceClient, ServiceClientOptions, Constants, RequestPipeline,
   ServiceClientCredentials, BaseFilter, LogFilter, ExponentialRetryPolicyFilter,
-  SystemErrorRetryPolicyFilter, SigningFilter, MsRestUserAgentFilter, stripResponse, delay, executePromisesSequentially,
-  generateUuid, isValidUuid, encodeUri, RestError, RequestOptionsBase, RequestFunction, ServiceCallback, promiseToCallback,
-  promiseToServiceCallback, isStream, dispatchRequest, RedirectFilter, applyMixins, isNode, stringifyXML, prepareXMLRootList
+  SystemErrorRetryPolicyFilter, SigningFilter, MsRestUserAgentFilter, stripResponse, delay,
+  executePromisesSequentially, generateUuid, isValidUuid, encodeUri, RestError, RequestOptionsBase,
+  RequestFunction, ServiceCallback, promiseToCallback, promiseToServiceCallback, isStream,
+  dispatchRequest, RedirectFilter, applyMixins, isNode, stringifyXML, prepareXMLRootList
 };
