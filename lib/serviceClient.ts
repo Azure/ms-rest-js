@@ -3,7 +3,7 @@
 import { DefaultHttpPipelineOptions, HttpPipeline, createDefaultHttpPipeline } from "./httpPipeline";
 import { HttpRequest } from "./httpRequest";
 import { HttpResponse } from "./httpResponse";
-import { WebResource, HttpOperationResponse } from "./msRest";
+import { WebResource } from "./msRest";
 
 /**
  * Options that can be used to configure a ServiceClient.
