@@ -3,6 +3,7 @@
 import { DefaultHttpPipelineOptions, HttpPipeline, createDefaultHttpPipeline } from "./httpPipeline";
 import { HttpRequest } from "./httpRequest";
 import { HttpResponse } from "./httpResponse";
+import { WebResource, HttpOperationResponse } from "./msRest";
 
 /**
  * Options that can be used to configure a ServiceClient.
@@ -35,6 +36,11 @@ export abstract class ServiceClient {
     } else {
       this._httpPipeline = createDefaultHttpPipeline();
     }
+  }
+
+  async pipeline(request: WebResource): Promise<HttpResponse> {
+    const httpRequest: HttpRequest = request.toHttpRequest();
+    return this.sendRequest(httpRequest);
   }
 
   /**

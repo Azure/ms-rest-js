@@ -3,6 +3,7 @@
 
 import { generateUuid } from "./util/utils";
 import { Serializer, Mapper } from "./serializer";
+import { HttpRequest } from "./msRest";
 export type HttpMethods = "GET" | "PUT" | "POST" | "DELETE" | "PATCH" | "HEAD" | "OPTIONS" | "TRACE";
 
 /**
@@ -31,6 +32,15 @@ export class WebResource {
     this.body = body;
     this.query = query;
     this.formData = undefined;
+  }
+
+  public toHttpRequest(): HttpRequest {
+    return new HttpRequest({
+      method: this.method,
+      url: this.url,
+      headers: this.headers,
+      body: this.body
+    });
   }
 
   /**
