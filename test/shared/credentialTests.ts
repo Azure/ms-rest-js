@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 import * as msRest from "../../lib/msRest";
+import { encodeString } from "../../lib/util/base64";
 const should = require("should");
 const TokenCredentials = msRest.TokenCredentials;
 const BasicAuthenticationCredentials = msRest.BasicAuthenticationCredentials;
@@ -61,9 +62,9 @@ describe("Token credentials", () => {
 });
 
 describe("Basic Authentication credentials", () => {
-  const encodedCredentials = Buffer.from(dummyuserName + ":" + dummyPassword).toString("base64");
+  const encodedCredentials = encodeString(dummyuserName + ":" + dummyPassword);
   describe("usage", () => {
-    it("should base64 encode the username and password and set auth header with baisc scheme in request", (done) => {
+    it("should base64 encode the username and password and set auth header with basic scheme in request", (done) => {
       const creds = new BasicAuthenticationCredentials(dummyuserName, dummyPassword);
       const request = new msRest.WebResource();
       request.headers = {};

@@ -39,7 +39,9 @@ const config: webpack.Configuration = {
     tls: false,
     tty: false,
     v8: false,
-    Buffer: true // TODO: find alternative to Buffer for tests
+    Buffer: false,
+    process: false,
+    stream: false
   }
 };
 

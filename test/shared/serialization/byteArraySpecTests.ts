@@ -4,6 +4,14 @@ import * as assert from "assert";
 import byteArraySpec from "../../../lib/serialization/byteArraySpec";
 import { deserializeTest, serializeTest } from "./specTest";
 
+function createUint8Array(value: number[]): Uint8Array {
+  if (typeof Buffer === "undefined") {
+    return Uint8Array.from(value);
+  } else {
+    return Buffer.from(value);
+  }
+}
+
 describe("byteArraySpec", () => {
   it("should have \"ByteArray\" for its typeName property", () => {
     assert.strictEqual("ByteArray", byteArraySpec.specType);
@@ -11,7 +19,7 @@ describe("byteArraySpec", () => {
 
   describe("serialize()", () => {
     describe("with strict type-checking", () => {
-      function byteArraySerializeWithStrictTypeCheckingTest(args: { propertyPath?: string[], value: Buffer, expectedResult: string | Error, expectedLogs?: string[] }): void {
+      function byteArraySerializeWithStrictTypeCheckingTest(args: { propertyPath?: string[], value: Uint8Array, expectedResult: string | Error, expectedLogs?: string[] }): void {
         serializeTest({
           typeSpec: byteArraySpec,
           propertyPath: args.propertyPath,
@@ -26,30 +34,30 @@ describe("byteArraySpec", () => {
 
       byteArraySerializeWithStrictTypeCheckingTest({
         value: undefined as any,
-        expectedResult: new Error("Property a.property.path with value undefined must be a Buffer."),
-        expectedLogs: [`ERROR: Property a.property.path with value undefined must be a Buffer.`]
+        expectedResult: new Error("Property a.property.path with value undefined must be a Uint8Array."),
+        expectedLogs: [`ERROR: Property a.property.path with value undefined must be a Uint8Array.`]
       });
 
       byteArraySerializeWithStrictTypeCheckingTest({
         value: 5 as any,
-        expectedResult: new Error("Property a.property.path with value 5 must be a Buffer."),
-        expectedLogs: [`ERROR: Property a.property.path with value 5 must be a Buffer.`]
+        expectedResult: new Error("Property a.property.path with value 5 must be a Uint8Array."),
+        expectedLogs: [`ERROR: Property a.property.path with value 5 must be a Uint8Array.`]
       });
 
       byteArraySerializeWithStrictTypeCheckingTest({
         value: {} as any,
-        expectedResult: new Error("Property a.property.path with value {} must be a Buffer."),
-        expectedLogs: [`ERROR: Property a.property.path with value {} must be a Buffer.`]
+        expectedResult: new Error("Property a.property.path with value {} must be a Uint8Array."),
+        expectedLogs: [`ERROR: Property a.property.path with value {} must be a Uint8Array.`]
       });
 
       byteArraySerializeWithStrictTypeCheckingTest({
-        value: new Buffer([0, 1, 2, 3, 4]),
+        value: createUint8Array([0, 1, 2, 3, 4]),
         expectedResult: "AAECAwQ="
       });
     });
 
     describe("without strict type-checking", () => {
-      function byteArraySerializeWithoutStrictTypeCheckingTest(args: { propertyPath?: string[], value: Buffer, expectedResult: string | Error, expectedLogs?: string[] }): void {
+      function byteArraySerializeWithoutStrictTypeCheckingTest(args: { propertyPath?: string[], value: Uint8Array, expectedResult: string | Error, expectedLogs?: string[] }): void {
         serializeTest({
           typeSpec: byteArraySpec,
           propertyPath: args.propertyPath,
@@ -65,23 +73,23 @@ describe("byteArraySpec", () => {
       byteArraySerializeWithoutStrictTypeCheckingTest({
         value: undefined as any,
         expectedResult: undefined as any,
-        expectedLogs: [`WARNING: Property a.property.path with value undefined should be a Buffer.`]
+        expectedLogs: [`WARNING: Property a.property.path with value undefined should be a Uint8Array.`]
       });
 
       byteArraySerializeWithoutStrictTypeCheckingTest({
         value: 5 as any,
         expectedResult: 5 as any,
-        expectedLogs: [`WARNING: Property a.property.path with value 5 should be a Buffer.`]
+        expectedLogs: [`WARNING: Property a.property.path with value 5 should be a Uint8Array.`]
       });
 
       byteArraySerializeWithoutStrictTypeCheckingTest({
         value: {} as any,
         expectedResult: {} as any,
-        expectedLogs: [`WARNING: Property a.property.path with value {} should be a Buffer.`]
+        expectedLogs: [`WARNING: Property a.property.path with value {} should be a Uint8Array.`]
       });
 
       byteArraySerializeWithoutStrictTypeCheckingTest({
-        value: new Buffer([0, 1, 2, 3, 4]),
+        value: createUint8Array([0, 1, 2, 3, 4]),
         expectedResult: "AAECAwQ="
       });
     });
@@ -89,7 +97,7 @@ describe("byteArraySpec", () => {
 
   describe("deserialize()", () => {
     describe("with strict type-checking", () => {
-      function byteArrayDeserializeWithStrictTypeCheckingTest(args: { propertyPath?: string[], value: string, expectedResult: Buffer | Error, expectedLogs?: string[] }): void {
+      function byteArrayDeserializeWithStrictTypeCheckingTest(args: { propertyPath?: string[], value: string, expectedResult: Uint8Array | Error, expectedLogs?: string[] }): void {
         deserializeTest({
           typeSpec: byteArraySpec,
           propertyPath: args.propertyPath,
@@ -122,12 +130,12 @@ describe("byteArraySpec", () => {
 
       byteArrayDeserializeWithStrictTypeCheckingTest({
         value: "AAECAwQ=",
-        expectedResult: new Buffer([0, 1, 2, 3, 4])
+        expectedResult: createUint8Array([0, 1, 2, 3, 4])
       });
     });
 
     describe("without strict type-checking", () => {
-      function byteArrayDeserializeWithoutStrictTypeCheckingTest(args: { propertyPath?: string[], value: string, expectedResult: Buffer | Error, expectedLogs?: string[] }): void {
+      function byteArrayDeserializeWithoutStrictTypeCheckingTest(args: { propertyPath?: string[], value: string, expectedResult: Uint8Array | Error, expectedLogs?: string[] }): void {
         deserializeTest({
           typeSpec: byteArraySpec,
           propertyPath: args.propertyPath,
@@ -160,7 +168,7 @@ describe("byteArraySpec", () => {
 
       byteArrayDeserializeWithoutStrictTypeCheckingTest({
         value: "AAECAwQ=",
-        expectedResult: new Buffer([0, 1, 2, 3, 4])
+        expectedResult: createUint8Array([0, 1, 2, 3, 4])
       });
     });
   });

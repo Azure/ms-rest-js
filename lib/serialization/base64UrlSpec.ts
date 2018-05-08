@@ -3,22 +3,22 @@
 import { PropertyPath } from "./propertyPath";
 import { SerializationOptions, failDeserializeTypeCheck, failSerializeTypeCheck } from "./serializationOptions";
 import { TypeSpec } from "./typeSpec";
+import { decodeByteArray, encodeByteArray } from "../util/base64";
 
 /**
  * A type specification that describes how to validate and serialize a Base64Url encoded ByteArray.
  */
-const base64UrlSpec: TypeSpec<string, Buffer> = {
+const base64UrlSpec: TypeSpec<string, Uint8Array> = {
   specType: "Base64Url",
 
-  serialize(propertyPath: PropertyPath, value: Buffer, options: SerializationOptions): string {
+  serialize(propertyPath: PropertyPath, value: Uint8Array, options: SerializationOptions): string {
     let result: string;
 
-    const anyValue: any = value;
-    if (!anyValue || !anyValue.constructor || typeof anyValue.constructor.isBuffer !== "function" || !anyValue.constructor.isBuffer(value)) {
-      failSerializeTypeCheck(options, propertyPath, value, "a Buffer");
-      result = anyValue;
+    if (!(value instanceof Uint8Array)) {
+      failSerializeTypeCheck(options, propertyPath, value, "a Uint8Array");
+      result = value;
     } else {
-      const base64String: string = value.toString("base64");
+      const base64String = encodeByteArray(value);
 
       let trimmedResultLength = base64String.length;
       while ((trimmedResultLength - 1) >= 0 && base64String[trimmedResultLength - 1] === "=") {
@@ -31,8 +31,8 @@ const base64UrlSpec: TypeSpec<string, Buffer> = {
     return result;
   },
 
-  deserialize(propertyPath: PropertyPath, value: string, options: SerializationOptions): Buffer {
-    let result: Buffer;
+  deserialize(propertyPath: PropertyPath, value: string, options: SerializationOptions): Uint8Array {
+    let result: Uint8Array;
 
     if (!value || typeof value !== "string") {
       failDeserializeTypeCheck(options, propertyPath, value, "a string");
@@ -41,8 +41,8 @@ const base64UrlSpec: TypeSpec<string, Buffer> = {
       // Base64Url to Base64.
       value = value.replace(/\-/g, "+").replace(/\_/g, "/");
 
-      // Base64 to Buffer.
-      result = Buffer.from(value, "base64");
+      // Base64 to Uint8Array.
+      result = decodeByteArray(value);
     }
 
     return result;
