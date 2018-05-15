@@ -75,12 +75,12 @@
     "url": "http://github.com/Azure/ms-rest-js/issues"
   },
   "scripts": {
-    "build": "run-p build:node build:browser",
+    "build": "run-s build:node build:browser",
     "build:node": "tsc",
     "build:browser": "webpack && node node_modules/uglify-es/bin/uglifyjs --source-map -c -m -o msRestBundle.min.js msRestBundle.js",
     "watch:node": "tsc -w",
     "watch:browser": "webpack -w",
-    "test": "run-p test:tslint test:nodejs-unit",
+    "test": "run-s test:tslint test:nodejs-unit",
     "test:server": "ts-node testserver",
     "test:tslint": "tslint -p . -c tslint.json --exclude \"./test/**/*.ts\"",
     "test:nodejs-unit": "mocha",
