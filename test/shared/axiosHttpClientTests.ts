@@ -101,12 +101,7 @@ describe("axiosHttpClient", () => {
     const request = new WebResource(`${baseURL}/fileupload`, "POST", new Uint8Array(1024*1024*10), undefined, undefined, true, controller.signal);
     const client = new AxiosHttpClient();
     const promise = client.sendRequest(request);
-    await new Promise((resolve) => {
-      setTimeout(() => {
-        controller.abort();
-        resolve();
-      });
-    });
+    controller.abort();
     try {
       await promise;
       assert.fail('');
