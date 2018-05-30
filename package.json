@@ -84,7 +84,7 @@
     "watch:browser": "webpack -w",
     "test": "run-p test:tslint test:unit",
     "test:tslint": "tslint -p . -c tslint.json --exclude \"./test/**/*.ts\"",
-    "test:unit": "node ./.scripts/chrome-unit",
+    "test:unit": "node ./.scripts/unit",
     "test:server": "ts-node testserver",
     "prepare": "npm run build",
     "publish-preview": "npm test && shx rm -rf dist/test && node ./.scripts/publish",
