@@ -42,6 +42,7 @@ export class WebResource {
   formData?: any;
   query?: { [key: string]: any; };
   operationSpec?: OperationSpec;
+  withCredentials: boolean;
 
   abortSignal?: AbortSignal;
 
@@ -58,6 +59,7 @@ export class WebResource {
     query?: { [key: string]: any; },
     headers?: { [key: string]: any; } | HttpHeaders,
     rawResponse = false,
+    withCredentials = false,
     abortSignal?: AbortSignal,
     onUploadProgress?: (progress: TransferProgressEvent) => void,
     onDownloadProgress?: (progress: TransferProgressEvent) => void) {
@@ -69,6 +71,7 @@ export class WebResource {
     this.body = body;
     this.query = query;
     this.formData = undefined;
+    this.withCredentials = withCredentials;
     this.abortSignal = abortSignal;
     this.onUploadProgress = onUploadProgress;
     this.onDownloadProgress = onDownloadProgress;
@@ -275,6 +278,7 @@ export class WebResource {
       this.query,
       this.headers && this.headers.clone(),
       this.rawResponse,
+      this.withCredentials,
       this.abortSignal,
       this.onUploadProgress,
       this.onDownloadProgress);
