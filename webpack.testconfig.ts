@@ -31,9 +31,9 @@ const config: webpack.Configuration = {
     extensions: [".tsx", ".ts", ".js"]
   },
   node: {
-    fs: false,
+    fs: "empty",
     net: false,
-    path: false,
+    path: "empty",
     dns: false,
     tls: false,
     tty: false,
