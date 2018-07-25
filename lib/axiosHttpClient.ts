@@ -4,30 +4,26 @@
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
 import { Transform, Readable } from "stream";
 import * as FormData from "form-data";
-import * as tough from "isomorphic-tough-cookie";
+import * as tough from "tough-cookie";
 import { HttpClient } from "./httpClient";
 import { HttpHeaders } from "./httpHeaders";
 import { HttpOperationResponse } from "./httpOperationResponse";
 import { RestError } from "./restError";
-import { isNode } from "./util/utils";
-import { WebResource } from "./webResource";
+import { WebResource, HttpRequestBody } from "./webResource";
 
 const axiosClient = axios.create();
-
-if (isNode) {
-  // Workaround for https://github.com/axios/axios/issues/1158
-  axiosClient.interceptors.request.use(config => ({ ...config, method: config.method && config.method.toUpperCase() }));
-}
+// Workaround for https://github.com/axios/axios/issues/1158
+axiosClient.interceptors.request.use(config => ({ ...config, method: config.method && config.method.toUpperCase() }));
 
 /**
  * A HttpClient implementation that uses axios to send HTTP requests.
  */
 export class AxiosHttpClient implements HttpClient {
-  private readonly cookieJar = isNode ? new tough.CookieJar() : undefined;
+  private readonly cookieJar = new tough.CookieJar();
 
   public async sendRequest(httpRequest: WebResource): Promise<HttpOperationResponse> {
     if (!httpRequest) {
-      return Promise.reject(new Error("options (WebResource) cannot be null or undefined and must be of type object."));
+      throw new Error("httpRequest (WebResource) cannot be null or undefined and must be of type object.");
     }
 
     if (httpRequest.formData) {
@@ -94,28 +90,31 @@ export class AxiosHttpClient implements HttpClient {
     });
 
     const rawHeaders: { [headerName: string]: string } = httpRequest.headers.rawHeaders();
-    const bodyType = typeof httpRequest.body;
-    // Workaround for https://github.com/axios/axios/issues/755
-    // tslint:disable-next-line:no-null-keyword
-    let axiosBody = bodyType === "undefined" ? null :
-      bodyType === "function" ? httpRequest.body() :
-      httpRequest.body;
+
+    const httpRequestBody: HttpRequestBody = httpRequest.body;
+    let axiosBody =
+      // Workaround for https://github.com/axios/axios/issues/755
+      // tslint:disable-next-line:no-null-keyword
+      typeof httpRequestBody === "undefined" ? null :
+      typeof httpRequestBody === "function" ? httpRequestBody() :
+      httpRequestBody;
 
     const onUploadProgress = httpRequest.onUploadProgress;
-    if (onUploadProgress && typeof axiosBody.pipe === "function") {
+    if (onUploadProgress && axiosBody) {
       const totalBytes = parseInt(httpRequest.headers.get("Content-Length")!) || undefined;
       let loadedBytes = 0;
       const uploadReportStream = new Transform({
         transform: (chunk: string | Buffer, _encoding, callback) => {
           loadedBytes += chunk.length;
-          onUploadProgress({
-            loadedBytes,
-            totalBytes
-          });
+          onUploadProgress({ loadedBytes, totalBytes });
           callback(undefined, chunk);
         }
       });
-      (axiosBody as Readable).pipe(uploadReportStream);
+      if (isReadableStream(axiosBody)) {
+        axiosBody.pipe(uploadReportStream);
+      } else {
+        uploadReportStream.end(axiosBody);
+      }
       axiosBody = uploadReportStream;
     }
 
@@ -151,30 +150,32 @@ export class AxiosHttpClient implements HttpClient {
     const headers = new HttpHeaders(res.headers);
 
     const onDownloadProgress = httpRequest.onDownloadProgress;
-    let readableStreamBody: Readable = res.data;
-    if (httpRequest.rawResponse && onDownloadProgress) {
-      const totalBytes = parseInt(headers.get("Content-Length")!) || undefined;
-      let loadedBytes = 0;
-      const downloadReportStream = new Transform({
-        transform: (chunk: string | Buffer, _encoding, callback) => {
-          loadedBytes += chunk.length;
-          onDownloadProgress({
-            loadedBytes,
-            totalBytes
-          });
-          callback(undefined, chunk);
-        }
-      });
-      readableStreamBody.pipe(downloadReportStream);
-      readableStreamBody = downloadReportStream;
+    let responseBody: Readable | string = res.data;
+    if (onDownloadProgress) {
+      const totalBytes = parseInt(headers.get("Content-Length")!) || (responseBody as string).length || undefined;
+      if (isReadableStream(responseBody)) {
+        let loadedBytes = 0;
+        const downloadReportStream = new Transform({
+          transform: (chunk: string | Buffer, _encoding, callback) => {
+            loadedBytes += chunk.length;
+            onDownloadProgress({ loadedBytes, totalBytes });
+            callback(undefined, chunk);
+          }
+        });
+        responseBody.pipe(downloadReportStream);
+        responseBody = downloadReportStream;
+      } else if (totalBytes) {
+        // Calling callback for non-stream response for consistency with browser
+        onDownloadProgress({ loadedBytes: totalBytes, totalBytes });
+      }
     }
 
     const operationResponse: HttpOperationResponse = {
       request: httpRequest,
       status: res.status,
       headers,
-      readableStreamBody: httpRequest.rawResponse ? readableStreamBody : undefined,
-      bodyAsText: httpRequest.rawResponse ? undefined : res.data
+      readableStreamBody: httpRequest.rawResponse ? responseBody as Readable : undefined,
+      bodyAsText: httpRequest.rawResponse ? undefined : responseBody as string
     };
 
     if (this.cookieJar) {
@@ -192,6 +193,10 @@ export class AxiosHttpClient implements HttpClient {
       }
     }
 
-    return Promise.resolve(operationResponse);
+    return operationResponse;
   }
+}
+
+function isReadableStream(body: any): body is Readable {
+  return typeof body.pipe === "function";
 }
