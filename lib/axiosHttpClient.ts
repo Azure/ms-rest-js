@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
+import { Transform, Readable } from "stream";
 import * as FormData from "form-data";
 import * as tough from "isomorphic-tough-cookie";
 import { HttpClient } from "./httpClient";
@@ -96,9 +97,27 @@ export class AxiosHttpClient implements HttpClient {
     const bodyType = typeof httpRequest.body;
     // Workaround for https://github.com/axios/axios/issues/755
     // tslint:disable-next-line:no-null-keyword
-    const axiosBody = bodyType === "undefined" ? null :
+    let axiosBody = bodyType === "undefined" ? null :
       bodyType === "function" ? httpRequest.body() :
       httpRequest.body;
+
+    const onUploadProgress = httpRequest.onUploadProgress;
+    if (onUploadProgress && typeof axiosBody.pipe === "function") {
+      const totalBytes = parseInt(httpRequest.headers.get("Content-Length")!) || undefined;
+      let loadedBytes = 0;
+      const uploadReportStream = new Transform({
+        transform: (chunk: string | Buffer, _encoding, callback) => {
+          loadedBytes += chunk.length;
+          onUploadProgress({
+            loadedBytes,
+            totalBytes
+          });
+          callback(undefined, chunk);
+        }
+      });
+      (axiosBody as Readable).pipe(uploadReportStream);
+      axiosBody = uploadReportStream;
+    }
 
     let res: AxiosResponse;
     try {
@@ -111,7 +130,7 @@ export class AxiosHttpClient implements HttpClient {
         validateStatus: () => true,
         // Workaround for https://github.com/axios/axios/issues/1362
         maxContentLength: 1024 * 1024 * 1024 * 10,
-        responseType: httpRequest.rawResponse ? (isNode ? "stream" : "blob") : "text",
+        responseType: httpRequest.rawResponse ? "stream" : "text",
         cancelToken,
         timeout: httpRequest.timeout
       };
@@ -131,13 +150,30 @@ export class AxiosHttpClient implements HttpClient {
 
     const headers = new HttpHeaders(res.headers);
 
+    const onDownloadProgress = httpRequest.onDownloadProgress;
+    let readableStreamBody: Readable = res.data;
+    if (httpRequest.rawResponse && onDownloadProgress) {
+      const totalBytes = parseInt(headers.get("Content-Length")!) || undefined;
+      let loadedBytes = 0;
+      const downloadReportStream = new Transform({
+        transform: (chunk: string | Buffer, _encoding, callback) => {
+          loadedBytes += chunk.length;
+          onDownloadProgress({
+            loadedBytes,
+            totalBytes
+          });
+          callback(undefined, chunk);
+        }
+      });
+      readableStreamBody.pipe(downloadReportStream);
+      readableStreamBody = downloadReportStream;
+    }
+
     const operationResponse: HttpOperationResponse = {
       request: httpRequest,
       status: res.status,
       headers,
-
-      readableStreamBody: httpRequest.rawResponse && isNode ? res.data as any : undefined,
-      blobBody: !httpRequest.rawResponse || isNode ? undefined : () => res.data,
+      readableStreamBody: httpRequest.rawResponse ? readableStreamBody : undefined,
       bodyAsText: httpRequest.rawResponse ? undefined : res.data
     };
 

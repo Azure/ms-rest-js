@@ -7,6 +7,9 @@ import { isNode } from "../../lib/util/utils";
 import { WebResource } from "../../lib/webResource";
 import { baseURL } from "../testUtils";
 
+// nodejs only
+import { PassThrough } from 'stream';
+
 function getAbortController(): AbortController {
   let controller: AbortController;
   if (typeof AbortController === "function") {
@@ -151,31 +154,49 @@ describe("defaultHttpClient", () => {
     }
   });
 
-  it("should report upload and download progress (browser only)", async function () {
-    if (isNode) {
-      this.skip();
-    }
-
+  it("should report upload and download progress", async function () {
     let uploadNotified = false;
     let downloadNotified = false;
 
     const buf = new Uint8Array(1024 * 1024 * 1);
-    const request = new WebResource(`${baseURL}/fileupload`, "POST", buf, undefined, undefined, true, undefined, undefined, 0,
+    let body: Uint8Array | (() => NodeJS.ReadableStream);
+    if (isNode) {
+      body = () => {
+        const stream = new PassThrough();
+        stream.end(buf);
+        return stream;
+      };
+    } else {
+      body = buf;
+    }
+
+    const request = new WebResource(`${baseURL}/fileupload`, "POST", body, undefined, undefined, true, undefined, undefined, 0,
       ev => {
         uploadNotified = true;
-        ev.should.not.be.instanceof(ProgressEvent);
+        if (typeof ProgressEvent !== "undefined") {
+          ev.should.not.be.instanceof(ProgressEvent);
+        }
         ev.loadedBytes.should.be.a.Number;
       },
       ev => {
         downloadNotified = true;
-        ev.should.not.be.instanceof(ProgressEvent);
+        if (typeof ProgressEvent !== "undefined") {
+          ev.should.not.be.instanceof(ProgressEvent);
+        }
         ev.loadedBytes.should.be.a.Number;
       });
 
     const client = new DefaultHttpClient();
     const response = await client.sendRequest(request);
+    const streamBody = response.readableStreamBody;
     if (response.blobBody) {
       await response.blobBody();
+    } else if (streamBody) {
+      streamBody.on('data', () => {});
+      await new Promise((resolve, reject) => {
+        streamBody.on("end", resolve);
+        streamBody.on("error", reject);
+      });
     }
     assert(uploadNotified);
     assert(downloadNotified);

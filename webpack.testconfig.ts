@@ -40,7 +40,7 @@ const config: webpack.Configuration = {
     v8: false,
     Buffer: false,
     process: false,
-    stream: false
+    stream: "empty"
   }
 };
 
