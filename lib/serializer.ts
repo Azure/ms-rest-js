@@ -752,8 +752,13 @@ export interface SimpleMapperType {
 
 export interface CompositeMapperType {
   name: "Composite";
-  className: string;
-  modelProperties: { [propertyName: string]: Mapper };
+
+  // Only one of the two below properties should be present.
+  // Use className to reference another type definition,
+  // and use modelProperties when the reference to the other type has been resolved.
+  className?: string;
+  modelProperties?: { [propertyName: string]: Mapper };
+
   uberParent?: string;
   polymorphicDiscriminator?: string | PolymorphicDiscriminator;
 }
