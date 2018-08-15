@@ -1162,4 +1162,163 @@ describe("msrest", function () {
       assert.deepStrictEqual(actual, expected);
     });
   });
+
+  describe("serialize with --client-side-validation=false", function() {
+    const noValidationSerializer = new msRest.Serializer({}, false, false);
+
+    it("should allow passing null when required: true", function() {
+      const mapper: msRest.CompositeMapper = {
+        type: {
+          name: "Composite",
+          modelProperties: {
+            prop: {
+              serializedName: "prop",
+              required: true,
+              type: { name: "String" }
+            }
+          }
+        }
+      };
+
+      const obj = { prop: null };
+      const actual = noValidationSerializer.serialize(mapper, obj, "obj");
+      assert.deepStrictEqual(actual, obj);
+    });
+
+    it("should allow passing null when nullable: false", function() {
+      const mapper: msRest.CompositeMapper = {
+        type: {
+          name: "Composite",
+          modelProperties: {
+            prop: {
+              serializedName: "prop",
+              nullable: false,
+              type: { name: "String" }
+            }
+          }
+        }
+      };
+
+      const obj = { prop: null };
+      const actual = noValidationSerializer.serialize(mapper, obj, "obj");
+      assert.deepStrictEqual(actual, obj);
+    });
+
+    it("should allow passing undefined when required: true", function() {
+      const mapper: msRest.CompositeMapper = {
+        type: {
+          name: "Composite",
+          modelProperties: {
+            prop: {
+              serializedName: "prop",
+              required: true,
+              type: { name: "String" }
+            }
+          }
+        }
+      };
+
+      const obj = { prop: undefined };
+      const actual = noValidationSerializer.serialize(mapper, obj, "obj");
+      assert.deepStrictEqual(actual, {});
+    });
+
+    it("should ignore constraints", function() {
+      const mapper: msRest.CompositeMapper = {
+        type: {
+          name: "Composite",
+          modelProperties: {
+            prop: {
+              serializedName: "prop",
+              required: true,
+              type: { name: "String" },
+              constraints: {
+                MaxLength: 1
+              }
+            }
+          }
+        }
+      };
+
+      const obj = { prop: "foo" };
+      const actual = noValidationSerializer.serialize(mapper, obj, "obj");
+      assert.deepStrictEqual(actual, obj);
+    });
+
+    it("should accept basic type mismatches", function() {
+      const mapper: msRest.CompositeMapper = {
+        type: {
+          name: "Composite",
+          modelProperties: {
+            prop: {
+              serializedName: "prop",
+              required: true,
+              type: { name: "String" }
+            }
+          }
+        }
+      };
+
+      const obj = { prop: 42 };
+      const actual = noValidationSerializer.serialize(mapper, obj, "obj");
+      assert.deepStrictEqual(actual, obj);
+    });
+
+    it("should accept disallowed enum values", function() {
+      const mapper: msRest.CompositeMapper = {
+        type: {
+          name: "Composite",
+          modelProperties: {
+            prop: {
+              serializedName: "prop",
+              required: true,
+              type: { name: "Enum", allowedValues: ["foo", "bar"] }
+            }
+          }
+        }
+      };
+
+      const obj = { prop: "hello" };
+      const actual = noValidationSerializer.serialize(mapper, obj, "obj");
+      assert.deepStrictEqual(actual, obj);
+    });
+
+    it("should accept invalid dates", function() {
+      const mapper: msRest.CompositeMapper = {
+        type: {
+          name: "Composite",
+          modelProperties: {
+            prop: {
+              serializedName: "prop",
+              required: true,
+              type: { name: "Date" }
+            }
+          }
+        }
+      };
+
+      const obj = { prop: "hello" };
+      const actual = noValidationSerializer.serialize(mapper, obj, "obj");
+      assert.deepStrictEqual(actual, obj);
+    });
+
+    it("should accept invalid durations", function() {
+      const mapper: msRest.CompositeMapper = {
+        type: {
+          name: "Composite",
+          modelProperties: {
+            prop: {
+              serializedName: "prop",
+              required: true,
+              type: { name: "TimeSpan" }
+            }
+          }
+        }
+      };
+
+      const obj = { prop: "hello" };
+      const actual = noValidationSerializer.serialize(mapper, obj, "obj");
+      assert.deepStrictEqual(actual, obj);
+    });
+  });
 });
