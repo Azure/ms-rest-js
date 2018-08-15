@@ -5,7 +5,10 @@ import * as base64 from "./util/base64";
 import * as utils from "./util/utils";
 
 export class Serializer {
-  constructor(public readonly modelMappers: { [key: string]: any } = {}, public readonly isXML?: boolean) { }
+  constructor(
+    public readonly modelMappers: { [key: string]: any } = {},
+    public readonly isXML: boolean = false,
+    public readonly validate: boolean = true) { }
 
   validateConstraints(mapper: Mapper, value: any, objectName: string): void {
     const failValidation = (constraintName: keyof MapperConstraints, constraintValue: any) => {
@@ -76,7 +79,7 @@ export class Serializer {
     let payload: any = {};
     const mapperType = mapper.type.name as string;
     if (!objectName) {
-      objectName = mapper.serializedName!;
+      objectName = mapper.serializedName || "";
     }
     if (mapperType.match(/^Sequence$/ig) !== null) {
       payload = [];
@@ -86,46 +89,54 @@ export class Serializer {
       object = mapper.defaultValue;
     }
 
-    // This table of allowed values should help explain
-    // the mapper.required and mapper.nullable properties.
-    // X means "neither undefined or null are allowed".
-    //           || required
-    //           || true      | false
-    //  nullable || ==========================
-    //      true || null      | undefined/null
-    //     false || X         | undefined
-    // undefined || X         | undefined/null
+    const validate = this.validate;
+    if (validate) {
+      // This table of allowed values should help explain
+      // the mapper.required and mapper.nullable properties.
+      // X means "neither undefined or null are allowed".
+      //           || required
+      //           || true      | false
+      //  nullable || ==========================
+      //      true || null      | undefined/null
+      //     false || X         | undefined
+      // undefined || X         | undefined/null
+      const { required, nullable } = mapper;
 
-    const { required, nullable } = mapper;
-
-    if (required && nullable && object === undefined) {
-      throw new Error(`${objectName} cannot be undefined.`);
-    }
-    if (required && !nullable && object == undefined) {
-      throw new Error(`${objectName} cannot be null or undefined.`);
-    }
-    if (!required && nullable === false && object === null) {
-      throw new Error(`${objectName} cannot be null.`);
+      if (required && nullable && object === undefined) {
+        throw new Error(`${objectName} cannot be undefined.`);
+      }
+      if (required && !nullable && object == undefined) {
+        throw new Error(`${objectName} cannot be null or undefined.`);
+      }
+      if (!required && nullable === false && object === null) {
+        throw new Error(`${objectName} cannot be null.`);
+      }
     }
 
     if (object == undefined) {
       payload = object;
     } else {
-      // Validate Constraints if any
-      this.validateConstraints(mapper, object, objectName);
+      if (validate) {
+        this.validateConstraints(mapper, object, objectName);
+      }
       if (mapperType.match(/^any$/ig) !== null) {
         payload = object;
       } else if (mapperType.match(/^(Number|String|Boolean|Object|Stream|Uuid)$/ig) !== null) {
-        payload = serializeBasicTypes(mapperType, objectName, object);
+        payload = serializeBasicTypes(mapperType, objectName, object, validate);
       } else if (mapperType.match(/^Enum$/ig) !== null) {
         const enumMapper: EnumMapper = mapper as EnumMapper;
-        payload = serializeEnumType(objectName, enumMapper.type.allowedValues, object);
-      } else if (mapperType.match(/^(Date|DateTime|TimeSpan|DateTimeRfc1123|UnixTime)$/ig) !== null) {
-        payload = serializeDateTypes(mapperType, object, objectName);
+        payload = serializeEnumType(objectName, enumMapper.type.allowedValues, object, this.validate);
+      } else if (mapperType.match(/^(Date|DateTime|DateTimeRfc1123|UnixTime)$/ig) !== null) {
+        payload = serializeDateTypes(mapperType, object, objectName, validate);
+      } else if (mapperType.match(/^TimeSpan$/ig) !== null) {
+        if (validate && !utils.isDuration(object)) {
+          throw new Error(`${objectName} must be a string in ISO 8601 format. Instead was "${object}".`);
+        }
+        payload = object;
       } else if (mapperType.match(/^ByteArray$/ig) !== null) {
-        payload = serializeByteArrayType(objectName, object);
+        payload = serializeByteArrayType(objectName, object, validate);
       } else if (mapperType.match(/^Base64Url$/ig) !== null) {
-        payload = serializeBase64UrlType(objectName, object);
+        payload = serializeBase64UrlType(objectName, object, validate);
       } else if (mapperType.match(/^Sequence$/ig) !== null) {
         payload = serializeSequenceType(this, mapper as SequenceMapper, object, objectName);
       } else if (mapperType.match(/^Dictionary$/ig) !== null) {
@@ -162,7 +173,7 @@ export class Serializer {
     let payload: any;
     const mapperType = mapper.type.name;
     if (!objectName) {
-      objectName = mapper.serializedName!;
+      objectName = mapper.serializedName || "";
     }
 
     if (mapperType.match(/^Number$/ig) !== null) {
@@ -187,7 +198,7 @@ export class Serializer {
     } else if (mapperType.match(/^ByteArray$/ig) !== null) {
       payload = base64.decodeString(responseBody);
     } else if (mapperType.match(/^Base64Url$/ig) !== null) {
-      payload = base64UrlToByteArray(responseBody);
+      payload = base64UrlToByteArray(responseBody, false);
     } else if (mapperType.match(/^Sequence$/ig) !== null) {
       payload = deserializeSequenceType(this, mapper as SequenceMapper, responseBody, objectName);
     } else if (mapperType.match(/^Dictionary$/ig) !== null) {
@@ -212,12 +223,16 @@ function trimEnd(str: string, ch: string) {
   return str.substr(0, len);
 }
 
-function bufferToBase64Url(buffer: any): string | undefined {
+function bufferToBase64Url(buffer: any, validate: boolean): string | undefined {
   if (!buffer) {
     return undefined;
   }
   if (!(buffer instanceof Uint8Array)) {
-    throw new Error(`Please provide an input of type Uint8Array for converting to Base64Url.`);
+    if (validate) {
+      throw new Error(`Please provide an input of type Uint8Array for converting to Base64Url.`);
+    } else {
+      return undefined;
+    }
   }
   // Uint8Array to Base64.
   const str = base64.encodeByteArray(buffer);
@@ -225,12 +240,16 @@ function bufferToBase64Url(buffer: any): string | undefined {
   return trimEnd(str, "=").replace(/\+/g, "-").replace(/\//g, "_");
 }
 
-function base64UrlToByteArray(str: string): Uint8Array | undefined {
+function base64UrlToByteArray(str: string, validate: boolean): Uint8Array | undefined {
   if (!str) {
     return undefined;
   }
   if (str && typeof str.valueOf() !== "string") {
-    throw new Error("Please provide an input of type string for converting to Uint8Array");
+    if (validate) {
+      throw new Error("Please provide an input of type string for converting to Uint8Array");
+    } else {
+      return undefined;
+    }
   }
   // Base64Url to Base64.
   str = str.replace(/\-/g, "+").replace(/\_/g, "/");
@@ -238,8 +257,10 @@ function base64UrlToByteArray(str: string): Uint8Array | undefined {
   return base64.decodeString(str);
 }
 
-function splitSerializeName(prop: string): Array<string> {
-  const classes: Array<string> = [];
+function splitSerializeName(prop: string | undefined): string[] {
+  prop = prop || "";
+
+  const classes: string[] = [];
   let partialclass = "";
   const subwords = prop.split(".");
 
@@ -274,8 +295,8 @@ function unixTimeToDate(n: number): Date | undefined {
   return new Date(n * 1000);
 }
 
-function serializeBasicTypes(typeName: string, objectName: string, value: any): any {
-  if (value !== null && value !== undefined) {
+function serializeBasicTypes(typeName: string, objectName: string, value: any, validate: boolean): any {
+  if (value != undefined && validate) {
     if (typeName.match(/^Number$/ig) !== null) {
       if (typeof value !== "number") {
         throw new Error(`${objectName} with value ${value} must be of type number.`);
@@ -306,7 +327,11 @@ function serializeBasicTypes(typeName: string, objectName: string, value: any): 
   return value;
 }
 
-function serializeEnumType(objectName: string, allowedValues: Array<any>, value: any): any {
+function serializeEnumType(objectName: string, allowedValues: any[], value: any, validate: boolean): any {
+  if (!validate) {
+    return value;
+  }
+
   if (!allowedValues) {
     throw new Error(`Please provide a set of allowedValues to validate ${objectName} as an Enum Type.`);
   }
@@ -322,65 +347,51 @@ function serializeEnumType(objectName: string, allowedValues: Array<any>, value:
   return value;
 }
 
-function serializeByteArrayType(objectName: string, value: any): any {
+function serializeByteArrayType(objectName: string, value: any, validate: boolean): any {
   if (value != undefined) {
-    if (!(value instanceof Uint8Array)) {
+    if (value instanceof Uint8Array) {
+      value = base64.encodeByteArray(value);
+    } else if (validate) {
       throw new Error(`${objectName} must be of type Uint8Array.`);
     }
-    value = base64.encodeByteArray(value);
   }
   return value;
 }
 
-function serializeBase64UrlType(objectName: string, value: any): any {
+function serializeBase64UrlType(objectName: string, value: any, validate: boolean): any {
   if (value != undefined) {
-    if (!(value instanceof Uint8Array)) {
+    if (value instanceof Uint8Array) {
+      value = bufferToBase64Url(value, validate);
+    } else if (validate) {
       throw new Error(`${objectName} must be of type Uint8Array.`);
     }
-    value = bufferToBase64Url(value);
   }
   return value;
 }
 
-function serializeDateTypes(typeName: string, value: any, objectName: string) {
+function serializeDateTypes(typeName: string, value: any, objectName: string, validate: boolean) {
   if (value != undefined) {
-    if (typeName.match(/^Date$/ig) !== null) {
-      if (!(value instanceof Date ||
-        (typeof value.valueOf() === "string" && !isNaN(Date.parse(value))))) {
-        throw new Error(`${objectName} must be an instanceof Date or a string in ISO8601 format.`);
+    const isValidDate = value instanceof Date || (typeof value.valueOf() === "string" && !isNaN(Date.parse(value)));
+    if (validate && !isValidDate) {
+      throw new Error(`${objectName} must be an instanceof Date or a string in a supported date format.`);
+    }
+    if (isValidDate) {
+      if (typeName.match(/^Date$/ig) !== null) {
+        value = (value instanceof Date) ? value.toISOString().substring(0, 10) : new Date(value).toISOString().substring(0, 10);
+      } else if (typeName.match(/^DateTime$/ig) !== null) {
+        value = (value instanceof Date) ? value.toISOString() : new Date(value).toISOString();
+      } else if (typeName.match(/^DateTimeRfc1123$/ig) !== null) {
+        value = (value instanceof Date) ? value.toUTCString() : new Date(value).toUTCString();
+      } else if (typeName.match(/^UnixTime$/ig) !== null) {
+        value = dateToUnixTime(value);
       }
-      value = (value instanceof Date) ? value.toISOString().substring(0, 10) : new Date(value).toISOString().substring(0, 10);
-    } else if (typeName.match(/^DateTime$/ig) !== null) {
-      if (!(value instanceof Date ||
-        (typeof value.valueOf() === "string" && !isNaN(Date.parse(value))))) {
-        throw new Error(`${objectName} must be an instanceof Date or a string in ISO8601 format.`);
-      }
-      value = (value instanceof Date) ? value.toISOString() : new Date(value).toISOString();
-    } else if (typeName.match(/^DateTimeRfc1123$/ig) !== null) {
-      if (!(value instanceof Date ||
-        (typeof value.valueOf() === "string" && !isNaN(Date.parse(value))))) {
-        throw new Error(`${objectName} must be an instanceof Date or a string in RFC-1123 format.`);
-      }
-      value = (value instanceof Date) ? value.toUTCString() : new Date(value).toUTCString();
-    } else if (typeName.match(/^UnixTime$/ig) !== null) {
-      if (!(value instanceof Date ||
-        (typeof value.valueOf() === "string" && !isNaN(Date.parse(value))))) {
-        throw new Error(`${objectName} must be an instanceof Date or a string in RFC-1123/ISO8601 format ` +
-          `for it to be serialized in UnixTime/Epoch format.`);
-      }
-      value = dateToUnixTime(value);
-    } else if (typeName.match(/^TimeSpan$/ig) !== null) {
-      if (!utils.isDuration(value)) {
-        throw new Error(`${objectName} must be a string in ISO 8601 format. Instead was "${value}".`);
-      }
-      value = value;
     }
   }
   return value;
 }
 
 function serializeSequenceType(serializer: Serializer, mapper: SequenceMapper, object: any, objectName: string) {
-  if (!Array.isArray(object)) {
+  if (serializer.validate && !Array.isArray(object)) {
     throw new Error(`${objectName} must be of type Array.`);
   }
   const elementType = mapper.type.element;
@@ -396,8 +407,7 @@ function serializeSequenceType(serializer: Serializer, mapper: SequenceMapper, o
 }
 
 function serializeDictionaryType(serializer: Serializer, mapper: DictionaryMapper, object: any, objectName: string) {
-
-  if (typeof object !== "object") {
+  if (serializer.validate && typeof object !== "object") {
     throw new Error(`${objectName} must be of type object.`);
   }
   const valueType = mapper.type.value;
@@ -460,7 +470,7 @@ function serializeCompositeType(serializer: Serializer, mapper: CompositeMapper,
           propName = propertyMapper.xmlElementName || propertyMapper.xmlName;
         }
       } else {
-        const paths = splitSerializeName(propertyMapper.serializedName!);
+        const paths = splitSerializeName(propertyMapper.serializedName);
         propName = paths.pop();
 
         for (const pathName of paths) {
@@ -563,7 +573,7 @@ function deserializeCompositeType(serializer: Serializer, mapper: CompositeMappe
         instance[key] = serializer.deserialize(propertyMapper, unwrappedProperty, propertyObjectName);
       }
     } else {
-      const paths = splitSerializeName(modelProps[key].serializedName!);
+      const paths = splitSerializeName(modelProps[key].serializedName);
       // deserialize the property if it is present in the provided responseBody instance
       let propertyInstance;
       let res = responseBody;
@@ -852,7 +862,7 @@ export function serializeObject(toSerialize: any): any {
 /**
  * Utility function to create a K:V from a list of strings
  */
-function strEnum<T extends string>(o: Array<T>): { [K in T]: K } {
+function strEnum<T extends string>(o: T[]): { [K in T]: K } {
   const result: any = {};
   for (const key of o) {
     result[key] = key;
