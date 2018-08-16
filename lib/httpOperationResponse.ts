@@ -7,7 +7,7 @@ import { HttpHeaders } from "./httpHeaders";
 /**
  * The properties on an HTTP response which will always be present.
  */
-export interface BaseHttpOperationResponse {
+export interface HttpResponse {
   /**
    * The raw request
    */
@@ -28,11 +28,11 @@ export interface BaseHttpOperationResponse {
  * Wrapper object for http request and response. Deserialized object is stored in
  * the `parsedBody` property when the response body is received in JSON or XML.
  */
-export interface HttpOperationResponse<TBody = any, THeaders = any> extends BaseHttpOperationResponse {
+export interface HttpOperationResponse extends HttpResponse {
   /**
    * The parsed HTTP response headers.
    */
-  parsedHeaders?: THeaders;
+  parsedHeaders?: { [key: string]: any };
 
   /**
    * The response body as text (string format)
@@ -42,7 +42,7 @@ export interface HttpOperationResponse<TBody = any, THeaders = any> extends Base
   /**
    * The response body as parsed JSON or XML
    */
-  parsedBody?: TBody;
+  parsedBody?: any;
 
   /**
    * BROWSER ONLY
