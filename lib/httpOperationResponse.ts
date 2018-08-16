@@ -5,10 +5,9 @@ import { WebResource } from "./webResource";
 import { HttpHeaders } from "./httpHeaders";
 
 /**
- * Wrapper object for http request and response. Deserialized object is stored in
- * the `parsedBody` property when the response body is received in JSON or XML.
+ * The properties on an HTTP response which will always be present.
  */
-export interface HttpOperationResponse<TBody = any, THeaders = any> {
+export interface BaseHttpOperationResponse {
   /**
    * The raw request
    */
@@ -23,7 +22,13 @@ export interface HttpOperationResponse<TBody = any, THeaders = any> {
    * The HTTP response headers.
    */
   headers: HttpHeaders;
+}
 
+/**
+ * Wrapper object for http request and response. Deserialized object is stored in
+ * the `parsedBody` property when the response body is received in JSON or XML.
+ */
+export interface HttpOperationResponse<TBody = any, THeaders = any> extends BaseHttpOperationResponse {
   /**
    * The parsed HTTP response headers.
    */
@@ -40,12 +45,16 @@ export interface HttpOperationResponse<TBody = any, THeaders = any> {
   parsedBody?: TBody;
 
   /**
-   * The response body as a Blob.
+   * BROWSER ONLY
+   *
+   * The response body as a browser Blob.
    * Always undefined in node.js.
    */
-  blobBody?: (() => Promise<Blob>);
+  blobBody?: () => Promise<Blob>;
 
   /**
+   * NODEJS ONLY
+   *
    * The response body as a node.js Readable stream.
    * Always undefined in the browser.
    */
