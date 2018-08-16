@@ -68,16 +68,15 @@ function domToObject(node: Node): any {
   return result;
 }
 
+// tslint:disable-next-line:no-null-keyword
+const doc = document.implementation.createDocument(null, null, null);
+const serializer = new XMLSerializer();
 
 export function stringifyXML(obj: any, opts?: { rootName?: string }) {
   const rootName = (opts || {}).rootName || "root";
   const dom = buildNode(obj, rootName)[0];
-  return serializer.serializeToString(dom);
+  return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' + serializer.serializeToString(dom);
 }
-
-// tslint:disable-next-line:no-null-keyword
-const doc = document.implementation.createDocument(null, null, null);
-const serializer = new XMLSerializer();
 
 function buildAttributes(attrs: { [key: string]: { toString(): string; } }): Attr[] {
   const result = [];
