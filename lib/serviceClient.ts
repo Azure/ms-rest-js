@@ -24,7 +24,7 @@ import { CompositeMapper, DictionaryMapper, Mapper, MapperType, Serializer } fro
 import { URLBuilder } from "./url";
 import { Constants } from "./util/constants";
 import * as utils from "./util/utils";
-import { RequestPrepareOptions, WebResource, RequestOptionsBase } from "./webResource";
+import { RequestOptionsBase, RequestPrepareOptions, WebResource } from "./webResource";
 
 /**
  * Options to be provided while creating the client.
@@ -173,137 +173,147 @@ export class ServiceClient {
   }
 
   /**
+   * Create an HTTP request that is populated using the provided OperationSpec.
+   * @param {OperationArguments} operationArguments The arguments that the HTTP request's templated values will be populated from.
+   * @param {OperationSpec} operationSpec The OperationSpec to use to populate the httpRequest.
+   */
+  createOperationRequest(operationArguments: OperationArguments, operationSpec: OperationSpec): WebResource {
+    const httpRequest = new WebResource();
+
+    if (operationSpec.baseUrl == undefined) {
+      operationSpec.baseUrl = this.baseUri;
+      if (!operationSpec.baseUrl) {
+        throw new Error("If operationSpec.baseUrl is not specified, then the ServiceClient must have a baseUri string property that contains the base URL to use.");
+      }
+    }
+
+    httpRequest.method = operationSpec.httpMethod;
+    httpRequest.operationSpec = operationSpec;
+
+    const requestUrl: URLBuilder = URLBuilder.parse(operationSpec.baseUrl);
+    if (operationSpec.path) {
+      requestUrl.setPath(operationSpec.path);
+    }
+    if (operationSpec.urlParameters && operationSpec.urlParameters.length > 0) {
+      for (const urlParameter of operationSpec.urlParameters) {
+        let urlParameterValue: string = getOperationArgumentValueFromParameter(this, operationArguments, urlParameter, operationSpec.serializer);
+        urlParameterValue = operationSpec.serializer.serialize(urlParameter.mapper, urlParameterValue, getPathStringFromParameter(urlParameter));
+        if (!urlParameter.skipEncoding) {
+          urlParameterValue = encodeURIComponent(urlParameterValue);
+        }
+        requestUrl.replaceAll(`{${urlParameter.mapper.serializedName || getPathStringFromParameter(urlParameter)}}`, urlParameterValue);
+      }
+    }
+    if (operationSpec.queryParameters && operationSpec.queryParameters.length > 0) {
+      for (const queryParameter of operationSpec.queryParameters) {
+        let queryParameterValue: any = getOperationArgumentValueFromParameter(this, operationArguments, queryParameter, operationSpec.serializer);
+        if (queryParameterValue != undefined) {
+          queryParameterValue = operationSpec.serializer.serialize(queryParameter.mapper, queryParameterValue, getPathStringFromParameter(queryParameter));
+          if (queryParameter.collectionFormat != undefined) {
+            if (queryParameter.collectionFormat === QueryCollectionFormat.Multi) {
+              if (queryParameterValue.length === 0) {
+                queryParameterValue = "";
+              } else {
+                for (const index in queryParameterValue) {
+                  const item = queryParameterValue[index];
+                  queryParameterValue[index] = item == undefined ? "" : item.toString();
+                }
+              }
+            } else {
+              queryParameterValue = queryParameterValue.join(queryParameter.collectionFormat);
+            }
+          }
+          if (!queryParameter.skipEncoding) {
+            if (Array.isArray(queryParameterValue)) {
+              for (const index in queryParameterValue) {
+                queryParameterValue[index] = encodeURIComponent(queryParameterValue[index]);
+              }
+            }
+            else {
+              queryParameterValue = encodeURIComponent(queryParameterValue);
+            }
+          }
+          requestUrl.setQueryParameter(queryParameter.mapper.serializedName || getPathStringFromParameter(queryParameter), queryParameterValue);
+        }
+      }
+    }
+    httpRequest.url = requestUrl.toString();
+
+    const contentType = operationSpec.contentType || this.requestContentType;
+    if (contentType) {
+      httpRequest.headers.set("Content-Type", contentType);
+    }
+
+    if (operationSpec.headerParameters) {
+      for (const headerParameter of operationSpec.headerParameters) {
+        let headerValue: any = getOperationArgumentValueFromParameter(this, operationArguments, headerParameter, operationSpec.serializer);
+        if (headerValue != undefined) {
+          headerValue = operationSpec.serializer.serialize(headerParameter.mapper, headerValue, getPathStringFromParameter(headerParameter));
+          const headerCollectionPrefix = (headerParameter.mapper as DictionaryMapper).headerCollectionPrefix;
+          if (headerCollectionPrefix) {
+            for (const key of Object.keys(headerValue)) {
+              httpRequest.headers.set(headerCollectionPrefix + key, headerValue[key]);
+            }
+          } else {
+            httpRequest.headers.set(headerParameter.mapper.serializedName || getPathStringFromParameter(headerParameter), headerValue);
+          }
+        }
+      }
+    }
+
+    const options: RequestOptionsBase | undefined = operationArguments.options;
+    if (options) {
+      if (options.customHeaders) {
+        for (const customHeaderName in options.customHeaders) {
+          httpRequest.headers.set(customHeaderName, options.customHeaders[customHeaderName]);
+        }
+      }
+
+      if (options.abortSignal) {
+        httpRequest.abortSignal = options.abortSignal;
+      }
+
+      if (options.timeout) {
+        httpRequest.timeout = options.timeout;
+      }
+
+      if (options.onUploadProgress) {
+        httpRequest.onUploadProgress = options.onUploadProgress;
+      }
+
+      if (options.onDownloadProgress) {
+        httpRequest.onDownloadProgress = options.onDownloadProgress;
+      }
+    }
+
+    httpRequest.withCredentials = this._withCredentials;
+
+    serializeRequestBody(this, httpRequest, operationArguments, operationSpec);
+
+    if (operationSpec.responses) {
+      let rawResponse = false;
+      for (const responseStatusCode in operationSpec.responses) {
+        const responseSpec: OperationResponse = operationSpec.responses[responseStatusCode];
+        if (responseSpec.bodyMapper && responseSpec.bodyMapper.type.name === MapperType.Stream) {
+          rawResponse = true;
+          break;
+        }
+      }
+      httpRequest.rawResponse = rawResponse;
+    }
+
+    return httpRequest;
+  }
+
+  /**
    * Send an HTTP request that is populated using the provided OperationSpec.
    * @param {OperationArguments} operationArguments The arguments that the HTTP request's templated values will be populated from.
    * @param {OperationSpec} operationSpec The OperationSpec to use to populate the httpRequest.
    */
   sendOperationRequest(operationArguments: OperationArguments, operationSpec: OperationSpec): Promise<HttpOperationResponse> {
-    const httpRequest = new WebResource();
-
     let result: Promise<HttpOperationResponse>;
     try {
-      if (operationSpec.baseUrl == undefined) {
-        operationSpec.baseUrl = this.baseUri;
-        if (!operationSpec.baseUrl) {
-          throw new Error("If operationSpec.baseUrl is not specified, then the ServiceClient must have a baseUri string property that contains the base URL to use.");
-        }
-      }
-
-      httpRequest.method = operationSpec.httpMethod;
-      httpRequest.operationSpec = operationSpec;
-
-      const requestUrl: URLBuilder = URLBuilder.parse(operationSpec.baseUrl);
-      if (operationSpec.path) {
-        requestUrl.setPath(operationSpec.path);
-      }
-      if (operationSpec.urlParameters && operationSpec.urlParameters.length > 0) {
-        for (const urlParameter of operationSpec.urlParameters) {
-          let urlParameterValue: string = getOperationArgumentValueFromParameter(this, operationArguments, urlParameter, operationSpec.serializer);
-          urlParameterValue = operationSpec.serializer.serialize(urlParameter.mapper, urlParameterValue, getPathStringFromParameter(urlParameter));
-          if (!urlParameter.skipEncoding) {
-            urlParameterValue = encodeURIComponent(urlParameterValue);
-          }
-          requestUrl.replaceAll(`{${urlParameter.mapper.serializedName || getPathStringFromParameter(urlParameter)}}`, urlParameterValue);
-        }
-      }
-      if (operationSpec.queryParameters && operationSpec.queryParameters.length > 0) {
-        for (const queryParameter of operationSpec.queryParameters) {
-          let queryParameterValue: any = getOperationArgumentValueFromParameter(this, operationArguments, queryParameter, operationSpec.serializer);
-          if (queryParameterValue != undefined) {
-            queryParameterValue = operationSpec.serializer.serialize(queryParameter.mapper, queryParameterValue, getPathStringFromParameter(queryParameter));
-            if (queryParameter.collectionFormat != undefined) {
-              if (queryParameter.collectionFormat === QueryCollectionFormat.Multi) {
-                if (queryParameterValue.length === 0) {
-                  queryParameterValue = "";
-                } else {
-                  for (const index in queryParameterValue) {
-                    const item = queryParameterValue[index];
-                    queryParameterValue[index] = item == undefined ? "" : item.toString();
-                  }
-                }
-              } else {
-                queryParameterValue = queryParameterValue.join(queryParameter.collectionFormat);
-              }
-            }
-            if (!queryParameter.skipEncoding) {
-              if (Array.isArray(queryParameterValue)) {
-                for (const index in queryParameterValue) {
-                  queryParameterValue[index] = encodeURIComponent(queryParameterValue[index]);
-                }
-              }
-              else {
-                queryParameterValue = encodeURIComponent(queryParameterValue);
-              }
-            }
-            requestUrl.setQueryParameter(queryParameter.mapper.serializedName || getPathStringFromParameter(queryParameter), queryParameterValue);
-          }
-        }
-      }
-      httpRequest.url = requestUrl.toString();
-
-      const contentType = operationSpec.contentType || this.requestContentType;
-      if (contentType) {
-        httpRequest.headers.set("Content-Type", contentType);
-      }
-
-      if (operationSpec.headerParameters) {
-        for (const headerParameter of operationSpec.headerParameters) {
-          let headerValue: any = getOperationArgumentValueFromParameter(this, operationArguments, headerParameter, operationSpec.serializer);
-          if (headerValue != undefined) {
-            headerValue = operationSpec.serializer.serialize(headerParameter.mapper, headerValue, getPathStringFromParameter(headerParameter));
-            const headerCollectionPrefix = (headerParameter.mapper as DictionaryMapper).headerCollectionPrefix;
-            if (headerCollectionPrefix) {
-              for (const key of Object.keys(headerValue)) {
-                httpRequest.headers.set(headerCollectionPrefix + key, headerValue[key]);
-              }
-            } else {
-              httpRequest.headers.set(headerParameter.mapper.serializedName || getPathStringFromParameter(headerParameter), headerValue);
-            }
-          }
-        }
-      }
-
-      const options: RequestOptionsBase | undefined = operationArguments.options;
-      if (options) {
-        if (options.customHeaders) {
-          for (const customHeaderName in options.customHeaders) {
-            httpRequest.headers.set(customHeaderName, options.customHeaders[customHeaderName]);
-          }
-        }
-
-        if (options.abortSignal) {
-          httpRequest.abortSignal = options.abortSignal;
-        }
-
-        if (options.timeout) {
-          httpRequest.timeout = options.timeout;
-        }
-
-        if (options.onUploadProgress) {
-          httpRequest.onUploadProgress = options.onUploadProgress;
-        }
-
-        if (options.onDownloadProgress) {
-          httpRequest.onDownloadProgress = options.onDownloadProgress;
-        }
-      }
-
-      httpRequest.withCredentials = this._withCredentials;
-
-      serializeRequestBody(this, httpRequest, operationArguments, operationSpec);
-
-      if (operationSpec.responses) {
-        let rawResponse = false;
-        for (const responseStatusCode in operationSpec.responses) {
-          const responseSpec: OperationResponse = operationSpec.responses[responseStatusCode];
-          if (responseSpec.bodyMapper && responseSpec.bodyMapper.type.name === MapperType.Stream) {
-            rawResponse = true;
-            break;
-          }
-        }
-        httpRequest.rawResponse = rawResponse;
-      }
-
+      const httpRequest: WebResource = this.createOperationRequest(operationArguments, operationSpec);
       result = this.sendRequest(httpRequest);
     } catch (error) {
       result = Promise.reject(error);
