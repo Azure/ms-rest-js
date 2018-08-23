@@ -113,7 +113,8 @@ function addProgressListener(xhr: XMLHttpRequestEventTarget, listener?: (progres
   }
 }
 
-function parseHeaders(xhr: XMLHttpRequest) {
+// exported locally for testing
+export function parseHeaders(xhr: XMLHttpRequest) {
   const responseHeaders = new HttpHeaders();
   const headerLines = xhr.getAllResponseHeaders().trim().split(/[\r\n]+/);
   for (const line of headerLines) {
