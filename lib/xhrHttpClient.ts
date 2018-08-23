@@ -120,7 +120,7 @@ export function parseHeaders(xhr: XMLHttpRequest) {
   for (const line of headerLines) {
     const index = line.indexOf(":");
     const headerName = line.slice(0, index);
-    const headerValue = line.slice(index+2);
+    const headerValue = line.slice(index + 2);
     responseHeaders.set(headerName, headerValue);
   }
   return responseHeaders;
