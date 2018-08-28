@@ -58,7 +58,7 @@ export interface HttpOperationResponse extends HttpResponse {
    * The response body as a browser Blob.
    * Always undefined in node.js.
    */
-  blobBody?: () => Promise<Blob>;
+  blobBody?: Promise<Blob>;
 
   /**
    * NODEJS ONLY

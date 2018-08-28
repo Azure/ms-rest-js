@@ -74,7 +74,7 @@ export class XhrHttpClient implements HttpClient {
         xhr.addEventListener("readystatechange", () => {
           // Resolve as soon as headers are loaded
           if (xhr.readyState === XMLHttpRequest.HEADERS_RECEIVED) {
-            const bodyPromise = new Promise<Blob>((resolve, reject) => {
+            const blobBody = new Promise<Blob>((resolve, reject) => {
               xhr.addEventListener("load", () => {
                 resolve(xhr.response);
               });
@@ -84,7 +84,7 @@ export class XhrHttpClient implements HttpClient {
               request,
               status: xhr.status,
               headers: parseHeaders(xhr),
-              blobBody: () => bodyPromise
+              blobBody
             });
           }
         });
