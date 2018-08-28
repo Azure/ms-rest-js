@@ -68,3 +68,11 @@ export interface HttpOperationResponse extends HttpResponse {
    */
   readableStreamBody?: NodeJS.ReadableStream;
 }
+
+/**
+ * The flattened response to a REST call.
+ */
+export interface RestResponse {
+  _response: HttpOperationResponse;
+  [key: string]: any;
+}

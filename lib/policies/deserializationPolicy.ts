@@ -147,6 +147,9 @@ export function deserializeResponseBody(response: HttpOperationResponse): Promis
               restError.response = utils.stripResponse(parsedResponse);
               return Promise.reject(restError);
             }
+          } else if (operationSpec.httpMethod === "HEAD") {
+            // head methods never have a body, but we return a boolean to indicate presence/absence of the resource
+            parsedResponse.parsedBody = response.status >= 200 && response.status < 300;
           }
 
           if (responseSpec.headersMapper) {

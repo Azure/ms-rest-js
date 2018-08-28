@@ -194,12 +194,12 @@ export function delay<T>(t: number, value?: T): Promise<T> {
 export interface ServiceCallback<TResult> {
   /**
    * A method that will be invoked as a callback to a service function.
-   * @param {Error | RestError} err The error occurred if any, while executing the request; otherwise null.
+   * @param {Error | RestError | null} err The error occurred if any, while executing the request; otherwise null.
    * @param {TResult} [result] The deserialized response body if an error did not occur.
    * @param {WebResource} [request] The raw/actual request sent to the server if an error did not occur.
    * @param {HttpOperationResponse} [response] The raw/actual response from the server if an error did not occur.
    */
-  (err: Error | RestError, result?: TResult, request?: WebResource, response?: HttpOperationResponse): void;
+  (err: Error | RestError | null, result?: TResult, request?: WebResource, response?: HttpOperationResponse): void;
 }
 
 /**
