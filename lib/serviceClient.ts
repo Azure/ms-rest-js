@@ -486,29 +486,29 @@ export function flattenResponse(_response: HttpOperationResponse, responseSpec: 
     const typeName = bodyMapper.type.name;
     if (typeName === "Stream") {
       return {
-        _response,
         ...parsedHeaders,
         blobBody: _response.blobBody,
-        readableStreamBody: _response.readableStreamBody
+        readableStreamBody: _response.readableStreamBody,
+        _response
       };
     }
 
     if (typeName === "Sequence") {
       const arrayResponse = [...(_response.parsedBody) || []] as RestResponse & any[];
-      arrayResponse._response = _response;
       if (parsedHeaders) {
         for (const key of Object.keys(parsedHeaders)) {
           arrayResponse[key] = parsedHeaders[key];
         }
       }
+      arrayResponse._response = _response;
       return arrayResponse;
     };
 
     if (typeName === "Composite" || typeName === "Dictionary") {
       return {
-        _response,
         ...parsedHeaders,
-        ..._response.parsedBody
+        ..._response.parsedBody,
+        _response
       };
     }
   }
@@ -516,15 +516,15 @@ export function flattenResponse(_response: HttpOperationResponse, responseSpec: 
   if (bodyMapper || _response.request.method === "HEAD") {
     // primitive body types and HEAD booleans
     return {
-      _response,
       ...parsedHeaders,
-      body: _response.parsedBody
+      body: _response.parsedBody,
+      _response
     };
   }
 
   return {
-    _response,
     ...parsedHeaders,
-    ..._response.parsedBody
+    ..._response.parsedBody,
+    _response
   };
 }
