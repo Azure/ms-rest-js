@@ -25,8 +25,8 @@ import { Constants } from "./util/constants";
 import * as utils from "./util/utils";
 import { stringifyXML } from "./util/xml";
 import { RequestOptionsBase, RequestPrepareOptions, WebResource } from "./webResource";
-import { OperationResponse } from './operationResponse';
-import { ServiceCallback } from './util/utils';
+import { OperationResponse } from "./operationResponse";
+import { ServiceCallback } from "./util/utils";
 
 /**
  * Options to be provided while creating the client.
@@ -311,7 +311,7 @@ export class ServiceClient {
     const cb = callback;
     if (cb) {
       result
-        //tslint:disable-next-line:no-null-keyword
+        // tslint:disable-next-line:no-null-keyword
         .then(res => cb(null, res._response.parsedBody, res._response.request, res._response))
         .catch(err => cb(err));
     }
@@ -502,7 +502,7 @@ export function flattenResponse(_response: HttpOperationResponse, responseSpec: 
       }
       arrayResponse._response = _response;
       return arrayResponse;
-    };
+    }
 
     if (typeName === "Composite" || typeName === "Dictionary") {
       return {
