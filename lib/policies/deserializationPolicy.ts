@@ -163,9 +163,9 @@ export function deserializeResponseBody(response: HttpOperationResponse): Promis
 }
 
 function parse(operationResponse: HttpOperationResponse): Promise<HttpOperationResponse> {
-  const errorHandler = (err: any) => {
+  const errorHandler = (err: Error & { code: string }) => {
     const msg = `Error "${err}" occurred while parsing the response body - ${operationResponse.bodyAsText}.`;
-    const errCode = err.code || "PARSE_ERROR";
+    const errCode = err.code || RestError.PARSE_ERROR;
     const e = new RestError(msg, errCode, operationResponse.status, operationResponse.request, operationResponse, operationResponse.bodyAsText);
     return Promise.reject(e);
   };

@@ -5,6 +5,7 @@ import { HttpOperationResponse } from "../httpOperationResponse";
 import * as utils from "../util/utils";
 import { WebResource } from "../webResource";
 import { BaseRequestPolicy, RequestPolicy, RequestPolicyFactory, RequestPolicyOptions } from "./requestPolicy";
+import { RestError } from "../restError";
 
 export interface RetryData {
   retryCount: number;
@@ -146,13 +147,17 @@ function retry(policy: ExponentialRetryPolicy, request: WebResource, response?: 
       .then(() => policy._nextPolicy.sendRequest(request.clone()))
       .then(res => retry(policy, request, res, retryData, undefined))
       .catch(err => retry(policy, request, response, retryData, err));
-  } else if (isAborted || requestError != undefined) {
+  } else if (isAborted || requestError || !response) {
     // If the operation failed in the end, return all errors instead of just the last one
-    requestError = retryData.error;
-    return Promise.reject(requestError);
-  } else if (response) {
-    return Promise.resolve(response);
+    const err = retryData.error ||
+      new RestError(
+        "Failed to send the request.",
+        RestError.REQUEST_SEND_ERROR,
+        response && response.status,
+        response && response.request,
+        response);
+    return Promise.reject(err);
   } else {
-    return Promise.reject();
+    return Promise.resolve(response);
   }
 }

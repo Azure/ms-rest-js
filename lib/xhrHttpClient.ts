@@ -127,7 +127,7 @@ export function parseHeaders(xhr: XMLHttpRequest) {
 }
 
 function rejectOnTerminalEvent(request: WebResource, xhr: XMLHttpRequest, reject: (err: any) => void) {
-  xhr.addEventListener("error", () => reject(new RestError(`Failed to send request to ${request.url}`, "REQUEST_SEND_ERROR", undefined, request)));
-  xhr.addEventListener("abort", () => reject(new RestError("The request was aborted", "REQUEST_ABORTED_ERROR", undefined, request)));
-  xhr.addEventListener("timeout", () => reject(new RestError(`timeout of ${xhr.timeout}ms exceeded`, "REQUEST_SEND_ERROR", undefined, request)));
+  xhr.addEventListener("error", () => reject(new RestError(`Failed to send request to ${request.url}`, RestError.REQUEST_SEND_ERROR, undefined, request)));
+  xhr.addEventListener("abort", () => reject(new RestError("The request was aborted", RestError.REQUEST_ABORTED_ERROR, undefined, request)));
+  xhr.addEventListener("timeout", () => reject(new RestError(`timeout of ${xhr.timeout}ms exceeded`, RestError.REQUEST_SEND_ERROR, undefined, request)));
 }
