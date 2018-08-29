@@ -33,7 +33,7 @@ export {
 export {
   stripRequest, stripResponse, delay,
   executePromisesSequentially, generateUuid, encodeUri, ServiceCallback,
-  promiseToCallback, responseToBody, promiseToServiceCallback, isValidUuid,
+  promiseToCallback, promiseToServiceCallback, isValidUuid,
   applyMixins, isNode, isDuration
 } from "./util/utils";
 export { URLBuilder, URLQuery } from "./url";
