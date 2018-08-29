@@ -71,8 +71,14 @@ export interface HttpOperationResponse extends HttpResponse {
 
 /**
  * The flattened response to a REST call.
+ * Contains the underlying HttpOperationResponse as well as
+ * the merged properties of the parsedBody, parsedHeaders, etc.
  */
 export interface RestResponse {
+  /**
+   * The underlying HTTP response containing both raw and deserialized response data.
+   */
   _response: HttpOperationResponse;
+
   [key: string]: any;
 }
