@@ -16,7 +16,7 @@ export function parseXML(str: string): Promise<any> {
 
 let errorNS = "";
 try {
-  errorNS = parser.parseFromString('INVALID', 'text/xml').getElementsByTagName("parsererror")[0].namespaceURI!;
+  errorNS = parser.parseFromString("INVALID", "text/xml").getElementsByTagName("parsererror")[0].namespaceURI!;
 } catch (ignored) {
   // Most browsers will return a document containing <parsererror>, but IE will throw.
 }
