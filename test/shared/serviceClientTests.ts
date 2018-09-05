@@ -188,6 +188,45 @@ describe("ServiceClient", function () {
     assert.strictEqual(request!.withCredentials, true);
   });
 
+  it("should deserialize response bodies", async function() {
+    let request: WebResource;
+    const httpClient: HttpClient = {
+      sendRequest: req => {
+        request = req;
+        return Promise.resolve({ request, status: 200, headers: new HttpHeaders(), bodyAsText: "[1,2,3]" });
+      }
+    };
+
+    const client1 = new ServiceClient(undefined, {
+      httpClient,
+      requestPolicyFactories: []
+    });
+
+    const res = await client1.sendOperationRequest(
+      {},
+      {
+        serializer: new Serializer(),
+        httpMethod: "GET",
+        baseUrl: "httpbin.org",
+        responses: {
+          200: {
+            bodyMapper: {
+            type: {
+              name: "Sequence",
+              element: {
+                type: {
+                  name: "Number"
+                }
+              }
+            }
+          }
+        }
+      }
+    });
+
+    res._response.status.should.equal(200);
+  });
+
   describe("serializeRequestBody()", () => {
     it("should serialize a JSON String request body", () => {
       const httpRequest = new WebResource();
