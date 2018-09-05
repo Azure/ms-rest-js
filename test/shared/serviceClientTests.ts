@@ -4,7 +4,7 @@ import { QueryCollectionFormat } from "../../lib/queryCollectionFormat";
 import { DictionaryMapper, MapperType, Serializer, Mapper } from "../../lib/serializer";
 import { serializeRequestBody, ServiceClient, getOperationArgumentValueFromParameterPath } from "../../lib/serviceClient";
 import { WebResource } from "../../lib/webResource";
-import { OperationArguments, HttpHeaders } from "../../lib/msRest";
+import { OperationArguments, HttpHeaders, deserializationPolicy } from "../../lib/msRest";
 import { ParameterPath } from "../../lib/operationParameter";
 
 describe("ServiceClient", function () {
@@ -199,7 +199,7 @@ describe("ServiceClient", function () {
 
     const client1 = new ServiceClient(undefined, {
       httpClient,
-      requestPolicyFactories: []
+      requestPolicyFactories: [deserializationPolicy()]
     });
 
     const res = await client1.sendOperationRequest(
@@ -224,7 +224,8 @@ describe("ServiceClient", function () {
       }
     });
 
-    res._response.status.should.equal(200);
+    assert.strictEqual(res._response.status, 200);
+    assert.deepStrictEqual(res.slice(), [1,2,3]);
   });
 
   describe("serializeRequestBody()", () => {
