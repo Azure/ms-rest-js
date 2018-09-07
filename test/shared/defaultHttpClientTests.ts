@@ -112,6 +112,23 @@ describe("defaultHttpClient", () => {
     }
   });
 
+  it("should cancel requests even after response headers are received", async function () {
+    const controller = getAbortController();
+    const request = new WebResource(`${baseURL}/fileupload`, "POST", new Uint8Array(1024 * 1024 * 100), undefined, undefined, true, undefined, controller.signal);
+    const client = new DefaultHttpClient();
+    const response = await client.sendRequest(request);
+    controller.abort();
+    const streamBody = response.readableStreamBody;
+    if (streamBody) {
+      streamBody.on('data', d => console.log(d.length));
+      await new Promise((resolve) => {
+        streamBody.on('error', function () {
+          resolve();
+        });
+      });
+    }
+  });
+
   it("should not overwrite a user-provided cookie (nodejs only)", async function () {
     // Cookie is only allowed to be set by the browser based on an actual response Set-Cookie header
     if (!isNode) {

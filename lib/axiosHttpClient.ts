@@ -171,6 +171,17 @@ export class AxiosHttpClient implements HttpClient {
       }
     }
 
+    if (abortSignal && isReadableStream(responseBody)) {
+      const bodyAborter = () => {
+        (responseBody as Readable).destroy();
+      }
+
+      abortSignal.addEventListener("abort", bodyAborter);
+      // const removeBodyAborter = () => abortSignal.removeEventListener("abort", bodyAborter);
+      // responseBody.on("end", removeBodyAborter);
+      // responseBody.on("error", removeBodyAborter);
+    }
+
     const operationResponse: HttpOperationResponse = {
       request: httpRequest,
       status: res.status,
