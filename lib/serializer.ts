@@ -654,15 +654,13 @@ function getPolymorphicMapper(serializer: Serializer, mapper: CompositeMapper, o
     const discriminatorAsObject: PolymorphicDiscriminator = mapper.type.polymorphicDiscriminator as PolymorphicDiscriminator;
 
     if (discriminatorAsObject &&
-      discriminatorAsObject[polymorphicPropertyName] !== null &&
-      discriminatorAsObject[polymorphicPropertyName] !== undefined) {
-      if (object === null || object === undefined) {
+      discriminatorAsObject[polymorphicPropertyName] != undefined) {
+      if (object == undefined) {
         throw new Error(`${objectName}" cannot be null or undefined. ` +
           `"${discriminatorAsObject[polymorphicPropertyName]}" is the ` +
           `polymorphicDiscriminator is a required property.`);
       }
-      if (object[discriminatorAsObject[polymorphicPropertyName]] === null ||
-        object[discriminatorAsObject[polymorphicPropertyName]] === undefined) {
+      if (object[discriminatorAsObject[polymorphicPropertyName]] == undefined) {
         throw new Error(`No discriminator field "${discriminatorAsObject[polymorphicPropertyName]}" was found in "${objectName}".`);
       }
       let indexDiscriminator = undefined;
