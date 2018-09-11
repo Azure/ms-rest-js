@@ -443,7 +443,7 @@ function resolveModelProperties(serializer: Serializer, mapper: CompositeMapper,
 function serializeCompositeType(serializer: Serializer, mapper: CompositeMapper, object: any, objectName: string) {
   // check for polymorphic discriminator
   if (mapper.type.polymorphicDiscriminator) {
-    mapper = getPolymorphicMapper(serializer, mapper, object, objectName, "serialize");
+    mapper = getPolymorphicMapper(serializer, mapper, object, objectName, "clientName");
   }
 
   if (object != undefined) {
@@ -516,7 +516,7 @@ function serializeCompositeType(serializer: Serializer, mapper: CompositeMapper,
 
 function deserializeCompositeType(serializer: Serializer, mapper: CompositeMapper, responseBody: any, objectName: string): any {
   if (mapper.type.polymorphicDiscriminator) {
-    mapper = getPolymorphicMapper(serializer, mapper, responseBody, objectName, "deserialize");
+    mapper = getPolymorphicMapper(serializer, mapper, responseBody, objectName, "serializedName");
   }
 
   const modelProps = resolveModelProperties(serializer, mapper, objectName);
@@ -639,22 +639,11 @@ function deserializeSequenceType(serializer: Serializer, mapper: SequenceMapper,
   return responseBody;
 }
 
-function getPolymorphicMapper(serializer: Serializer, mapper: CompositeMapper, object: any, objectName: string, mode: string): CompositeMapper {
+function getPolymorphicMapper(serializer: Serializer, mapper: CompositeMapper, object: any, objectName: string, polymorphicPropertyName: "clientName" | "serializedName"): CompositeMapper {
   const polymorphicDiscriminator = mapper.type.polymorphicDiscriminator;
   if (polymorphicDiscriminator) {
-    // check for polymorphic discriminator
-    let polymorphicPropertyName = "";
-    if (mode === "serialize") {
-      polymorphicPropertyName = "clientName";
-    } else if (mode === "deserialize") {
-      polymorphicPropertyName = "serializedName";
-    } else {
-      throw new Error(`The given mode "${mode}" for getting the polymorphic mapper for "${objectName}" is inavlid.`);
-    }
     const discriminatorAsObject: PolymorphicDiscriminator = mapper.type.polymorphicDiscriminator as PolymorphicDiscriminator;
-
-    if (discriminatorAsObject &&
-      discriminatorAsObject[polymorphicPropertyName] != undefined) {
+    if (discriminatorAsObject && discriminatorAsObject[polymorphicPropertyName] != undefined) {
       if (object == undefined) {
         throw new Error(`${objectName}" cannot be null or undefined. ` +
           `"${discriminatorAsObject[polymorphicPropertyName]}" is the ` +
@@ -673,7 +662,6 @@ function getPolymorphicMapper(serializer: Serializer, mapper: CompositeMapper, o
         mapper = serializer.modelMappers.discriminators[indexDiscriminator];
       }
     }
-    return mapper;
   }
   return mapper;
 }
