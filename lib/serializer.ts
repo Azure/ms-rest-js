@@ -480,7 +480,13 @@ function serializeCompositeType(serializer: Serializer, mapper: CompositeMapper,
           ? objectName + "." + propertyMapper.serializedName
           : objectName;
 
-        const serializedValue = serializer.serialize(propertyMapper, object[key], propertyObjectName);
+        let toSerialize = object[key];
+        const polymorphicDiscriminator = mapper.type.polymorphicDiscriminator;
+        if (polymorphicDiscriminator && polymorphicDiscriminator.clientName === key && toSerialize == undefined) {
+          toSerialize = mapper.serializedName;
+        }
+
+        const serializedValue = serializer.serialize(propertyMapper, toSerialize, propertyObjectName);
         if (serializedValue !== undefined && propName != undefined) {
           if (propertyMapper.xmlIsAttribute) {
             // $ is the key attributes are kept under in xml2js.
@@ -565,6 +571,11 @@ function deserializeCompositeType(serializer: Serializer, mapper: CompositeMappe
         res = res[item];
       }
       propertyInstance = res;
+      const polymorphicDiscriminator = mapper.type.polymorphicDiscriminator;
+      if (polymorphicDiscriminator && propertyMapper.serializedName === polymorphicDiscriminator.serializedName && propertyInstance == undefined) {
+        propertyInstance = mapper.serializedName;
+      }
+
       let serializedValue;
       // paging
       if (Array.isArray(responseBody[key]) && modelProps[key].serializedName === "") {
