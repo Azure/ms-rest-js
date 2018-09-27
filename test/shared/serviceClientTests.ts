@@ -1,10 +1,13 @@
-import * as assert from "assert";
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
+import assert from "assert";
 import { HttpClient } from "../../lib/httpClient";
 import { QueryCollectionFormat } from "../../lib/queryCollectionFormat";
 import { DictionaryMapper, MapperType, Serializer, Mapper } from "../../lib/serializer";
 import { serializeRequestBody, ServiceClient, getOperationArgumentValueFromParameterPath } from "../../lib/serviceClient";
 import { WebResource } from "../../lib/webResource";
-import { OperationArguments, HttpHeaders } from "../../lib/msRest";
+import { OperationArguments, HttpHeaders, deserializationPolicy } from "../../lib/msRest";
 import { ParameterPath } from "../../lib/operationParameter";
 
 describe("ServiceClient", function () {
@@ -15,7 +18,6 @@ describe("ServiceClient", function () {
       "unrelated": "42"
     };
 
-    // TODO: might make more sense to factor out a method in ServiceClient which returns the prepared request
     let request: WebResource;
     const client = new ServiceClient(undefined, {
       httpClient: {
@@ -69,6 +71,34 @@ describe("ServiceClient", function () {
 
     assert(request!);
     assert.deepStrictEqual(request!.headers.toJson(), expected);
+  });
+
+  it("responses should not show the _response property when serializing", async function () {
+    let request: WebResource;
+    const client = new ServiceClient(undefined, {
+      httpClient: {
+        sendRequest: req => {
+          request = req;
+          return Promise.resolve({ request, status: 200, headers: new HttpHeaders() });
+        }
+      },
+      requestPolicyFactories: []
+    });
+
+    const response = await client.sendOperationRequest(
+      {},
+      {
+        httpMethod: "GET",
+        baseUrl: "httpbin.org",
+        serializer: new Serializer(),
+        headerParameters: [],
+        responses: {
+          200: {}
+        }
+      });
+
+    assert(request!);
+    assert.strictEqual(JSON.stringify(response), "{}");
   });
 
   it("Should serialize collection:multi query parameters", async function () {
@@ -159,6 +189,46 @@ describe("ServiceClient", function () {
         responses: { 200: {} }
       });
     assert.strictEqual(request!.withCredentials, true);
+  });
+
+  it("should deserialize response bodies", async function() {
+    let request: WebResource;
+    const httpClient: HttpClient = {
+      sendRequest: req => {
+        request = req;
+        return Promise.resolve({ request, status: 200, headers: new HttpHeaders(), bodyAsText: "[1,2,3]" });
+      }
+    };
+
+    const client1 = new ServiceClient(undefined, {
+      httpClient,
+      requestPolicyFactories: [deserializationPolicy()]
+    });
+
+    const res = await client1.sendOperationRequest(
+      {},
+      {
+        serializer: new Serializer(),
+        httpMethod: "GET",
+        baseUrl: "httpbin.org",
+        responses: {
+          200: {
+            bodyMapper: {
+            type: {
+              name: "Sequence",
+              element: {
+                type: {
+                  name: "Number"
+                }
+              }
+            }
+          }
+        }
+      }
+    });
+
+    assert.strictEqual(res._response.status, 200);
+    assert.deepStrictEqual(res.slice(), [1,2,3]);
   });
 
   describe("serializeRequestBody()", () => {

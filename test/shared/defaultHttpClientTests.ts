@@ -1,8 +1,9 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
-import * as assert from "assert";
-import * as should from "should";
+import assert from "assert";
+import should from "should";
 import { DefaultHttpClient } from "../../lib/defaultHttpClient";
+import { RestError } from "../../lib/restError";
 import { isNode } from "../../lib/util/utils";
 import { WebResource, HttpRequestBody } from "../../lib/webResource";
 import { baseURL } from "../testUtils";
@@ -240,7 +241,15 @@ describe("defaultHttpClient", () => {
       await client.sendRequest(request);
       throw new Error("request did not fail as expected");
     } catch (err) {
+      err.should.be.instanceof(RestError);
       err.code.should.equal("REQUEST_SEND_ERROR");
     }
+  });
+
+  it("should interpret undefined as an empty body", async function () {
+    const request = new WebResource(`${baseURL}/expect-empty`, "PUT");
+    const client = new DefaultHttpClient();
+    const response = await client.sendRequest(request);
+    response.status.should.equal(200, response.bodyAsText!);
   });
 });

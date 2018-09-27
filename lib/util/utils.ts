@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-import * as uuidv4 from "uuid/v4";
+import uuidv4 from "uuid/v4";
 import { HttpOperationResponse } from "../httpOperationResponse";
 import { RestError } from "../restError";
 import { WebResource } from "../webResource";
@@ -62,18 +62,10 @@ export function stripResponse(response: HttpOperationResponse): any {
  * @return {WebResource} The stripped version of Http Request.
  */
 export function stripRequest(request: WebResource): WebResource {
-  let strippedRequest = new WebResource();
-  try {
-    strippedRequest = request.clone();
-    if (strippedRequest.headers) {
-      strippedRequest.headers.remove("authorization");
-    }
-  } catch (err) {
-    const errMsg = err.message;
-    err.message = `Error - "${errMsg}" occured while creating a stripped version of the request object - "${request}".`;
-    return err;
+  const strippedRequest = request.clone();
+  if (strippedRequest.headers) {
+    strippedRequest.headers.remove("authorization");
   }
-
   return strippedRequest;
 }
 

@@ -482,49 +482,60 @@ function getPropertyFromParameterPath(parent: { [parameterName: string]: any }, 
 export function flattenResponse(_response: HttpOperationResponse, responseSpec: OperationResponse | undefined): RestResponse {
   const parsedHeaders = _response.parsedHeaders;
   const bodyMapper = responseSpec && responseSpec.bodyMapper;
+
+  const addOperationResponse = (obj: {}) =>
+    Object.defineProperty(obj, "_response", {
+      value: _response
+    });
+
   if (bodyMapper) {
     const typeName = bodyMapper.type.name;
     if (typeName === "Stream") {
-      return {
+      return addOperationResponse({
         ...parsedHeaders,
         blobBody: _response.blobBody,
-        readableStreamBody: _response.readableStreamBody,
-        _response
-      };
+        readableStreamBody: _response.readableStreamBody
+      });
     }
 
-    if (typeName === "Sequence") {
-      const arrayResponse = [...(_response.parsedBody) || []] as RestResponse & any[];
+    const modelProperties = typeName === "Composite" && (bodyMapper as CompositeMapper).type.modelProperties || {};
+    const isPageableResponse = Object.keys(modelProperties).some(k => modelProperties[k].serializedName === "");
+    if (typeName === "Sequence" || isPageableResponse) {
+      const arrayResponse = [...(_response.parsedBody || [])] as RestResponse & any[];
+
+      for (const key of Object.keys(modelProperties)) {
+        if (modelProperties[key].serializedName) {
+          arrayResponse[key] = _response.parsedBody[key];
+        }
+      }
+
       if (parsedHeaders) {
         for (const key of Object.keys(parsedHeaders)) {
           arrayResponse[key] = parsedHeaders[key];
         }
       }
-      arrayResponse._response = _response;
+      addOperationResponse(arrayResponse);
       return arrayResponse;
     }
 
     if (typeName === "Composite" || typeName === "Dictionary") {
-      return {
+      return addOperationResponse({
         ...parsedHeaders,
-        ..._response.parsedBody,
-        _response
-      };
+        ..._response.parsedBody
+      });
     }
   }
 
   if (bodyMapper || _response.request.method === "HEAD") {
     // primitive body types and HEAD booleans
-    return {
+    return addOperationResponse({
       ...parsedHeaders,
-      body: _response.parsedBody,
-      _response
-    };
+      body: _response.parsedBody
+    });
   }
 
-  return {
+  return addOperationResponse({
     ...parsedHeaders,
-    ..._response.parsedBody,
-    _response
-  };
+    ..._response.parsedBody
+  });
 }

@@ -1,8 +1,12 @@
 # Changelog
 
-## 0.21.1 - 2018-09-27
+## 0.22.1 - 2018-09-27
 
 - Added Authenticator type
+
+## 0.22.0 - 2018-09-05
+
+- Added support for EventGrid TopicCredentials object.
 
 ## 0.21.0 - 2018-08-30
 
