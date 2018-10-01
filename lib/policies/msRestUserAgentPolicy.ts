@@ -40,7 +40,7 @@ export class MsRestUserAgentPolicy extends BaseRequestPolicy {
         this.userAgentInfo.unshift(runtimeInfo);
       }
 
-      const nodeSDKSignature = `Azure-SDK-For-JS`;
+      const nodeSDKSignature = `azure-sdk-for-js`;
       if (this.userAgentInfo.indexOf(nodeSDKSignature) === -1) {
         const azureRuntime = `ms-rest-azure-js`;
 
