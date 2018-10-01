@@ -371,9 +371,9 @@ function createDefaultRequestPolicyFactories(credentials: ServiceClientCredentia
 
   if (credentials) {
     if (isRequestPolicyFactory(credentials)) {
-      factories.push(credentials as RequestPolicyFactory);
+      factories.push(credentials);
     } else {
-      factories.push(signingPolicy(credentials as ServiceClientCredentials));
+      factories.push(signingPolicy(credentials));
     }
   }
 
