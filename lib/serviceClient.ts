@@ -358,6 +358,10 @@ export function serializeRequestBody(serviceClient: ServiceClient, httpRequest: 
   }
 }
 
+function isRequestPolicyFactory(instance: any): instance is RequestPolicyFactory {
+  return typeof instance.create === "function";
+}
+
 function createDefaultRequestPolicyFactories(credentials: ServiceClientCredentials | RequestPolicyFactory | undefined, options: ServiceClientOptions, userAgentInfo: string[]): RequestPolicyFactory[] {
   const factories: RequestPolicyFactory[] = [];
 
@@ -366,11 +370,10 @@ function createDefaultRequestPolicyFactories(credentials: ServiceClientCredentia
   }
 
   if (credentials) {
-    const crendentialsPolicyFactory = credentials as RequestPolicyFactory;
-    if (!crendentialsPolicyFactory || !crendentialsPolicyFactory.create) {
-      factories.push(signingPolicy(credentials as ServiceClientCredentials));
+    if (isRequestPolicyFactory(credentials)) {
+      factories.push(credentials as RequestPolicyFactory);
     } else {
-      factories.push(crendentialsPolicyFactory);
+      factories.push(signingPolicy(credentials as ServiceClientCredentials));
     }
   }
 
