@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.22.2 - 2018-10-04
+## 1.0.0 - 2018-10-04
 
 - Moved to Rollup for node and browser bundles
 - Moved browser bundle from ./msRestBundle.js to ./dist/msRest.browser.js.
