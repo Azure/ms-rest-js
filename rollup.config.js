@@ -46,7 +46,7 @@ const browserConfig = {
   output: {
     file: "./dist/msRest.browser.js",
     format: "umd",
-    name: "Microsoft.Rest",
+    name: "msRest",
     sourcemap: true,
     banner
   },
