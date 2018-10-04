@@ -4,7 +4,6 @@
 
 - Moved to Rollup for node and browser bundles
 - Moved browser bundle from ./msRestBundle.js to ./dist/msRest.browser.js.
-- Renamed browser global from msRest to Microsoft.Rest
 
 ## 0.22.1 - 2018-09-27
 
