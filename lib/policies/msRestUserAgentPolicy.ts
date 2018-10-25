@@ -15,6 +15,11 @@ export function msRestUserAgentPolicy(userAgentInfo: Array<string>): RequestPoli
 }
 
 export class MsRestUserAgentPolicy extends MsRestUserAgentBase {
+  constructor(nextPolicy: RequestPolicy, options: RequestPolicyOptions, userAgentInfo: Array<string>) {
+    super(nextPolicy, options, userAgentInfo);
+    this._userAgentInfo = userAgentInfo;
+  }
+
   protected addPlatformSpecificData(userAgentInfo: string[]): string[] {
     const osInfo = `(${os.arch()}-${os.type()}-${os.release()})`;
     if (userAgentInfo.indexOf(osInfo) === -1) {
@@ -31,10 +36,5 @@ export class MsRestUserAgentPolicy extends MsRestUserAgentBase {
 
   protected getUserAgentKey(): string {
     return Constants.HeaderConstants.USER_AGENT;
-  }
-
-  constructor(nextPolicy: RequestPolicy, options: RequestPolicyOptions, userAgentInfo: Array<string>) {
-    super(nextPolicy, options, userAgentInfo);
-    this.userAgentInfo = userAgentInfo;
   }
 }
