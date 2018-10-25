@@ -66,7 +66,7 @@ describe("MsRestUserAgentPolicy (Browser)", () => {
     const userAgent = getBrowserUserAgentPolicy();
     const userAgentParts = userAgent.split(" ");
     const osInfo = userAgentParts[2];
-    osInfo.should.match(/OS\/\([\w\d]+\)/);
+    osInfo.should.match(/OS\/[\w\d\.\-]+/);
     done();
   });
 });
