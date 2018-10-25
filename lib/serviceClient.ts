@@ -12,7 +12,7 @@ import { isStreamOperation, OperationSpec } from "./operationSpec";
 import { deserializationPolicy, DeserializationContentTypes } from "./policies/deserializationPolicy";
 import { exponentialRetryPolicy } from "./policies/exponentialRetryPolicy";
 import { generateClientRequestIdPolicy } from "./policies/generateClientRequestIdPolicy";
-import { msRestUserAgentPolicy } from "./policies/telemetry/msRestUserAgentPolicyFactory";
+import { userAgentPolicy } from "./policies/telemetry/userAgentPolicyFactory";
 import { redirectPolicy } from "./policies/redirectPolicy";
 import { RequestPolicy, RequestPolicyFactory, RequestPolicyOptions } from "./policies/requestPolicy";
 import { rpRegistrationPolicy } from "./policies/rpRegistrationPolicy";
@@ -361,7 +361,7 @@ function createDefaultRequestPolicyFactories(credentials: ServiceClientCredentia
   }
 
   if (utils.isNode) {
-    factories.push(msRestUserAgentPolicy(overriddenUserAgent));
+    factories.push(userAgentPolicy(overriddenUserAgent));
   }
 
   factories.push(redirectPolicy());

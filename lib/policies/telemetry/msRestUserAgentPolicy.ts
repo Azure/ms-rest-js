@@ -2,30 +2,23 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 import * as os from "os";
-import { RequestPolicy, RequestPolicyOptions } from "../requestPolicy";
-import { MsRestUserAgentBase, TelemetryInfo } from "./msRestUserAgentPolicyBase";
+import { TelemetryInfo } from "./userAgentPolicyFactory";
 import { Constants } from "../../util/constants";
 
-export class MsRestUserAgentPolicy extends MsRestUserAgentBase {
-  constructor(nextPolicy: RequestPolicy, options: RequestPolicyOptions, overriddenUserAgent?: string) {
-    super(nextPolicy, options, overriddenUserAgent);
-  }
+export function getPlatformSpecificData(): TelemetryInfo[] {
+  const osInfo = {
+    key: "OS",
+    value: `(${os.arch()}-${os.type()}-${os.release()})`
+  };
 
-  protected getPlatformSpecificData(): TelemetryInfo[] {
-    const osInfo = {
-      key: "OS",
-      value: `(${os.arch()}-${os.type()}-${os.release()})`
-    };
+  const runtimeInfo = {
+    key: "Node",
+    value: process.version
+  };
 
-    const runtimeInfo =  {
-      key: "Node",
-      value: process.version
-    };
+  return [osInfo, runtimeInfo];
+}
 
-    return [osInfo, runtimeInfo];
-  }
-
-  protected getUserAgentKey(): string {
-    return Constants.HeaderConstants.USER_AGENT;
-  }
+export function getUserAgentKey(): string {
+  return Constants.HeaderConstants.USER_AGENT;
 }

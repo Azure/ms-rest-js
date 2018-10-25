@@ -5,7 +5,7 @@ import { RequestPolicy, RequestPolicyOptions } from "../../../lib/policies/reque
 import { Constants } from "../../../lib/util/constants";
 import { WebResource } from "../../../lib/webResource";
 import { HttpOperationResponse } from "../../../lib/httpOperationResponse";
-import { MsRestUserAgentBase } from "../../../lib/policies/telemetry/msRestUserAgentPolicyBase";
+import { userAgentPolicy } from "../../../lib/policies/telemetry/userAgentPolicyFactory";
 
 const userAgentHeaderKey = Constants.HeaderConstants.USER_AGENT;
 
@@ -16,24 +16,16 @@ const emptyRequestPolicy: RequestPolicy = {
   }
 };
 
-const getPlainMsRestUserAgentPolicy = (overriddenUserAgent?: string): MsRestUserAgentBase => {
-    const policy = new (class CommonMsRestUserAgent extends MsRestUserAgentBase {
-        constructor(nextPolicy: RequestPolicy, options: RequestPolicyOptions, overriddenUserAgent?: string) {
-            super(nextPolicy, options, overriddenUserAgent);
-        }
-
-        protected getUserAgentKey = () => userAgentHeaderKey;
-        protected getPlatformSpecificData = () => [];
-    })(emptyRequestPolicy, new RequestPolicyOptions(), overriddenUserAgent);
-
-    return policy;
+const getPlainMsRestUserAgentPolicy = (headerValue?: string): RequestPolicy => {
+    const factory = userAgentPolicy(undefined, headerValue);
+    return factory.create(emptyRequestPolicy, new RequestPolicyOptions());
 };
 
 describe("MsRestUserAgentPolicy", () => {
   function getVanillaUserAgent(): string {
     const userAgentFilter = getPlainMsRestUserAgentPolicy();
     const resource = new WebResource();
-    userAgentFilter.addUserAgentHeader(resource);
+    userAgentFilter.sendRequest(resource);
     const userAgent = resource.headers.get(userAgentHeaderKey);
     return userAgent!;
   }
@@ -43,7 +35,7 @@ describe("MsRestUserAgentPolicy", () => {
     const customUserAgent = "my custom user agent";
     const resource = new WebResource();
     resource.headers.set(userAgentHeaderKey, customUserAgent);
-    userAgentPolicy.addUserAgentHeader(resource);
+    userAgentPolicy.sendRequest(resource);
 
     const userAgentHeader: string = resource.headers.get(userAgentHeaderKey)!;
 
@@ -55,7 +47,7 @@ describe("MsRestUserAgentPolicy", () => {
     const customUserAgent = "my custom user agent";
     const userAgentPolicy = getPlainMsRestUserAgentPolicy(customUserAgent);
     const resource = new WebResource();
-    userAgentPolicy.addUserAgentHeader(resource);
+    userAgentPolicy.sendRequest(resource);
 
     const userAgentHeader: string = resource.headers.get(userAgentHeaderKey)!;
 
