@@ -5,26 +5,32 @@ import { BaseRequestPolicy, RequestPolicy, RequestPolicyOptions } from "./reques
 import { WebResource, HttpHeaders, HttpOperationResponse } from "../msRest";
 
 export abstract class MsRestUserAgentBase extends BaseRequestPolicy {
-    protected userAgentInfo: Array<string>;
+    protected _userAgentInfo: Array<string>;
 
     protected constructor(readonly _nextPolicy: RequestPolicy, readonly _options: RequestPolicyOptions, userAgentInfo: Array<string>) {
         super(_nextPolicy, _options);
-        this.userAgentInfo = userAgentInfo;
+        this._userAgentInfo = userAgentInfo;
     }
 
     tagRequest(request: WebResource): void {
-        const nodeSDKSignature = `azure-sdk-for-js`;
-        if (this.userAgentInfo.indexOf(nodeSDKSignature) === -1) {
-            const azureRuntime = `ms-rest-azure-js`;
+        const userAgentInfo = this._userAgentInfo;
+        this.addRuntimeInfo(userAgentInfo);
+        this.addPlatformSpecificData(userAgentInfo);
+        request.headers.set(this.getUserAgentKey(), userAgentInfo.join(" "));
+    }
 
-            let insertIndex = this.userAgentInfo.indexOf(azureRuntime);
+    addRuntimeInfo(userAgentInfo: string[]): string[] {
+        const jsSdkSignature = "azure-sdk-for-js";
+
+        if (userAgentInfo.includes(jsSdkSignature)) {
+            const azureRuntime = `ms-rest-azure-js`;
+            let insertIndex = userAgentInfo.indexOf(azureRuntime);
             // insert after azureRuntime, otherwise, insert last.
-            insertIndex = insertIndex < 0 ? this.userAgentInfo.length : insertIndex + 1;
-            this.userAgentInfo.splice(insertIndex, 0, nodeSDKSignature);
+            insertIndex = insertIndex < 0 ? userAgentInfo.length : insertIndex + 1;
+            userAgentInfo.splice(insertIndex, 0, jsSdkSignature);
         }
 
-        this.addPlatformSpecificData(this.userAgentInfo);
-        request.headers.set(this.getUserAgentKey(), this.userAgentInfo.join(" "));
+        return userAgentInfo;
     }
 
     addUserAgentHeader(request: WebResource): void {
