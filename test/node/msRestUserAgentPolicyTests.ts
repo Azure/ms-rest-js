@@ -50,7 +50,7 @@ describe("MsRestUserAgentPolicy (NodeJS)", () => {
     done();
   });
 
-  it("should be space delimited contain four fields", function(done) {
+  it("should be space delimited and contain four fields", function(done) {
     const userAgent = getNodeUserAgentPolicy();
     const userAgentParts = userAgent.split(" ");
     userAgentParts.length.should.be.equal(4);
@@ -67,8 +67,7 @@ describe("MsRestUserAgentPolicy (NodeJS)", () => {
     const userAgent = getNodeUserAgentPolicy();
     const userAgentParts = userAgent.split(" ");
     const osInfo = userAgentParts[2];
-    osInfo.should.match(/OS\/\([\w\d-]+\)/);
-    osInfo.should.not.be.ok();
+    osInfo.should.match(/OS\/\([\w\d\.\-]+\)/);
     done();
   });
 
@@ -76,8 +75,7 @@ describe("MsRestUserAgentPolicy (NodeJS)", () => {
     const userAgent = getNodeUserAgentPolicy();
     const userAgentParts = userAgent.split(" ");
     const osInfo = userAgentParts[3];
-    osInfo.should.match(/Node\/[\d.]+/);
-    osInfo.should.not.be.ok();
+    osInfo.should.match(/Node\/v[\d.]+/);
     done();
   });
 });

@@ -14,7 +14,7 @@ export class MsRestUserAgentPolicy extends MsRestUserAgentBase {
   }
 
   protected getUserAgentKey(): string {
-    return "x-ms-commandname";
+    return "x-ms-command-name";
   }
 
   protected getPlatformSpecificData(): TelemetryInfo[] {
