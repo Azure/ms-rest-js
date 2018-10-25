@@ -1,7 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-import * as os from "os";
 import { BaseRequestPolicy, RequestPolicy, RequestPolicyOptions } from "./requestPolicy";
 import { WebResource, HttpHeaders, HttpOperationResponse } from "../msRest";
 
@@ -14,16 +13,6 @@ export abstract class MsRestUserAgentBase extends BaseRequestPolicy {
     }
 
     tagRequest(request: WebResource): void {
-        const osInfo = `(${os.arch()}-${os.type()}-${os.release()})`;
-        if (this.userAgentInfo.indexOf(osInfo) === -1) {
-            this.userAgentInfo.unshift(osInfo);
-        }
-
-        const runtimeInfo = `Node/${process.version}`;
-        if (this.userAgentInfo.indexOf(runtimeInfo) === -1) {
-            this.userAgentInfo.unshift(runtimeInfo);
-        }
-
         const nodeSDKSignature = `azure-sdk-for-js`;
         if (this.userAgentInfo.indexOf(nodeSDKSignature) === -1) {
             const azureRuntime = `ms-rest-azure-js`;
@@ -34,6 +23,7 @@ export abstract class MsRestUserAgentBase extends BaseRequestPolicy {
             this.userAgentInfo.splice(insertIndex, 0, nodeSDKSignature);
         }
 
+        this.addPlatformSpecificData(this.userAgentInfo);
         request.headers.set(this.getUserAgentKey(), this.userAgentInfo.join(" "));
     }
 
@@ -48,6 +38,7 @@ export abstract class MsRestUserAgentBase extends BaseRequestPolicy {
     }
 
     protected abstract getUserAgentKey(): string;
+    protected abstract addPlatformSpecificData(userAgentInfo: string[]): string[];
 
     public sendRequest(request: WebResource): Promise<HttpOperationResponse> {
         this.addUserAgentHeader(request);
