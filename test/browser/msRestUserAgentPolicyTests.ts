@@ -18,7 +18,7 @@ const emptyRequestPolicy: RequestPolicy = {
   }
 };
 
-describe("MsRestUserAgentPolicy (NodeJS)", () => {
+describe("MsRestUserAgentPolicy (Browser)", () => {
   it("should construct user agent header when supplied empty array", function (done) {
     const userAgentArray: Array<string> = [];
     const userAgentFilter = new MsRestUserAgentPolicy(emptyRequestPolicy, new RequestPolicyOptions(), userAgentArray);
