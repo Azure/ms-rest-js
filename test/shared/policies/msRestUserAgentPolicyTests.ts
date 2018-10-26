@@ -11,8 +11,8 @@ const userAgentHeaderKey = Constants.HeaderConstants.USER_AGENT;
 
 const emptyRequestPolicy: RequestPolicy = {
   sendRequest(request: WebResource): Promise<HttpOperationResponse> {
-    request.should.be.ok();
-    throw new Error("Not Implemented");
+    request.should.be.ok;
+    return Promise.resolve({ request: request, status: 200, headers: request.headers });
   }
 };
 
@@ -22,63 +22,51 @@ const getPlainMsRestUserAgentPolicy = (headerValue?: string): RequestPolicy => {
 };
 
 describe("MsRestUserAgentPolicy", () => {
-  function getVanillaUserAgent(): string {
+  async function getVanillaUserAgent(): Promise<string> {
     const userAgentFilter = getPlainMsRestUserAgentPolicy();
     const resource = new WebResource();
-    userAgentFilter.sendRequest(resource);
+    await userAgentFilter.sendRequest(resource);
     const userAgent = resource.headers.get(userAgentHeaderKey);
     return userAgent!;
   }
 
-  it("should not modify user agent header if already present", function (done) {
+  it("should not modify user agent header if already present", async () => {
     const userAgentPolicy = getPlainMsRestUserAgentPolicy();
     const customUserAgent = "my custom user agent";
     const resource = new WebResource();
     resource.headers.set(userAgentHeaderKey, customUserAgent);
-    userAgentPolicy.sendRequest(resource);
+    await userAgentPolicy.sendRequest(resource);
 
     const userAgentHeader: string = resource.headers.get(userAgentHeaderKey)!;
 
     userAgentHeader.should.be.equal(customUserAgent);
-    done();
   });
 
-  it("should use injected user agent string if provided", function (done) {
+  it("should use injected user agent string if provided", async () => {
     const customUserAgent = "my custom user agent";
     const userAgentPolicy = getPlainMsRestUserAgentPolicy(customUserAgent);
     const resource = new WebResource();
-    userAgentPolicy.sendRequest(resource);
+    await userAgentPolicy.sendRequest(resource);
 
     const userAgentHeader: string = resource.headers.get(userAgentHeaderKey)!;
 
     userAgentHeader.should.be.equal(customUserAgent);
-    done();
   });
 
-  it("should be space and slash delimited", function(done) {
-    const userAgent = getVanillaUserAgent();
+  it("should be space and slash delimited", async () => {
+    const userAgent = await getVanillaUserAgent();
     userAgent.should.match(/azure-sdk-for-js ms-rest-js\/[\d\.]+/);
-    done();
   });
 
-  it("should start with \"azure-sdk-for-js\" and \"azure-sdk-for-js\" should not have a value", function (done) {
-    const userAgent = getVanillaUserAgent();
+  it("should start with \"azure-sdk-for-js\" and \"azure-sdk-for-js\" should not have a value", async () => {
+    const userAgent = await getVanillaUserAgent();
     const userAgentParts = userAgent!.split(" ");
     userAgentParts[0].should.be.equal("azure-sdk-for-js");
-    done();
   });
 
-  it("should have runtime telemetry at the second position", function(done) {
-    const userAgent = getVanillaUserAgent();
+  it("should have runtime telemetry at the second position", async () => {
+    const userAgent = await getVanillaUserAgent();
     const userAgentParts = userAgent!.split(" ");
     userAgentParts[1].should.match(/ms-rest-js\/[\d\.]+/);
-    done();
-  });
-
-  it("should not have platform specific information", function(done) {
-    const userAgent = getVanillaUserAgent();
-    const userAgentParts = userAgent!.split(" ");
-    userAgentParts.length.should.be.equal(2);
-    done();
   });
 });

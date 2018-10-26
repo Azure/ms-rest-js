@@ -10,8 +10,8 @@ const userAgentHeaderKey = "x-ms-command-name";
 
 const emptyRequestPolicy: RequestPolicy = {
   sendRequest(request: WebResource): Promise<HttpOperationResponse> {
-    request.should.be.ok();
-    throw new Error("Not Implemented");
+    request.should.be.ok;
+    return Promise.resolve({ request: request, status: 200, headers: request.headers });
   }
 };
 
