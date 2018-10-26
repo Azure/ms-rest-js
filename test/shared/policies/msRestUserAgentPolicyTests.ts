@@ -16,14 +16,14 @@ const emptyRequestPolicy: RequestPolicy = {
   }
 };
 
-const getPlainMsRestUserAgentPolicy = (headerValue?: string): RequestPolicy => {
+const getPlainUserAgentPolicy = (headerValue?: string): RequestPolicy => {
     const factory = userAgentPolicy(undefined, headerValue);
     return factory.create(emptyRequestPolicy, new RequestPolicyOptions());
 };
 
 describe("MsRestUserAgentPolicy", () => {
   async function getVanillaUserAgent(): Promise<string> {
-    const userAgentFilter = getPlainMsRestUserAgentPolicy();
+    const userAgentFilter = getPlainUserAgentPolicy();
     const resource = new WebResource();
     await userAgentFilter.sendRequest(resource);
     const userAgent = resource.headers.get(userAgentHeaderKey);
@@ -31,7 +31,7 @@ describe("MsRestUserAgentPolicy", () => {
   }
 
   it("should not modify user agent header if already present", async () => {
-    const userAgentPolicy = getPlainMsRestUserAgentPolicy();
+    const userAgentPolicy = getPlainUserAgentPolicy();
     const customUserAgent = "my custom user agent";
     const resource = new WebResource();
     resource.headers.set(userAgentHeaderKey, customUserAgent);
@@ -44,7 +44,7 @@ describe("MsRestUserAgentPolicy", () => {
 
   it("should use injected user agent string if provided", async () => {
     const customUserAgent = "my custom user agent";
-    const userAgentPolicy = getPlainMsRestUserAgentPolicy(customUserAgent);
+    const userAgentPolicy = getPlainUserAgentPolicy(customUserAgent);
     const resource = new WebResource();
     await userAgentPolicy.sendRequest(resource);
 
