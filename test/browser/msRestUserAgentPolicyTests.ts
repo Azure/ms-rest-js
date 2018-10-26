@@ -4,7 +4,7 @@
 import { HttpOperationResponse } from "../../lib/httpOperationResponse";
 import { RequestPolicy, RequestPolicyOptions } from "../../lib/policies/requestPolicy";
 import { WebResource } from "../../lib/webResource";
-import { userAgentPolicy } from "../../lib/policies/telemetry/userAgentPolicy";
+import { userAgentPolicy } from "../../lib/policies/userAgentPolicy";
 
 const userAgentHeaderKey = "x-ms-command-name";
 
@@ -16,7 +16,7 @@ const emptyRequestPolicy: RequestPolicy = {
 };
 
 const getUserAgent = async (headerValue?: string): Promise<string> => {
-  const factory = userAgentPolicy(undefined, headerValue);
+  const factory = userAgentPolicy({ value: headerValue});
   const policy = factory.create(emptyRequestPolicy, new RequestPolicyOptions());
   const resource = new WebResource();
   await policy.sendRequest(resource);
@@ -40,7 +40,7 @@ describe("MsRestUserAgentPolicy (Browser)", () => {
 
   it("should use injected user agent string if provided", async () => {
     const customUserAgent = "my custom user agent";
-    const factory = userAgentPolicy(undefined, customUserAgent);
+    const factory = userAgentPolicy({ value: customUserAgent });
     const browserUserAgentPolicy = factory.create(emptyRequestPolicy, new RequestPolicyOptions());
     const resource = new WebResource();
     await browserUserAgentPolicy.sendRequest(resource);

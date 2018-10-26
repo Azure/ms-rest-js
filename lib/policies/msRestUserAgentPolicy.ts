@@ -3,7 +3,7 @@
 
 import * as os from "os";
 import { TelemetryInfo } from "./userAgentPolicy";
-import { Constants } from "../../util/constants";
+import { Constants } from "../util/constants";
 
 export function getDefaultUserAgentKey(): string {
   return Constants.HeaderConstants.USER_AGENT;

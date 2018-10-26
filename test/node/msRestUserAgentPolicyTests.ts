@@ -5,7 +5,7 @@ import { HttpOperationResponse } from "../../lib/httpOperationResponse";
 import { RequestPolicy, RequestPolicyOptions } from "../../lib/policies/requestPolicy";
 import { Constants } from "../../lib/util/constants";
 import { WebResource } from "../../lib/webResource";
-import { userAgentPolicy } from "../../lib/policies/telemetry/userAgentPolicy";
+import { userAgentPolicy } from "../../lib/policies/userAgentPolicy";
 
 const userAgentHeaderKey = Constants.HeaderConstants.USER_AGENT;
 
@@ -17,7 +17,7 @@ const emptyRequestPolicy: RequestPolicy = {
 };
 
 const getPlainUserAgentPolicy = (headerValue?: string): RequestPolicy => {
-  const factory = userAgentPolicy(undefined, headerValue);
+  const factory = userAgentPolicy({ value: headerValue });
   return factory.create(emptyRequestPolicy, new RequestPolicyOptions());
 };
 
@@ -44,7 +44,7 @@ describe("MsRestUserAgentPolicy (NodeJS)", () => {
 
   it("should use injected user agent string if provided", async () => {
     const customUserAgent = "my custom user agent";
-    const factory = userAgentPolicy(undefined, customUserAgent);
+    const factory = userAgentPolicy({ value: customUserAgent });
     const nodeUserAgentPolicy = factory.create(emptyRequestPolicy, new RequestPolicyOptions());
     const resource = new WebResource();
     await nodeUserAgentPolicy.sendRequest(resource);
