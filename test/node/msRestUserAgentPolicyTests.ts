@@ -16,23 +16,26 @@ const emptyRequestPolicy: RequestPolicy = {
   }
 };
 
-describe("MsRestUserAgentPolicy (NodeJS)", () => {
-  async function getUserAgent(headerValue?: string): Promise<string> {
-    const factory = userAgentPolicy(undefined, headerValue);
-    const policy = factory.create(emptyRequestPolicy, new RequestPolicyOptions());
-    const resource = new WebResource();
-    await policy.sendRequest(resource);
-    const userAgent = resource.headers.get(userAgentHeaderKey);
-    return userAgent!;
-  }
+const getPlainUserAgentPolicy = (headerValue?: string): RequestPolicy => {
+  const factory = userAgentPolicy(undefined, headerValue);
+  return factory.create(emptyRequestPolicy, new RequestPolicyOptions());
+};
 
+const getUserAgent = async (headerValue?: string): Promise<string> => {
+  const policy = getPlainUserAgentPolicy(headerValue);
+  const resource = new WebResource();
+  await policy.sendRequest(resource);
+  const userAgent = resource.headers.get(userAgentHeaderKey);
+  return userAgent!;
+};
+
+describe("MsRestUserAgentPolicy (NodeJS)", () => {
   it("should not modify user agent header if already present", async () => {
-    const factory = userAgentPolicy();
-    const nodeUserAgentPolicy = factory.create(emptyRequestPolicy, new RequestPolicyOptions());
+    const userAgentPolicy = getPlainUserAgentPolicy();
     const customUserAgent = "my custom user agent";
     const resource = new WebResource();
     resource.headers.set(userAgentHeaderKey, customUserAgent);
-    await nodeUserAgentPolicy.sendRequest(resource);
+    await userAgentPolicy.sendRequest(resource);
 
     const userAgentHeader: string = resource.headers.get(userAgentHeaderKey)!;
 

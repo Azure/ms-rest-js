@@ -4,7 +4,7 @@
 import { RequestPolicy, RequestPolicyOptions, RequestPolicyFactory } from "../requestPolicy";
 import { UserAgentPolicy } from "./userAgentPolicy";
 import { Constants } from "../../util/constants";
-import { getPlatformSpecificData, getUserAgentKey } from "./msRestUserAgentPolicy";
+import { getPlatformSpecificData, getDefaultUserAgentKey } from "./msRestUserAgentPolicy";
 
 export type TelemetryInfo = { key: string; value?: string };
 
@@ -18,7 +18,7 @@ function getRuntimeInfo(): TelemetryInfo[] {
         value: Constants.msRestVersion
     };
 
-    return [ sdkSignature, msRestRuntime ];
+    return [sdkSignature, msRestRuntime];
 }
 
 function getUserAgentString(telemetryInfo: TelemetryInfo[], keySeparator = " ", valueSeparator = "/"): string {
@@ -28,17 +28,16 @@ function getUserAgentString(telemetryInfo: TelemetryInfo[], keySeparator = " ", 
     }).join(keySeparator);
 }
 
-function getHeaderValue(): string {
+function getDefaultHeaderValue(): string {
     const runtimeInfo = getRuntimeInfo();
     const platformSpecificData = getPlatformSpecificData();
     const userAgent = getUserAgentString(runtimeInfo.concat(platformSpecificData));
     return userAgent;
 }
 
-
 export function userAgentPolicy(headerKey?: string, headerValue?: string): RequestPolicyFactory {
-    const key: string = headerKey || getUserAgentKey();
-    const value: string = headerValue || getHeaderValue();
+    const key: string = headerKey || getDefaultUserAgentKey();
+    const value: string = headerValue || getDefaultHeaderValue();
 
     return {
         create: (nextPolicy: RequestPolicy, options: RequestPolicyOptions) => {

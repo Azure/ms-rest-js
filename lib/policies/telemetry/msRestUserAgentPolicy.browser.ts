@@ -7,7 +7,7 @@ interface NavigatorEx extends Navigator {
   readonly oscpu: string | undefined;
 }
 
-export function getUserAgentKey(): string {
+export function getDefaultUserAgentKey(): string {
   return "x-ms-command-name";
 }
 

@@ -5,6 +5,10 @@ import * as os from "os";
 import { TelemetryInfo } from "./userAgentPolicyFactory";
 import { Constants } from "../../util/constants";
 
+export function getDefaultUserAgentKey(): string {
+  return Constants.HeaderConstants.USER_AGENT;
+}
+
 export function getPlatformSpecificData(): TelemetryInfo[] {
   const osInfo = {
     key: "OS",
@@ -17,8 +21,4 @@ export function getPlatformSpecificData(): TelemetryInfo[] {
   };
 
   return [osInfo, runtimeInfo];
-}
-
-export function getUserAgentKey(): string {
-  return Constants.HeaderConstants.USER_AGENT;
 }
