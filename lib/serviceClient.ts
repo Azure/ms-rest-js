@@ -12,7 +12,7 @@ import { isStreamOperation, OperationSpec } from "./operationSpec";
 import { deserializationPolicy, DeserializationContentTypes } from "./policies/deserializationPolicy";
 import { exponentialRetryPolicy } from "./policies/exponentialRetryPolicy";
 import { generateClientRequestIdPolicy } from "./policies/generateClientRequestIdPolicy";
-import { userAgentPolicy } from "./policies/telemetry/userAgentPolicyFactory";
+import { userAgentPolicy } from "./policies/telemetry/userAgentPolicy";
 import { redirectPolicy } from "./policies/redirectPolicy";
 import { RequestPolicy, RequestPolicyFactory, RequestPolicyOptions } from "./policies/requestPolicy";
 import { rpRegistrationPolicy } from "./policies/rpRegistrationPolicy";
@@ -73,7 +73,7 @@ export interface ServiceClientOptions {
   /**
    * The string to be set to the telemetry header while sending the request.
    */
-  overriddenUserAgent?: string;
+  userAgent?: string;
 }
 
 /**
@@ -122,7 +122,7 @@ export class ServiceClient {
     this._withCredentials = options.withCredentials || false;
     this._httpClient = options.httpClient || new DefaultHttpClient();
     this._requestPolicyOptions = new RequestPolicyOptions(options.httpPipelineLogger);
-    this._overriddenUserAgent = options.overriddenUserAgent || undefined;
+    this._overriddenUserAgent = options.userAgent || undefined;
 
     this._requestPolicyFactories = options.requestPolicyFactories || createDefaultRequestPolicyFactories(credentials, options, this._overriddenUserAgent);
   }
@@ -345,7 +345,7 @@ function isRequestPolicyFactory(instance: any): instance is RequestPolicyFactory
   return typeof instance.create === "function";
 }
 
-function createDefaultRequestPolicyFactories(credentials: ServiceClientCredentials | RequestPolicyFactory | undefined, options: ServiceClientOptions, overriddenUserAgent?: string): RequestPolicyFactory[] {
+function createDefaultRequestPolicyFactories(credentials: ServiceClientCredentials | RequestPolicyFactory | undefined, options: ServiceClientOptions, userAgent?: string): RequestPolicyFactory[] {
   const factories: RequestPolicyFactory[] = [];
 
   if (options.generateClientRequestIdHeader) {
@@ -360,10 +360,7 @@ function createDefaultRequestPolicyFactories(credentials: ServiceClientCredentia
     }
   }
 
-  if (utils.isNode) {
-    factories.push(userAgentPolicy(overriddenUserAgent));
-  }
-
+  factories.push(userAgentPolicy(userAgent));
   factories.push(redirectPolicy());
   factories.push(rpRegistrationPolicy(options.rpRegistrationRetryTimeout));
 

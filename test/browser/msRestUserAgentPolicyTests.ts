@@ -4,7 +4,7 @@
 import { HttpOperationResponse } from "../../lib/httpOperationResponse";
 import { RequestPolicy, RequestPolicyOptions } from "../../lib/policies/requestPolicy";
 import { WebResource } from "../../lib/webResource";
-import { userAgentPolicy } from "../../lib/policies/telemetry/userAgentPolicyFactory";
+import { userAgentPolicy } from "../../lib/policies/telemetry/userAgentPolicy";
 
 const userAgentHeaderKey = "x-ms-command-name";
 

@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-import { TelemetryInfo } from "./userAgentPolicyFactory";
+import { TelemetryInfo } from "./userAgentPolicy";
 
 interface NavigatorEx extends Navigator {
   readonly oscpu: string | undefined;

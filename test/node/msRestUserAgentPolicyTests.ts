@@ -5,7 +5,7 @@ import { HttpOperationResponse } from "../../lib/httpOperationResponse";
 import { RequestPolicy, RequestPolicyOptions } from "../../lib/policies/requestPolicy";
 import { Constants } from "../../lib/util/constants";
 import { WebResource } from "../../lib/webResource";
-import { userAgentPolicy } from "../../lib/policies/telemetry/userAgentPolicyFactory";
+import { userAgentPolicy } from "../../lib/policies/telemetry/userAgentPolicy";
 
 const userAgentHeaderKey = Constants.HeaderConstants.USER_AGENT;
 

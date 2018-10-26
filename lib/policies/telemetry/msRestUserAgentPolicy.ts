@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 import * as os from "os";
-import { TelemetryInfo } from "./userAgentPolicyFactory";
+import { TelemetryInfo } from "./userAgentPolicy";
 import { Constants } from "../../util/constants";
 
 export function getDefaultUserAgentKey(): string {
