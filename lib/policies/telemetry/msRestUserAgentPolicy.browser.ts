@@ -15,7 +15,7 @@ export function getPlatformSpecificData(): TelemetryInfo[] {
   const navigator = window.navigator as NavigatorEx;
   const osInfo = {
     key: "OS",
-    value: navigator.oscpu || navigator.platform
+    value: (navigator.oscpu || navigator.platform).replace(" ", "")
   };
 
   return [osInfo];
