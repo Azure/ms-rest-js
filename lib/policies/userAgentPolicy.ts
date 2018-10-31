@@ -32,8 +32,8 @@ export function getDefaultUserAgentValue(): string {
 }
 
 export function userAgentPolicy(userAgentData?: TelemetryInfo): RequestPolicyFactory {
-    const key: string = (userAgentData && userAgentData.key) || getDefaultUserAgentKey();
-    const value: string = (userAgentData && userAgentData.value) || getDefaultUserAgentValue();
+    const key: string = (!userAgentData || userAgentData.key === undefined) ? getDefaultUserAgentKey() : userAgentData.key;
+    const value: string = (!userAgentData || userAgentData.value === undefined) ?  getDefaultUserAgentValue() : userAgentData.value;
 
     return {
         create: (nextPolicy: RequestPolicy, options: RequestPolicyOptions) => {
@@ -57,7 +57,7 @@ export class UserAgentPolicy extends BaseRequestPolicy {
             request.headers = new HttpHeaders();
         }
 
-        if (!request.headers.get(this.headerKey)) {
+        if (!request.headers.get(this.headerKey) && this.headerValue && this.headerValue !== "") {
             request.headers.set(this.headerKey, this.headerValue);
         }
     }

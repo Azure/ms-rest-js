@@ -42,6 +42,18 @@ describe("MsRestUserAgentPolicy (NodeJS)", () => {
     userAgentHeader.should.be.equal(customUserAgent);
   });
 
+  it("should not set the user agent header if custom user agent is empty", async () => {
+    const customUserAgent = "";
+    const factory = userAgentPolicy({ value: customUserAgent });
+    const nodeUserAgentPolicy = factory.create(emptyRequestPolicy, new RequestPolicyOptions());
+    const resource = new WebResource();
+    await nodeUserAgentPolicy.sendRequest(resource);
+
+    const userAgentHeader: string = resource.headers.get(userAgentHeaderKey)!;
+
+    (userAgentHeader === undefined).should.be.true;
+  });
+
   it("should use injected user agent string if provided", async () => {
     const customUserAgent = "my custom user agent";
     const factory = userAgentPolicy({ value: customUserAgent });
