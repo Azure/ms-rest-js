@@ -57,7 +57,7 @@ export class UserAgentPolicy extends BaseRequestPolicy {
             request.headers = new HttpHeaders();
         }
 
-        if (!request.headers.get(this.headerKey) && this.headerValue && this.headerValue !== "") {
+        if (!request.headers.get(this.headerKey) && this.headerValue) {
             request.headers.set(this.headerKey, this.headerValue);
         }
     }
