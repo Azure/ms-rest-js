@@ -468,7 +468,7 @@ describe("ServiceClient", function () {
           "myParameter": 1
         }
       };
-      const parameterPath: ParameterPath = ["options", "myParameter"];
+      const parameterPath: ParameterPath = ["optionsOrCallback", "myParameter"];
       const parameterMapper: Mapper = {
         serializedName: "my-parameter",
         type: {
