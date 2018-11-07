@@ -57,7 +57,7 @@ describe("msrest", function () {
     });
 
     it("should correctly serialize a complex JSON object", function (done) {
-      const o1: any = {
+      const o1: unknown = {
         "p1": "value1",
         "p2": "value2",
         "top-buf": stringToByteArray("top string"),
@@ -84,7 +84,7 @@ describe("msrest", function () {
         }
       };
 
-      const o2: any = {
+      const o2: unknown = {
         p1: "value1",
         p2: "value2",
         "top-buf": "dG9wIHN0cmluZw==",

@@ -669,10 +669,10 @@ function getPolymorphicMapper(serializer: Serializer, mapper: CompositeMapper, o
     if (discriminatorName != undefined) {
       const discriminatorValue = object[discriminatorName];
       if (discriminatorValue != undefined) {
-        const parent = mapper.type.uberParent || mapper.type.className;
-        const indexDiscriminator = discriminatorValue === parent
+        const typeName = mapper.type.uberParent || mapper.type.className;
+        const indexDiscriminator = discriminatorValue === typeName
           ? discriminatorValue
-          : parent + "." + discriminatorValue;
+          : typeName + "." + discriminatorValue;
         const polymorphicMapper = serializer.modelMappers.discriminators[indexDiscriminator];
         if (polymorphicMapper) {
           mapper = polymorphicMapper;
@@ -685,8 +685,12 @@ function getPolymorphicMapper(serializer: Serializer, mapper: CompositeMapper, o
 
 function getPolymorphicDiscriminatorRecursively(serializer: Serializer, mapper: CompositeMapper): PolymorphicDiscriminator | undefined {
   return  mapper.type.polymorphicDiscriminator
-    || (mapper.type.uberParent && serializer.modelMappers[mapper.type.uberParent] && serializer.modelMappers[mapper.type.uberParent].type.polymorphicDiscriminator)
-    || (mapper.type.className && serializer.modelMappers[mapper.type.className] && serializer.modelMappers[mapper.type.className].type.polymorphicDiscriminator);
+    || getPolymorphicDiscriminatorSafely(serializer, mapper.type.uberParent)
+    || getPolymorphicDiscriminatorSafely(serializer, mapper.type.className);
+}
+
+function getPolymorphicDiscriminatorSafely(serializer: Serializer, typeName?: string) {
+  return (typeName && serializer.modelMappers[typeName] && serializer.modelMappers[typeName].type.polymorphicDiscriminator);
 }
 
 export interface MapperConstraints {
