@@ -454,7 +454,7 @@ function resolveModelProperties(serializer: Serializer, mapper: CompositeMapper,
 }
 
 function serializeCompositeType(serializer: Serializer, mapper: CompositeMapper, object: any, objectName: string) {
-  if (mapper.type.polymorphicDiscriminator) {
+  if (getPolymorphicDiscriminatorRecursively(serializer, mapper)) {
     mapper = getPolymorphicMapper(serializer, mapper, object, "clientName");
   }
 
@@ -494,7 +494,7 @@ function serializeCompositeType(serializer: Serializer, mapper: CompositeMapper,
           : objectName;
 
         let toSerialize = object[key];
-        const polymorphicDiscriminator = mapper.type.polymorphicDiscriminator;
+        const polymorphicDiscriminator = getPolymorphicDiscriminatorRecursively(serializer, mapper);
         if (polymorphicDiscriminator && polymorphicDiscriminator.clientName === key && toSerialize == undefined) {
           toSerialize = mapper.serializedName;
         }
@@ -669,9 +669,10 @@ function getPolymorphicMapper(serializer: Serializer, mapper: CompositeMapper, o
     if (discriminatorName != undefined) {
       const discriminatorValue = object[discriminatorName];
       if (discriminatorValue != undefined) {
-        const indexDiscriminator = discriminatorValue === mapper.type.uberParent
+        const parent = mapper.type.uberParent || mapper.type.className;
+        const indexDiscriminator = discriminatorValue === parent
           ? discriminatorValue
-          : mapper.type.uberParent + "." + discriminatorValue;
+          : parent + "." + discriminatorValue;
         const polymorphicMapper = serializer.modelMappers.discriminators[indexDiscriminator];
         if (polymorphicMapper) {
           mapper = polymorphicMapper;
@@ -683,7 +684,9 @@ function getPolymorphicMapper(serializer: Serializer, mapper: CompositeMapper, o
 }
 
 function getPolymorphicDiscriminatorRecursively(serializer: Serializer, mapper: CompositeMapper): PolymorphicDiscriminator | undefined {
-  return  mapper.type.polymorphicDiscriminator || (mapper.type.uberParent && serializer.modelMappers[mapper.type.uberParent].type.polymorphicDiscriminator);
+  return  mapper.type.polymorphicDiscriminator
+    || (mapper.type.uberParent && serializer.modelMappers[mapper.type.uberParent] && serializer.modelMappers[mapper.type.uberParent].type.polymorphicDiscriminator)
+    || (mapper.type.className && serializer.modelMappers[mapper.type.className] && serializer.modelMappers[mapper.type.className].type.polymorphicDiscriminator);
 }
 
 export interface MapperConstraints {

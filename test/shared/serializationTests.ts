@@ -1296,7 +1296,168 @@ describe("msrest", function () {
         assert.strictEqual(15, result.sibling.age);
       });
 
-      it.only("foo", function () {
+    });
+
+    describe("polymorphic composite type array", () => {
+      const Fish: msRest.CompositeMapper = {
+        serializedName: "Fish",
+        type: {
+          name: "Composite",
+          polymorphicDiscriminator: {
+            serializedName: "fishtype",
+            clientName: "fishtype"
+          },
+          uberParent: "Fish",
+          className: "Fish",
+          modelProperties: {
+            species: {
+              serializedName: "species",
+              type: {
+                name: "String"
+              }
+            },
+            length: {
+              required: true,
+              serializedName: "length",
+              type: {
+                name: "Number"
+              }
+            },
+            siblings: {
+              serializedName: "siblings",
+              type: {
+                name: "Sequence",
+                element: {
+                  type: {
+                    name: "Composite",
+                    className: "Fish"
+                  }
+                }
+              }
+            },
+            fishtype: {
+              required: true,
+              serializedName: "fishtype",
+              type: {
+                name: "String"
+              }
+            }
+          }
+        }
+      };
+
+      const Salmon: msRest.CompositeMapper = {
+        serializedName: "salmon",
+        type: {
+          name: "Composite",
+          polymorphicDiscriminator: Fish.type.polymorphicDiscriminator,
+          uberParent: "Fish",
+          className: "Salmon",
+          modelProperties: {
+            ...Fish.type.modelProperties,
+            location: {
+              serializedName: "location",
+              type: {
+                name: "String"
+              }
+            },
+            iswild: {
+              serializedName: "iswild",
+              type: {
+                name: "Boolean"
+              }
+            }
+          }
+        }
+      };
+
+      const Shark: msRest.CompositeMapper = {
+        serializedName: "shark",
+        type: {
+          name: "Composite",
+          polymorphicDiscriminator: Fish.type.polymorphicDiscriminator,
+          uberParent: "Fish",
+          className: "Shark",
+          modelProperties: {
+            ...Fish.type.modelProperties,
+            age: {
+              serializedName: "age",
+              type: {
+                name: "Number"
+              }
+            },
+            birthday: {
+              required: true,
+              serializedName: "birthday",
+              type: {
+                name: "DateTime"
+              }
+            }
+          }
+        }
+      };
+
+      const Sawshark: msRest.CompositeMapper = {
+        serializedName: "sawshark",
+        type: {
+          name: "Composite",
+          polymorphicDiscriminator: Fish.type.polymorphicDiscriminator,
+          uberParent: "Fish",
+          className: "Sawshark",
+          modelProperties: {
+            ...Shark.type.modelProperties,
+            picture: {
+              serializedName: "picture",
+              type: {
+                name: "ByteArray"
+              }
+            }
+          }
+        }
+      };
+
+      const Goblinshark: msRest.CompositeMapper = {
+        serializedName: "goblin",
+        type: {
+          name: "Composite",
+          polymorphicDiscriminator: Fish.type.polymorphicDiscriminator,
+          uberParent: "Fish",
+          className: "Goblinshark",
+          modelProperties: {
+            ...Shark.type.modelProperties,
+            jawsize: {
+              serializedName: "jawsize",
+              type: {
+                name: "Number"
+              }
+            },
+            color: {
+              serializedName: "color",
+              defaultValue: "gray",
+              type: {
+                name: "String"
+              }
+            }
+          }
+        }
+      };
+
+      const mappers = {
+        discriminators: {
+          "Fish" : Fish,
+          "Fish.salmon" : Salmon,
+          "Fish.shark" : Shark,
+          "Fish.sawshark" : Sawshark,
+          "Fish.goblin" : Goblinshark,
+        },
+        Fish,
+        Salmon,
+        Shark,
+        Sawshark,
+        Goblinshark,
+      };
+
+      it("should be deserialized with child properties", function () {
         const body = {
           "fishtype": "salmon",
           "location": "alaska",
@@ -1326,167 +1487,55 @@ describe("msrest", function () {
           }]
         };
 
-        const Fish: msRest.CompositeMapper = {
-          serializedName: "Fish",
-          type: {
-            name: "Composite",
-            polymorphicDiscriminator: {
-              serializedName: "fishtype",
-              clientName: "fishtype"
+        const serializer = new msRest.Serializer(mappers);
+        const result = serializer.deserialize(Fish, body, "");
+
+        assert.equal(result.siblings.length, 3);
+        assert(result.siblings[1].picture);
+        assert.equal(result.siblings[2].jawsize, 5);
+      });
+
+      it("should be serialized with child properties", function() {
+        const body = {
+          "fishtype": "salmon",
+          "location": "alaska",
+          "iswild": true,
+          "species": "king",
+          "length": 1.0,
+          "siblings": [
+            {
+              "fishtype": "shark",
+              "age": 6,
+              "birthday": new Date("2012-01-05T01:00:00Z"),
+              "length": 20.0,
+              "species": "predator"
             },
-            uberParent: "Fish",
-            className: "Fish",
-            modelProperties: {
-              species: {
-                serializedName: "species",
-                type: {
-                  name: "String"
-                }
-              },
-              length: {
-                required: true,
-                serializedName: "length",
-                type: {
-                  name: "Number"
-                }
-              },
-              siblings: {
-                serializedName: "siblings",
-                type: {
-                  name: "Sequence",
-                  element: {
-                    type: {
-                      name: "Composite",
-                      className: "Fish"
-                    }
-                  }
-                }
-              },
-              fishtype: {
-                required: true,
-                serializedName: "fishtype",
-                type: {
-                  name: "String"
-                }
-              }
+            {
+              "fishtype": "sawshark",
+              "age": 105,
+              "birthday": new Date("1900-01-05T01:00:00Z"),
+              "length": 10.0,
+              "picture": new Uint8Array([255, 255, 255, 255, 254]),
+              "species": "dangerous"
+            },
+            {
+              "fishtype": "goblin",
+              "color": "pinkish-gray",
+              "age": 1,
+              "length": 30,
+              "species": "scary",
+              "birthday": new Date("2015-08-08T00:00:00Z"),
+              "jawsize": 5
             }
-          }
-        };
-
-        const Salmon: msRest.CompositeMapper = {
-          serializedName: "salmon",
-          type: {
-            name: "Composite",
-            polymorphicDiscriminator: Fish.type.polymorphicDiscriminator,
-            uberParent: "Fish",
-            className: "Salmon",
-            modelProperties: {
-              ...Fish.type.modelProperties,
-              location: {
-                serializedName: "location",
-                type: {
-                  name: "String"
-                }
-              },
-              iswild: {
-                serializedName: "iswild",
-                type: {
-                  name: "Boolean"
-                }
-              }
-            }
-          }
-        };
-
-        const Shark: msRest.CompositeMapper = {
-          serializedName: "shark",
-          type: {
-            name: "Composite",
-            polymorphicDiscriminator: Fish.type.polymorphicDiscriminator,
-            uberParent: "Fish",
-            className: "Shark",
-            modelProperties: {
-              ...Fish.type.modelProperties,
-              age: {
-                serializedName: "age",
-                type: {
-                  name: "Number"
-                }
-              },
-              birthday: {
-                required: true,
-                serializedName: "birthday",
-                type: {
-                  name: "DateTime"
-                }
-              }
-            }
-          }
-        };
-
-        const Sawshark: msRest.CompositeMapper = {
-          serializedName: "sawshark",
-          type: {
-            name: "Composite",
-            polymorphicDiscriminator: Fish.type.polymorphicDiscriminator,
-            uberParent: "Fish",
-            className: "Sawshark",
-            modelProperties: {
-              ...Shark.type.modelProperties,
-              picture: {
-                serializedName: "picture",
-                type: {
-                  name: "ByteArray"
-                }
-              }
-            }
-          }
-        };
-
-        const Goblinshark: msRest.CompositeMapper = {
-          serializedName: "goblin",
-          type: {
-            name: "Composite",
-            polymorphicDiscriminator: Fish.type.polymorphicDiscriminator,
-            uberParent: "Fish",
-            className: "Goblinshark",
-            modelProperties: {
-              ...Shark.type.modelProperties,
-              jawsize: {
-                serializedName: "jawsize",
-                type: {
-                  name: "Number"
-                }
-              },
-              color: {
-                serializedName: "color",
-                defaultValue: "gray",
-                type: {
-                  name: "String"
-                }
-              }
-            }
-          }
-        };
-
-        const mappers = {
-          discriminators: {
-            "Fish" : Fish,
-            "Fish.salmon" : Salmon,
-            "Fish.shark" : Shark,
-            "Fish.sawshark" : Sawshark,
-            "Fish.goblin" : Goblinshark,
-          },
-          Fish,
-          Salmon,
-          Shark,
-          Sawshark,
-          Goblinshark,
+          ]
         };
 
         const serializer = new msRest.Serializer(mappers);
-        const result = serializer.deserialize(Fish, body, "");
-        console.log(result);
+        const result = serializer.serialize(Fish, body, "");
+
+        assert.equal(result.siblings.length, 3);
+        assert(result.siblings[1].picture);
+        assert.equal(result.siblings[2].jawsize, 5);
       });
     });
   });
