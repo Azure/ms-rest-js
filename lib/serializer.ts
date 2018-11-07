@@ -655,7 +655,7 @@ function deserializeSequenceType(serializer: Serializer, mapper: SequenceMapper,
 
     const tempArray = [];
     for (let i = 0; i < responseBody.length; i++) {
-      tempArray[i] = serializer.deserialize(element, responseBody[i], objectName);
+      tempArray[i] = serializer.deserialize(element, responseBody[i], `${objectName}[${i}]`);
     }
     return tempArray;
   }
