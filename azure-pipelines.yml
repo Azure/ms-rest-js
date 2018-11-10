@@ -9,7 +9,7 @@ jobs:
   - task: NodeTool@0
     displayName: 'Install Node'
     inputs:
-      versionSpecs: 11.x
+      versionSpec: 11.x
   - task: Npm@1
     displayName: 'npm pack'
     inputs:
