@@ -110,7 +110,6 @@
     "test:tslint": "tslint -p . -c tslint.json --exclude \"./test/**/*.ts\"",
     "test:unit": "node ./.scripts/unit",
     "test:server": "ts-node -T testserver",
-    "prepare": "npm run build",
     "publish-preview": "mocha --no-colors && shx rm -rf dist/test && node ./.scripts/publish",
     "local": "ts-node ./.scripts/local.ts",
     "preview": "ts-node ./.scripts/preview.ts",
