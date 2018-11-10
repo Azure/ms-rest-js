@@ -47,6 +47,12 @@ jobs:
     inputs:
       verbose: false
   - task: Npm@1
+    displayName: 'npm run build'
+    inputs:
+      command: custom
+      verbose: false
+      customCommand: run build
+  - task: Npm@1
     displayName: 'npm test'
     inputs:
       command: custom
