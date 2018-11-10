@@ -82,10 +82,17 @@ node_modules
 SdkCodeGen
 
 output/*
+package-lock.json
 
 # Typescript output
 dist/
-typings/
+*.d.ts
+*.d.ts.map
 *.js
 *.js.map
 
+# Rollup
+!rollup.config.js
+*stats.html
+
+*.log

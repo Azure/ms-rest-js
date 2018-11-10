@@ -22,7 +22,7 @@ export { exponentialRetryPolicy } from "./policies/exponentialRetryPolicy";
 export { systemErrorRetryPolicy } from "./policies/systemErrorRetryPolicy";
 export { redirectPolicy } from "./policies/redirectPolicy";
 export { signingPolicy } from "./policies/signingPolicy";
-export { msRestUserAgentPolicy } from "./policies/msRestUserAgentPolicy";
+export { userAgentPolicy, getDefaultUserAgentValue } from "./policies/userAgentPolicy";
 export { deserializationPolicy, deserializeResponseBody } from "./policies/deserializationPolicy";
 export {
   MapperType, SimpleMapperType, CompositeMapperType, DictionaryMapperType, SequenceMapperType, EnumMapperType,
@@ -44,3 +44,4 @@ export { BasicAuthenticationCredentials } from "./credentials/basicAuthenticatio
 export { ApiKeyCredentials, ApiKeyCredentialOptions } from "./credentials/apiKeyCredentials";
 export { ServiceClientCredentials } from "./credentials/serviceClientCredentials";
 export { TopicCredentials } from "./credentials/topicCredentials";
+export { Authenticator } from "./credentials/credentials";

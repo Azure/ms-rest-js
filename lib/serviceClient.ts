@@ -9,10 +9,10 @@ import { HttpPipelineLogger } from "./httpPipelineLogger";
 import { OperationArguments } from "./operationArguments";
 import { getPathStringFromParameter, getPathStringFromParameterPath, OperationParameter, ParameterPath } from "./operationParameter";
 import { isStreamOperation, OperationSpec } from "./operationSpec";
-import { deserializationPolicy } from "./policies/deserializationPolicy";
+import { deserializationPolicy, DeserializationContentTypes } from "./policies/deserializationPolicy";
 import { exponentialRetryPolicy } from "./policies/exponentialRetryPolicy";
 import { generateClientRequestIdPolicy } from "./policies/generateClientRequestIdPolicy";
-import { msRestUserAgentPolicy } from "./policies/msRestUserAgentPolicy";
+import { userAgentPolicy } from "./policies/userAgentPolicy";
 import { redirectPolicy } from "./policies/redirectPolicy";
 import { RequestPolicy, RequestPolicyFactory, RequestPolicyOptions } from "./policies/requestPolicy";
 import { rpRegistrationPolicy } from "./policies/rpRegistrationPolicy";
@@ -21,7 +21,6 @@ import { systemErrorRetryPolicy } from "./policies/systemErrorRetryPolicy";
 import { QueryCollectionFormat } from "./queryCollectionFormat";
 import { CompositeMapper, DictionaryMapper, Mapper, MapperType, Serializer } from "./serializer";
 import { URLBuilder } from "./url";
-import { Constants } from "./util/constants";
 import * as utils from "./util/utils";
 import { stringifyXML } from "./util/xml";
 import { RequestOptionsBase, RequestPrepareOptions, WebResource } from "./webResource";
@@ -67,6 +66,14 @@ export interface ServiceClientOptions {
    * header to all outgoing requests with this header name and a random UUID as the request ID.
    */
   clientRequestIdHeaderName?: string;
+  /**
+   * The content-types that will be associated with JSON or XML serialization.
+   */
+  deserializationContentTypes?: DeserializationContentTypes;
+  /**
+   * The string to be set to the telemetry header while sending the request.
+   */
+  userAgent?: string;
 }
 
 /**
@@ -86,11 +93,6 @@ export class ServiceClient {
    */
   protected requestContentType?: string;
 
-  /**
-   * The string to be appended to the User-Agent header while sending the request.
-   * This will be applicable only for node.js environment as the fetch library in browser does not allow setting custom UA.
-   */
-  userAgentInfo: { value: string[] };
 
   /**
    * The HTTP client that will be used to send requests.
@@ -112,36 +114,15 @@ export class ServiceClient {
       options = {};
     }
 
-    this.userAgentInfo = { value: [] };
-
     if (credentials && !credentials.signRequest) {
       throw new Error("credentials argument needs to implement signRequest method");
-    }
-
-    try {
-      const moduleName = "ms-rest-js";
-      const moduleVersion = Constants.msRestVersion;
-      this.addUserAgentInfo(`${moduleName}/${moduleVersion}`);
-    } catch (err) {
-      // do nothing
     }
 
     this._withCredentials = options.withCredentials || false;
     this._httpClient = options.httpClient || new DefaultHttpClient();
     this._requestPolicyOptions = new RequestPolicyOptions(options.httpPipelineLogger);
 
-    this._requestPolicyFactories = options.requestPolicyFactories || createDefaultRequestPolicyFactories(credentials, options, this.userAgentInfo.value);
-  }
-
-  /**
-   * Adds custom information to user agent header
-   * @param {string} additionalUserAgentInfo information to be added to user agent header, as string.
-   */
-  addUserAgentInfo(additionalUserAgentInfo: string): void {
-    if (this.userAgentInfo.value.indexOf(additionalUserAgentInfo) === -1) {
-      this.userAgentInfo.value.push(additionalUserAgentInfo);
-    }
-    return;
+    this._requestPolicyFactories = options.requestPolicyFactories || createDefaultRequestPolicyFactories(credentials, options);
   }
 
   /**
@@ -200,7 +181,7 @@ export class ServiceClient {
 
       const requestUrl: URLBuilder = URLBuilder.parse(baseUri);
       if (operationSpec.path) {
-        requestUrl.setPath(operationSpec.path);
+        requestUrl.appendPath(operationSpec.path);
       }
       if (operationSpec.urlParameters && operationSpec.urlParameters.length > 0) {
         for (const urlParameter of operationSpec.urlParameters) {
@@ -358,7 +339,11 @@ export function serializeRequestBody(serviceClient: ServiceClient, httpRequest: 
   }
 }
 
-function createDefaultRequestPolicyFactories(credentials: ServiceClientCredentials | undefined, options: ServiceClientOptions, userAgentInfo: string[]): RequestPolicyFactory[] {
+function isRequestPolicyFactory(instance: any): instance is RequestPolicyFactory {
+  return typeof instance.create === "function";
+}
+
+function createDefaultRequestPolicyFactories(credentials: ServiceClientCredentials | RequestPolicyFactory | undefined, options: ServiceClientOptions): RequestPolicyFactory[] {
   const factories: RequestPolicyFactory[] = [];
 
   if (options.generateClientRequestIdHeader) {
@@ -366,13 +351,14 @@ function createDefaultRequestPolicyFactories(credentials: ServiceClientCredentia
   }
 
   if (credentials) {
-    factories.push(signingPolicy(credentials));
+    if (isRequestPolicyFactory(credentials)) {
+      factories.push(credentials);
+    } else {
+      factories.push(signingPolicy(credentials));
+    }
   }
 
-  if (utils.isNode) {
-    factories.push(msRestUserAgentPolicy(userAgentInfo));
-  }
-
+  factories.push(userAgentPolicy({ value: options.userAgent }));
   factories.push(redirectPolicy());
   factories.push(rpRegistrationPolicy(options.rpRegistrationRetryTimeout));
 
@@ -381,7 +367,7 @@ function createDefaultRequestPolicyFactories(credentials: ServiceClientCredentia
     factories.push(systemErrorRetryPolicy());
   }
 
-  factories.push(deserializationPolicy());
+  factories.push(deserializationPolicy(options.deserializationContentTypes));
 
   return factories;
 }
