@@ -4,44 +4,63 @@ pool:
 trigger:
 - master
 
-steps:
-
-- task: Npm@1
-  displayName: 'npm install'
-  inputs:
-    verbose: false
-
-- task: Npm@1
-  displayName: 'npm test'
-  inputs:
-    command: custom
-    verbose: false
-    customCommand: test
-
-- task: PublishTestResults@2
-  inputs:
-    testResultsFiles: '**/test-results.xml'
-    testRunTitle: 'Test results for JavaScript'
-
-- task: PublishCodeCoverageResults@1
-  inputs:
-    codeCoverageTool: Cobertura
-    summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/*coverage.xml'
-    reportDirectory: '$(System.DefaultWorkingDirectory)/**/coverage'
-
-- task: Npm@1
-  displayName: 'npm pack'
-  inputs:
-    command: custom
-    verbose: false
-    customCommand: pack
-
-- task: CopyFiles@2
-  displayName: 'Copy Files to: drop'
-  inputs:
-    Contents: '*.tgz'
-    TargetFolder: drop
-
-- task: PublishBuildArtifacts@1
-  inputs:
-    pathtoPublish: $(Build.SourcesDirectory)/drop
+jobs:
+- job: Pack
+  pool:
+    vmImage: 'Ubuntu 16.04'
+  steps:
+  - task: NodeTool@0
+    displayName: 'Install Node'
+    inputs:
+      versionSpecs: 11.x
+  - task: Npm@1
+    displayName: 'npm pack'
+    inputs:
+      command: custom
+      verbose: false
+      customCommand: pack
+  - task: CopyFiles@2
+    displayName: 'Copy Files to: drop'
+    inputs:
+      Contents: '*.tgz'
+      TargetFolder: drop
+  - task: PublishBuildArtifacts@1
+    inputs:
+      pathtoPublish: $(Build.SourcesDirectory)/drop
+- job: Test
+  pool:
+    vmImage: 'Ubuntu 16.04'
+  strategy:
+    matrix:
+      Node6:
+        node.version: 6.x
+      Node8:
+        node.version: 8.x
+      Node10:
+        node.version: 10.x
+      Node11:
+        node.version: 11.x
+  steps:
+  - task: NodeTool@0
+    displayName: 'Install Node'
+    inputs:
+      versionSpecs: $(node.version)
+  - task: Npm@1
+    displayName: 'npm install'
+    inputs:
+      verbose: false
+  - task: Npm@1
+    displayName: 'npm test'
+    inputs:
+      command: custom
+      verbose: false
+      customCommand: test
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFiles: '**/test-results.xml'
+      testRunTitle: 'Test results for JavaScript'
+  - task: PublishCodeCoverageResults@1
+    inputs:
+      codeCoverageTool: Cobertura
+      summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/*coverage.xml'
+      reportDirectory: '$(System.DefaultWorkingDirectory)/**/coverage'
