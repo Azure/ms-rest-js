@@ -213,7 +213,7 @@ describe("defaultHttpClient", () => {
     if (response.blobBody) {
       await response.blobBody;
     } else if (streamBody) {
-      streamBody.on('data', () => {});
+      streamBody.on("data", () => {});
       await new Promise((resolve, reject) => {
         streamBody.on("end", resolve);
         streamBody.on("error", reject);
