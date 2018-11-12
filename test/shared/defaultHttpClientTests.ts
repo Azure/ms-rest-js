@@ -158,7 +158,7 @@ describe("defaultHttpClient", () => {
     let uploadNotified = false;
     let downloadNotified = false;
 
-    const body = isNode ? new Buffer(1024 * 1024) : new Uint8Array(1024 * 1024);
+    const body = isNode ? Buffer.alloc(1024 * 1024) : new Uint8Array(1024 * 1024);
     const request = new WebResource(`${baseURL}/fileupload`, "POST", body, undefined, undefined, false, undefined, undefined, 0,
       ev => {
         uploadNotified = true;

@@ -61,4 +61,4 @@ jobs:
     inputs:
       artifactName: dist
       downloadPath: $(System.DefaultWorkingDirectory)
-  - script: 'npm test'
+  - script: npm test'
