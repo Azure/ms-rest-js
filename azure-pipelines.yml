@@ -61,9 +61,4 @@ jobs:
     inputs:
       artifactName: dist
       downloadPath: $(System.DefaultWorkingDirectory)
-  - task: Npm@1
-    displayName: 'npm test'
-    inputs:
-      command: custom
-      verbose: false
-      customCommand: test
+  - script: 'npm test'
