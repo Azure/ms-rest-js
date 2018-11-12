@@ -32,6 +32,7 @@ jobs:
   pool:
     vmImage: 'Ubuntu 16.04'
   strategy:
+    maxParallel: 1
     matrix:
       Node6:
         node.version: 6.x
