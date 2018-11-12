@@ -6,6 +6,7 @@ const webpackDevServer = spawn(join(__dirname, "../node_modules/.bin/ts-node"), 
 function cleanupDevServer() {
   webpackDevServer.stderr.destroy();
   webpackDevServer.stdout.destroy();
+  console.log("stop test-server");
   webpackDevServer.kill();
 };
 
