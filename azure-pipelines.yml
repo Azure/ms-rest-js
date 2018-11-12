@@ -38,6 +38,8 @@ jobs:
       Node11:
         node.version: 11.x
   steps:
+  - script: 'sudo apt install chromium-browser'
+    displayName: 'sudo apt install chromium-browser'
   - task: NodeTool@0
     displayName: 'Install Node $(node.version)'
     inputs:
