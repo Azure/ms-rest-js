@@ -3,6 +3,7 @@
 
 import * as childProcess from "child_process";
 import * as path from "path";
+import kill from "tree-kill";
 
 let serverProcess: childProcess.ChildProcess;
 
@@ -22,7 +23,7 @@ before(function(done) {
 });
 
 after(function() {
-    serverProcess.stdout.destroy();
-    serverProcess.stderr.destroy();
-    serverProcess.kill();
+    // serverProcess.stdout.destroy();
+    // serverProcess.stderr.destroy();
+    kill(serverProcess.pid);
 });

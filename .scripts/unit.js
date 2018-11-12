@@ -1,13 +1,14 @@
 const { major } = require("semver");
 const { spawn, exec } = require("child_process");
 const { join } = require("path");
+const kill = require("tree-kill");
 
 const webpackDevServer = spawn(join(__dirname, "../node_modules/.bin/ts-node"), ["-T", join(__dirname, "../testserver")], { shell: true })
 function cleanupDevServer() {
-  webpackDevServer.stderr.destroy();
-  webpackDevServer.stdout.destroy();
-  console.log("stop test-server");
-  webpackDevServer.kill();
+  kill(webpackDevServer.pid);
+  // webpackDevServer.stderr.destroy();
+  // webpackDevServer.stdout.destroy();
+  // webpackDevServer.kill();
 };
 
 let mochaRunning = false
