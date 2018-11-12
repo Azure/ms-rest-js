@@ -23,7 +23,7 @@ jobs:
       TargetFolder: drop
   - task: PublishBuildArtifacts@1
     inputs:
-      pathtoPublish: $(Build.SourcesDirectory)
+      pathtoPublish: $(Build.SourcesDirectory)/drop
 - job: Test
   pool:
     vmImage: 'Ubuntu 16.04'
