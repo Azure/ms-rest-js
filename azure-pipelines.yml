@@ -41,6 +41,8 @@ jobs:
         node.version: 10.x
       Node11:
         node.version: 11.x
+  dependsOn: Pack
+  condition: succeeded()
   steps:
   - script: 'sudo apt-get update'
     displayName: 'sudo apt-get update'
