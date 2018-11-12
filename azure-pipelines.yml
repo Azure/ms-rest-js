@@ -16,14 +16,9 @@ jobs:
       command: custom
       verbose: false
       customCommand: pack
-  - task: CopyFiles@2
-    displayName: 'Copy Files to: drop'
-    inputs:
-      Contents: '*.tgz'
-      TargetFolder: drop
   - task: PublishBuildArtifacts@1
     inputs:
-      pathtoPublish: $(Build.SourcesDirectory)/drop
+      pathtoPublish: $(Build.SourcesDirectory)
 - job: Test
   pool:
     vmImage: 'Ubuntu 16.04'
