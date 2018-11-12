@@ -23,7 +23,8 @@ before(function(done) {
 });
 
 after(function() {
-    // serverProcess.stdout.destroy();
-    // serverProcess.stderr.destroy();
+    serverProcess.stdout.destroy();
+    serverProcess.stderr.destroy();
+    console.log(`kill ${serverProcess.pid}`);
     kill(serverProcess.pid);
 });

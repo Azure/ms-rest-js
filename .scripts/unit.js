@@ -5,10 +5,10 @@ const kill = require("tree-kill");
 
 const webpackDevServer = spawn(join(__dirname, "../node_modules/.bin/ts-node"), ["-T", join(__dirname, "../testserver")], { shell: true })
 function cleanupDevServer() {
+  webpackDevServer.stderr.destroy();
+  webpackDevServer.stdout.destroy();
+  console.log(`kill ${webpackDevServer.pid}`);
   kill(webpackDevServer.pid);
-  // webpackDevServer.stderr.destroy();
-  // webpackDevServer.stdout.destroy();
-  // webpackDevServer.kill();
 };
 
 let mochaRunning = false
