@@ -30,13 +30,13 @@ jobs:
       artifactName: dist
 - template: azure-pipelines-job.yml
   parameters:
-    node.version: 6.x
+    nodeVersion: 6.x
 - template: azure-pipelines-job.yml
   parameters:
-    node.version: 8.x
+    nodeVersion: 8.x
 - template: azure-pipelines-job.yml
   parameters:
-    node.version: 10.x
+    nodeVersion: 10.x
 - template: azure-pipelines-job.yml
   parameters:
-    node.version: 11.x
+    nodeVersion: 11.x
