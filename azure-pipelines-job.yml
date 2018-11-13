@@ -1,8 +1,8 @@
 parameters:
-  node.version: 11.x
+  node.version: ''
 
 jobs:
-- job: Test on $(node.version)
+- job: 'Test on $(node.version)'
   pool:
     vmImage: 'Ubuntu 16.04'
   dependsOn: Pack
