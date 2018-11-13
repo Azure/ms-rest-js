@@ -31,12 +31,3 @@ jobs:
 - template: azure-pipelines-job.yml
   parameters:
     nodeVersion: 6.x
-- template: azure-pipelines-job.yml
-  parameters:
-    nodeVersion: 8.x
-- template: azure-pipelines-job.yml
-  parameters:
-    nodeVersion: 10.x
-- template: azure-pipelines-job.yml
-  parameters:
-    nodeVersion: 11.x
