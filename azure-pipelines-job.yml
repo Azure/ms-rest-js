@@ -2,7 +2,7 @@ parameters:
   node.version: ''
 
 jobs:
-- job: 'Test on $(node.version)'
+- job: 'Test on $(parameters.node.version)'
   pool:
     vmImage: 'Ubuntu 16.04'
   dependsOn: Pack
@@ -13,9 +13,9 @@ jobs:
   - script: 'sudo apt install chromium-browser'
     displayName: 'sudo apt install chromium-browser'
   - task: NodeTool@0
-    displayName: 'Install Node $(node.version)'
+    displayName: 'Install Node $(parameters.node.version)'
     inputs:
-      versionSpec: $(node.version)
+      versionSpec: $(parameters.node.version)
   - task: Npm@1
     displayName: 'npm install'
     inputs:
