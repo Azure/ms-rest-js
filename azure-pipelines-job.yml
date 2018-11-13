@@ -15,7 +15,7 @@ jobs:
   - task: NodeTool@0
     displayName: 'Install Node ${{parameters.nodeVersion}}'
     inputs:
-      versionSpec: ${{parameters.nodeVersion}}
+      versionSpec: '${{parameters.nodeVersion}}.x'
   - task: Npm@1
     displayName: 'npm install'
     inputs:
