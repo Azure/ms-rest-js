@@ -29,14 +29,14 @@ jobs:
       pathtoPublish: $(Build.SourcesDirectory)/dist
       artifactName: dist
 - template: azure-pipelines-job.yml
-  paramters:
+  parameters:
     node.version: 6.x
 - template: azure-pipelines-job.yml
-  paramters:
+  parameters:
     node.version: 8.x
 - template: azure-pipelines-job.yml
-  paramters:
+  parameters:
     node.version: 10.x
 - template: azure-pipelines-job.yml
-  paramters:
+  parameters:
     node.version: 11.x
