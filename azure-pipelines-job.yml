@@ -2,7 +2,7 @@ parameters:
   nodeVersion: ''
 
 jobs:
-- job: 'Test on ${{parameters.nodeVersion}}'
+- job: 'testOn${{parameters.nodeVersion}}'
   pool:
     vmImage: 'Ubuntu 16.04'
   dependsOn: Pack
