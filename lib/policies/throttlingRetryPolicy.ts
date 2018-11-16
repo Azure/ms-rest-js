@@ -18,7 +18,11 @@ export class ThrottlingRetryPolicy extends BaseRequestPolicy {
     super(nextPolicy, options);
   }
 
-  public sendRequest(webResource: WebResource): Promise<HttpOperationResponse> {
-    throw new Error("Method not implemented.");
+  public sendRequest(httpRequest: WebResource): Promise<HttpOperationResponse> {
+    return this._nextPolicy.sendRequest(httpRequest).then(this._handleResponse);
+  }
+
+  private _handleResponse(reponse: HttpOperationResponse) {
+
   }
 }
