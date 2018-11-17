@@ -36,7 +36,7 @@ describe.only("ThrottlingRetryPolicy", () => {
     }
 
     describe("sendRequest", () => {
-        it("clones the request", async () => {
+        it("should clone the request", async () => {
             const request = new WebResource();
             const nextPolicy = {
                 sendRequest: (requestToSend: WebResource): Promise<HttpOperationResponse> => {
@@ -48,7 +48,7 @@ describe.only("ThrottlingRetryPolicy", () => {
             await policy.sendRequest(request);
         });
 
-        it("does not modify the request", async () => {
+        it("should not modify the request", async () => {
             const request = new WebResource();
             request.url = "http://url";
             request.method = "PATCH";
@@ -62,7 +62,7 @@ describe.only("ThrottlingRetryPolicy", () => {
             assert.deepEqual(response.request, request);
         });
 
-        it("does nothing when status code is not 429", async () => {
+        it("should do nothing when status code is not 429", async () => {
             const request = new WebResource();
             const mockResponse = {
                 status: 400,
@@ -78,7 +78,7 @@ describe.only("ThrottlingRetryPolicy", () => {
             assert.deepEqual(response, mockResponse);
         });
 
-        it("passes the response to the handler if the status code equals 429", async () => {
+        it("should pass the response to the handler if the status code equals 429", async () => {
             const request = new WebResource();
             const mockResponse = {
                 status: 429,
@@ -94,6 +94,13 @@ describe.only("ThrottlingRetryPolicy", () => {
 
             const response = await policy.sendRequest(request);
             assert.deepEqual(response, mockResponse);
+        });
+    });
+
+    describe("parseRetryAfterHeader", () => {
+        it("should return sleep interval value in miliseconds if parameter is a number", function () {
+            const retryAfter = ThrottlingRetryPolicy.parseRetryAfterHeader("1");
+            assert.equal(retryAfter, 1000);
         });
     });
 });
