@@ -20,13 +20,15 @@ describe.only("ThrottlingRetryPolicy", () => {
         }
     }
 
+    const defaultResponse = {
+        status: 200,
+        request: new WebResource(),
+        headers: new HttpHeaders()
+    };
+
     function createDefaultThrottlingRetryPolicy(response?: HttpOperationResponse, actionHandler?: (response: HttpOperationResponse) => Promise<HttpOperationResponse>) {
         if (!response) {
-            response = {
-                status: 200,
-                request: new WebResource(),
-                headers: new HttpHeaders()
-            };
+            response = defaultResponse;
         }
 
         const passThroughPolicy = new PassThroughPolicy(response);
@@ -34,6 +36,18 @@ describe.only("ThrottlingRetryPolicy", () => {
     }
 
     describe("sendRequest", () => {
+        it("clones the request", async () => {
+            const request = new WebResource();
+            const nextPolicy = {
+                sendRequest: (requestToSend: WebResource): Promise<HttpOperationResponse> => {
+                    assert(request !== requestToSend);
+                    return Promise.resolve(defaultResponse);
+                }
+            };
+            const policy = new ThrottlingRetryPolicy(nextPolicy, new RequestPolicyOptions());
+            await policy.sendRequest(request);
+        });
+
         it("does not modify the request", async () => {
             const request = new WebResource();
             request.url = "http://url";
@@ -64,8 +78,22 @@ describe.only("ThrottlingRetryPolicy", () => {
             assert.deepEqual(response, mockResponse);
         });
 
-        it("", async () => {
+        it("passes the response to the handler if the status code equals 429", async () => {
+            const request = new WebResource();
+            const mockResponse = {
+                status: 429,
+                headers: new HttpHeaders({
+                    "Retry-After": "100"
+                }),
+                request: request
+            };
+            const policy = createDefaultThrottlingRetryPolicy(mockResponse, response => {
+                 assert.deepEqual(response, mockResponse);
+                 return Promise.resolve(response);
+            });
 
+            const response = await policy.sendRequest(request);
+            assert.deepEqual(response, mockResponse);
         });
     });
 });

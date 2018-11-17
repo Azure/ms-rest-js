@@ -25,17 +25,31 @@ export class ThrottlingRetryPolicy extends BaseRequestPolicy {
     this._handleResponse = _handleResponse || this._defaultResponseHandler;
   }
 
-  public sendRequest(httpRequest: WebResource): Promise<HttpOperationResponse> {
-    return this._nextPolicy.sendRequest(httpRequest).then(response => {
+  public async sendRequest(httpRequest: WebResource): Promise<HttpOperationResponse> {
+    return this._nextPolicy.sendRequest(httpRequest.clone()).then(response => {
       if (response.status !== StatusCodes.TooManyRequests) {
-        return Promise.resolve(response);
+        return response;
       } else {
         return this._handleResponse(response);
       }
     });
   }
 
-  private _defaultResponseHandler(response: HttpOperationResponse): Promise<HttpOperationResponse> {
+  public static parseRetryAfterHeader(headerValue: string): number {
+    const retryAfterInSeconds = Number(headerValue);
+    if (Number.isNaN(retryAfterInSeconds)) {
+      return ThrottlingRetryPolicy.parseDateRetryAfterHeader(headerValue);
+    } else {
+      return retryAfterInSeconds * 1000;
+    }
+  }
+
+  public static parseDateRetryAfterHeader(_: string): number {
+    throw new Error();
+  }
+
+
+  private _defaultResponseHandler(_: HttpOperationResponse): Promise<HttpOperationResponse> {
     return Promise.reject();
   }
 }
