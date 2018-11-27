@@ -3,12 +3,18 @@
 
 import assert from "assert";
 import * as msRest from "../../lib/msRest";
-const should = require("should");
+// tslint:disable-next-line
+import should from "should";
 
 import { TestClient } from "./data/TestClient/lib/testClient";
 import { Mappers } from "./data/TestClient/lib/models/mappers";
+
 const Serializer = new msRest.Serializer({});
 const valid_uuid = "ceaafd1e-f936-429f-bbfc-82ee75dddc33";
+
+export function disableTs6133(): any {
+  return should;
+}
 
 function stringToByteArray(str: string): Uint8Array {
   if (typeof Buffer === "function") {
@@ -129,24 +135,28 @@ describe("msrest", function () {
       serializedObject.should.equal("foo");
       done();
     });
+
     it("should correctly serialize an array if the type is 'any'", function (done) {
       const mapper: msRest.Mapper = { type: { name: "any" }, required: false, serializedName: "any" };
       const serializedObject = Serializer.serialize(mapper, [1, 2], "anyBody");
       assert.deepEqual(serializedObject, [1, 2]);
       done();
     });
+
     it("should correctly serialize a string", function (done) {
       const mapper: msRest.Mapper = { type: { name: "String" }, required: false, serializedName: "string" };
       const serializedObject = Serializer.serialize(mapper, "foo", "stringBody");
       serializedObject.should.equal("foo");
       done();
     });
+
     it("should correctly serialize a uuid", function (done) {
       const mapper: msRest.Mapper = { type: { name: "Uuid" }, required: false, serializedName: "Uuid" };
       const serializedObject = Serializer.serialize(mapper, valid_uuid, "uuidBody");
       serializedObject.should.equal(valid_uuid);
       done();
     });
+
     it("should throw an error if the value is not a valid Uuid", function (done) {
       const mapper: msRest.Mapper = { type: { name: "Uuid" }, required: false, serializedName: "Uuid" };
       try {
@@ -156,24 +166,28 @@ describe("msrest", function () {
         done();
       }
     });
+
     it("should correctly serialize a number", function (done) {
       const mapper: msRest.Mapper = { type: { name: "Number" }, required: false, serializedName: "Number" };
       const serializedObject = Serializer.serialize(mapper, 1.506, "stringBody");
       serializedObject.should.equal(1.506);
       done();
     });
+
     it("should correctly serialize a boolean", function (done) {
       const mapper: msRest.Mapper = { type: { name: "Boolean" }, required: false, serializedName: "Boolean" };
       const serializedObject = Serializer.serialize(mapper, false, "stringBody");
       serializedObject.should.equal(false);
       done();
     });
+
     it("should correctly serialize an Enum", function (done) {
       const mapper: msRest.EnumMapper = { type: { name: "Enum", allowedValues: [1, 2, 3, 4] }, required: false, serializedName: "Enum" };
       const serializedObject = Serializer.serialize(mapper, 1, "enumBody");
       serializedObject.should.equal(1);
       done();
     });
+
     it("should throw an error if the value is not valid for an Enum", function (done) {
       const mapper: msRest.EnumMapper = { type: { name: "Enum", allowedValues: [1, 2, 3, 4] }, required: false, serializedName: "Enum" };
       try {
@@ -200,18 +214,21 @@ describe("msrest", function () {
       Serializer.serialize(mapper, dateObj, "dateObj").should.equal(dateISO);
       done();
     });
+
     it("should correctly serialize a Date object with max value", function (done) {
       const mapper: msRest.Mapper = { type: { name: "DateTime" }, required: false, serializedName: "DateTime" };
       const serializedDateString = Serializer.serialize(mapper, new Date("9999-12-31T23:59:59-12:00"), "dateTimeObj");
-      should.equal(serializedDateString, "+010000-01-01T11:59:59.000Z");
+      serializedDateString.should.equal("+010000-01-01T11:59:59.000Z");
       done();
     });
+
     it("should correctly serialize a Date object with max value and format UnixTime", function (done) {
       const mapper: msRest.Mapper = { type: { name: "UnixTime" }, required: false, serializedName: "UnixTime" };
       const serializedDate = Serializer.serialize(mapper, new Date("9999-12-31T23:59:59-12:00"), "dateTimeObj");
       serializedDate.should.equal(253402343999);
       done();
     });
+
     it("should correctly serialize a string in DateTimeRfc1123", function (done) {
       const mapper: msRest.Mapper = { type: { name: "DateTimeRfc1123" }, required: false, serializedName: "DateTimeRfc1123" };
       const rfc = new Date("Mon, 01 Jan 0001 00:00:00 GMT");
@@ -219,16 +236,18 @@ describe("msrest", function () {
       serializedDateString.should.equal("Mon, 01 Jan 2001 00:00:00 GMT");
       done();
     });
+
     it("should correctly serialize an ISO 8601 duration", function () {
       const mapper: msRest.Mapper = { type: { name: "TimeSpan" }, required: false, serializedName: "TimeSpan" };
       const duration = "P123DT22H14M12.011S";
       const serializedDateString = Serializer.serialize(mapper, duration, "dateTimeObj");
       serializedDateString.should.equal(duration);
     });
+
     it("should throw an error when given an invalid ISO 8601 duration", function () {
       const mapper: msRest.Mapper = { type: { name: "TimeSpan" }, required: false, serializedName: "TimeSpan" };
       const duration = "P123Z42DT22H14M12.011S";
-      (() => Serializer.serialize(mapper, duration, "dateTimeObj")).should.throw(/must be a string in ISO 8601 format/);
+      (() => Serializer.serialize(mapper, duration, "dateTimeObj")).should.throwError(/must be a string in ISO 8601 format/);
     });
 
     it("should correctly serialize an array of primitives", function (done) {
@@ -572,7 +591,7 @@ describe("msrest", function () {
       };
 
       const result = Serializer.serialize(mapper, { length: null }, "testobj");
-      should.exist(result);
+      result.should.exist;
     });
 
     it("should not allow undefined when required: true and nullable: true", function () {
