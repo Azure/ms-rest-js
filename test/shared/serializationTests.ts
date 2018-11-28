@@ -3,7 +3,6 @@
 
 import assert from "assert";
 import * as msRest from "../../lib/msRest";
-// tslint:disable-next-line
 import should from "should";
 
 import { TestClient } from "./data/TestClient/lib/testClient";
@@ -11,10 +10,6 @@ import { Mappers } from "./data/TestClient/lib/models/mappers";
 
 const Serializer = new msRest.Serializer({});
 const valid_uuid = "ceaafd1e-f936-429f-bbfc-82ee75dddc33";
-
-export function disableTs6133(): any {
-  return should;
-}
 
 function stringToByteArray(str: string): Uint8Array {
   if (typeof Buffer === "function") {
@@ -132,7 +127,7 @@ describe("msrest", function () {
     it("should correctly serialize a string if the type is 'any'", function (done) {
       const mapper: msRest.Mapper = { type: { name: "any" }, required: false, serializedName: "any" };
       const serializedObject = Serializer.serialize(mapper, "foo", "anyBody");
-      serializedObject.should.equal("foo");
+      should.equal(serializedObject, "foo");
       done();
     });
 
@@ -591,7 +586,7 @@ describe("msrest", function () {
       };
 
       const result = Serializer.serialize(mapper, { length: null }, "testobj");
-      result.should.exist;
+      should.exist(result);
     });
 
     it("should not allow undefined when required: true and nullable: true", function () {
