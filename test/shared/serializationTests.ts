@@ -3,7 +3,7 @@
 
 import assert from "assert";
 import * as msRest from "../../lib/msRest";
-import should from "should";
+import { should } from "chai";
 
 import { TestClient } from "./data/TestClient/lib/testClient";
 import { Mappers } from "./data/TestClient/lib/models/mappers";
@@ -47,7 +47,7 @@ describe("msrest", function () {
       msRest.serializeObject("true").should.equal("true");
       msRest.serializeObject(1).should.equal(1);
       msRest.serializeObject(100.0123).should.equal(100.0123);
-      assert.equal(msRest.serializeObject(null), null);
+      assert.equal(msRest.serializeObject(undefined), undefined);
       done();
     });
 
@@ -127,7 +127,7 @@ describe("msrest", function () {
     it("should correctly serialize a string if the type is 'any'", function (done) {
       const mapper: msRest.Mapper = { type: { name: "any" }, required: false, serializedName: "any" };
       const serializedObject = Serializer.serialize(mapper, "foo", "anyBody");
-      should.equal(serializedObject, "foo");
+      serializedObject.should.equal("foo");
       done();
     });
 
@@ -242,7 +242,7 @@ describe("msrest", function () {
     it("should throw an error when given an invalid ISO 8601 duration", function () {
       const mapper: msRest.Mapper = { type: { name: "TimeSpan" }, required: false, serializedName: "TimeSpan" };
       const duration = "P123Z42DT22H14M12.011S";
-      (() => Serializer.serialize(mapper, duration, "dateTimeObj")).should.throwError(/must be a string in ISO 8601 format/);
+      (() => Serializer.serialize(mapper, duration, "dateTimeObj")).should.throw(/must be a string in ISO 8601 format/);
     });
 
     it("should correctly serialize an array of primitives", function (done) {
@@ -335,7 +335,7 @@ describe("msrest", function () {
           }
         }
       };
-      const array = [[1], ["2"], [null], [1, "2", {}, true, []]];
+      const array = [[1], ["2"], [undefined], [1, "2", {}, true, []]];
       try {
         Serializer.serialize(mapper, array, mapper.serializedName);
       } catch (err) {
@@ -585,8 +585,9 @@ describe("msrest", function () {
         }
       };
 
+      // tslint:disable-next-line
       const result = Serializer.serialize(mapper, { length: null }, "testobj");
-      should.exist(result);
+      should().exist(result);
     });
 
     it("should not allow undefined when required: true and nullable: true", function () {
@@ -632,7 +633,7 @@ describe("msrest", function () {
         }
       };
 
-      (function () { Serializer.serialize(mapper, { length: null }, "testobj"); }).should.throw("testobj.length cannot be null or undefined.");
+      (function () { Serializer.serialize(mapper, { length: undefined }, "testobj"); }).should.throw("testobj.length cannot be null or undefined.");
     });
 
     it("should not allow undefined when required: true and nullable: false", function () {
@@ -666,7 +667,7 @@ describe("msrest", function () {
           name: "String"
         }
       };
-      (function () { Serializer.serialize(mapper, null, "testobj"); }).should.throw("testobj cannot be null or undefined.");
+      (function () { Serializer.serialize(mapper, undefined, "testobj"); }).should.throw("testobj cannot be null or undefined.");
     });
 
     it("should not allow undefined when required: true and nullable is undefined", function () {
@@ -690,7 +691,7 @@ describe("msrest", function () {
         }
       };
 
-      Serializer.serialize(mapper, null, "testobj");
+      Serializer.serialize(mapper, undefined, "testobj");
     });
 
     it("should not allow null when required: false and nullable: false", function () {
@@ -702,6 +703,8 @@ describe("msrest", function () {
           name: "String"
         }
       };
+
+      // tslint:disable-next-line
       (function () { Serializer.serialize(mapper, null, "testobj"); }).should.throw("testobj cannot be null.");
     });
 
@@ -714,7 +717,7 @@ describe("msrest", function () {
         }
       };
 
-      Serializer.serialize(mapper, null, "testobj");
+      Serializer.serialize(mapper, undefined, "testobj");
     });
 
     it("should allow undefined when required: false and nullable: true", function () {
