@@ -431,7 +431,7 @@ function serializeDictionaryType(serializer: Serializer, mapper: DictionaryMappe
  * @param serializer the serializer containing the entire set of mappers
  * @param mapper the composite mapper to resolve
  */
-function resolveModelProperties(serializer: Serializer, mapper: CompositeMapper, objectName: string): { [propertyName: string]: Mapper } {
+export function resolveModelProperties(serializer: Serializer, mapper: CompositeMapper, _object: any, objectName: string): { [propertyName: string]: Mapper } {
   let modelProps = mapper.type.modelProperties;
   if (!modelProps) {
     const className = mapper.type.className;
@@ -460,7 +460,7 @@ function serializeCompositeType(serializer: Serializer, mapper: CompositeMapper,
 
   if (object != undefined) {
     const payload: any = {};
-    const modelProps = resolveModelProperties(serializer, mapper, objectName);
+    const modelProps = resolveModelProperties(serializer, mapper, object, objectName);
     for (const key of Object.keys(modelProps)) {
       const propertyMapper = modelProps[key];
       if (propertyMapper.readOnly) {
@@ -537,7 +537,7 @@ function deserializeCompositeType(serializer: Serializer, mapper: CompositeMappe
     mapper = getPolymorphicMapper(serializer, mapper, responseBody, "serializedName");
   }
 
-  const modelProps = resolveModelProperties(serializer, mapper, objectName);
+  const modelProps = resolveModelProperties(serializer, mapper, responseBody, objectName);
   let instance: { [key: string]: any } = {};
   for (const key of Object.keys(modelProps)) {
     const propertyMapper = modelProps[key];

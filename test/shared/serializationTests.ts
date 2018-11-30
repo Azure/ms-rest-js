@@ -4,9 +4,11 @@
 import assert from "assert";
 import * as msRest from "../../lib/msRest";
 import { should } from "chai";
+import "chai/register-should";
 
 import { TestClient } from "./data/TestClient/lib/testClient";
 import { Mappers } from "./data/TestClient/lib/models/mappers";
+import { resolveModelProperties } from '../../lib/serializer';
 
 const Serializer = new msRest.Serializer({});
 const valid_uuid = "ceaafd1e-f936-429f-bbfc-82ee75dddc33";
@@ -1554,6 +1556,37 @@ describe("msrest", function () {
         assert(result.siblings[1].picture);
         assert.equal(result.siblings[2].jawsize, 5);
       });
+    });
+  });
+
+  describe.only("resolveModelProperties", function () {
+    const Mapper: msRest.CompositeMapper = {
+      type: {
+        name: "Composite",
+        className: "Fish"
+      }
+    };
+
+    const Serializer = new msRest.Serializer({
+      Fish: {
+        type: {
+          modelProperties: {
+          //   Foo: {
+          //     required: true,
+          //     serializedName: "Foo",
+          //     type: {
+          //       name: "String"
+          //     }
+          //   }
+          }
+        }
+      }
+    });
+
+    it("should return no properties when object is empty and model properties are empty", function (done) {
+      const result = resolveModelProperties(Serializer, Mapper, {}, "Fish");
+      result.should.be.empty;
+      done();
     });
   });
 });
