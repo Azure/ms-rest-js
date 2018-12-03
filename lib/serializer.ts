@@ -532,6 +532,20 @@ function serializeCompositeType(serializer: Serializer, mapper: CompositeMapper,
   return object;
 }
 
+function isSpecialXmlProperty(propertyName: string): boolean {
+  return [ "$", "_" ].includes(propertyName);
+}
+
+function containsSerializedName(modelProperties: {[propertyName: string]: Mapper}, serializedKey: string): boolean {
+  for (const [, mapper] of Object.entries(modelProperties)) {
+    if (mapper.serializedName === serializedKey) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 function deserializeCompositeType(serializer: Serializer, mapper: CompositeMapper, responseBody: any, objectName: string): any {
   if (getPolymorphicDiscriminatorRecursively(serializer, mapper)) {
     mapper = getPolymorphicMapper(serializer, mapper, responseBody, "serializedName");
@@ -623,23 +637,8 @@ function deserializeCompositeType(serializer: Serializer, mapper: CompositeMappe
       }
     }
   } else {
-    const containsSerializedName = (modelProperties: {[propertyName: string]: Mapper}, serializedKey: string): boolean => {
-      for (const key of Object.keys(modelProperties)) {
-        const mapper: Mapper = modelProperties[key];
-        if (mapper.serializedName === serializedKey) {
-          return true;
-        }
-      }
-
-      return false;
-    };
-
-    const isSpecialProperty = (propertyName: string): boolean => {
-      return [ "$", "_" ].includes(propertyName);
-    };
-
     for (const key of Object.keys(responseBody)) {
-      if (instance[key] === undefined && !handledPropertyNames.includes(key) && !containsSerializedName(modelProps, key) && !isSpecialProperty(key)) {
+      if (instance[key] === undefined && !handledPropertyNames.includes(key) && !containsSerializedName(modelProps, key) && !isSpecialXmlProperty(key)) {
         instance[key] = responseBody[key];
       }
     }
