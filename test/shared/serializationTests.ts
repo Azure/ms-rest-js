@@ -1059,7 +1059,7 @@ describe("msrest", function () {
       done();
     });
 
-    it.only("should deserialize headerCollectionPrefix", function () {
+    it("should deserialize headerCollectionPrefix", function () {
       const mapper: msRest.CompositeMapper = {
         serializedName: "something",
         type: {

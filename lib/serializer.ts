@@ -547,6 +547,8 @@ function deserializeCompositeType(serializer: Serializer, mapper: CompositeMappe
 
   const modelProps = resolveModelProperties(serializer, mapper, objectName);
   let instance: { [key: string]: any } = {};
+  const handledPropertyNames: string[] = [];
+
   for (const key of Object.keys(modelProps)) {
     const propertyMapper = modelProps[key];
     const { serializedName, xmlName, xmlElementName } = propertyMapper;
@@ -562,6 +564,8 @@ function deserializeCompositeType(serializer: Serializer, mapper: CompositeMappe
         if (headerKey.startsWith(headerCollectionPrefix)) {
           dictionary[headerKey.substring(headerCollectionPrefix.length)] = serializer.deserialize((propertyMapper as DictionaryMapper).type.value, responseBody[headerKey], propertyObjectName);
         }
+
+        handledPropertyNames.push(headerKey);
       }
       instance[key] = dictionary;
     } else if (serializer.isXML) {
@@ -630,10 +634,7 @@ function deserializeCompositeType(serializer: Serializer, mapper: CompositeMappe
     const containsSerializedName = (modelProperties: {[propertyName: string]: Mapper}, serializedKey: string): boolean => {
       for (const key of Object.keys(modelProperties)) {
         const mapper: Mapper = modelProperties[key];
-        const headerCollectionPrefix: string | undefined = getHeaderCollectionPrefix(mapper);
-        const keyToFind = headerCollectionPrefix ? serializedKey.replace(headerCollectionPrefix, "") : serializedKey;
-
-        if (mapper.serializedName === keyToFind) {
+        if (mapper.serializedName === serializedKey) {
           return true;
         }
       }
@@ -646,7 +647,7 @@ function deserializeCompositeType(serializer: Serializer, mapper: CompositeMappe
     };
 
     for (const key of Object.keys(responseBody)) {
-      if (instance[key] === undefined && !containsSerializedName(modelProps, key) && !isSpecialProperty(key)) {
+      if (instance[key] === undefined && !handledPropertyNames.includes(key) && !containsSerializedName(modelProps, key) && !isSpecialProperty(key)) {
         instance[key] = responseBody[key];
       }
     }
