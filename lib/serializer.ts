@@ -532,6 +532,14 @@ function serializeCompositeType(serializer: Serializer, mapper: CompositeMapper,
   return object;
 }
 
+function getHeaderCollectionPrefix(mapper: Mapper): string | undefined {
+  if ((mapper as DictionaryMapper).headerCollectionPrefix) {
+    return (mapper as DictionaryMapper).headerCollectionPrefix;
+  }
+
+  return undefined;
+}
+
 function deserializeCompositeType(serializer: Serializer, mapper: CompositeMapper, responseBody: any, objectName: string): any {
   if (getPolymorphicDiscriminatorRecursively(serializer, mapper)) {
     mapper = getPolymorphicMapper(serializer, mapper, responseBody, "serializedName");
@@ -547,7 +555,7 @@ function deserializeCompositeType(serializer: Serializer, mapper: CompositeMappe
       propertyObjectName = objectName + "." + serializedName;
     }
 
-    const headerCollectionPrefix = (propertyMapper as DictionaryMapper).headerCollectionPrefix;
+    const headerCollectionPrefix = getHeaderCollectionPrefix(propertyMapper);
     if (headerCollectionPrefix) {
       const dictionary: any = {};
       for (const headerKey of Object.keys(responseBody)) {
@@ -619,9 +627,13 @@ function deserializeCompositeType(serializer: Serializer, mapper: CompositeMappe
       }
     }
   } else {
-    const containsSerializedName = (obj: {[propertyName: string]: Mapper}, serializedKey: string): boolean => {
-      for (const key of Object.keys(obj)) {
-        if (obj[key].serializedName === serializedKey) {
+    const containsSerializedName = (modelProperties: {[propertyName: string]: Mapper}, serializedKey: string): boolean => {
+      for (const key of Object.keys(modelProperties)) {
+        const mapper: Mapper = modelProperties[key];
+        const headerCollectionPrefix: string | undefined = getHeaderCollectionPrefix(mapper);
+        const keyToFind = headerCollectionPrefix ? serializedKey.replace(headerCollectionPrefix, "") : serializedKey;
+
+        if (mapper.serializedName === keyToFind) {
           return true;
         }
       }
@@ -634,16 +646,8 @@ function deserializeCompositeType(serializer: Serializer, mapper: CompositeMappe
     };
 
     for (const key of Object.keys(responseBody)) {
-      const propertyMapper = modelProps[key];
-      const dictionaryMapper = propertyMapper as DictionaryMapper;
-      let finalKey = key;
-      if (dictionaryMapper) {
-        const headerCollectionPrefix = dictionaryMapper.headerCollectionPrefix;
-        finalKey = headerCollectionPrefix ? (key.replace(headerCollectionPrefix, "")) : key;
-      }
-
-      if (instance[finalKey] === undefined && !containsSerializedName(modelProps, finalKey) && !isSpecialProperty(finalKey)) {
-        instance[finalKey] = responseBody[finalKey];
+      if (instance[key] === undefined && !containsSerializedName(modelProps, key) && !isSpecialProperty(key)) {
+        instance[key] = responseBody[key];
       }
     }
   }
