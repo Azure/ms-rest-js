@@ -557,6 +557,8 @@ function deserializeCompositeType(serializer: Serializer, mapper: CompositeMappe
 
   for (const key of Object.keys(modelProps)) {
     const propertyMapper = modelProps[key];
+    const paths = splitSerializeName(modelProps[key].serializedName!);
+    handledPropertyNames.push(paths[0]);
     const { serializedName, xmlName, xmlElementName } = propertyMapper;
     let propertyObjectName = objectName;
     if (serializedName !== "" && serializedName !== undefined) {
@@ -592,7 +594,6 @@ function deserializeCompositeType(serializer: Serializer, mapper: CompositeMappe
         instance[key] = serializer.deserialize(propertyMapper, unwrappedProperty, propertyObjectName);
       }
     } else {
-      const paths = splitSerializeName(modelProps[key].serializedName!);
       // deserialize the property if it is present in the provided responseBody instance
       let propertyInstance;
       let res = responseBody;
