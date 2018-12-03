@@ -532,14 +532,6 @@ function serializeCompositeType(serializer: Serializer, mapper: CompositeMapper,
   return object;
 }
 
-function getHeaderCollectionPrefix(mapper: Mapper): string | undefined {
-  if ((mapper as DictionaryMapper).headerCollectionPrefix) {
-    return (mapper as DictionaryMapper).headerCollectionPrefix;
-  }
-
-  return undefined;
-}
-
 function deserializeCompositeType(serializer: Serializer, mapper: CompositeMapper, responseBody: any, objectName: string): any {
   if (getPolymorphicDiscriminatorRecursively(serializer, mapper)) {
     mapper = getPolymorphicMapper(serializer, mapper, responseBody, "serializedName");
@@ -557,7 +549,7 @@ function deserializeCompositeType(serializer: Serializer, mapper: CompositeMappe
       propertyObjectName = objectName + "." + serializedName;
     }
 
-    const headerCollectionPrefix = getHeaderCollectionPrefix(propertyMapper);
+    const headerCollectionPrefix = (propertyMapper as DictionaryMapper).headerCollectionPrefix;
     if (headerCollectionPrefix) {
       const dictionary: any = {};
       for (const headerKey of Object.keys(responseBody)) {
