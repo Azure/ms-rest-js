@@ -533,17 +533,11 @@ function serializeCompositeType(serializer: Serializer, mapper: CompositeMapper,
 }
 
 function isSpecialXmlProperty(propertyName: string): boolean {
-  return [ "$", "_" ].includes(propertyName);
+  return ["$", "_"].includes(propertyName);
 }
 
-function containsSerializedName(modelProperties: {[propertyName: string]: Mapper}, serializedKey: string): boolean {
-  for (const [, mapper] of Object.entries(modelProperties)) {
-    if (mapper.serializedName === serializedKey) {
-      return true;
-    }
-  }
-
-  return false;
+function containsSerializedName(modelProperties: { [propertyName: string]: Mapper }, serializedKey: string): boolean {
+  return Object.values(modelProperties).some(mapper => mapper.serializedName === serializedKey);
 }
 
 function deserializeCompositeType(serializer: Serializer, mapper: CompositeMapper, responseBody: any, objectName: string): any {
@@ -709,7 +703,7 @@ function getPolymorphicMapper(serializer: Serializer, mapper: CompositeMapper, o
 }
 
 function getPolymorphicDiscriminatorRecursively(serializer: Serializer, mapper: CompositeMapper): PolymorphicDiscriminator | undefined {
-  return  mapper.type.polymorphicDiscriminator
+  return mapper.type.polymorphicDiscriminator
     || getPolymorphicDiscriminatorSafely(serializer, mapper.type.uberParent)
     || getPolymorphicDiscriminatorSafely(serializer, mapper.type.className);
 }
