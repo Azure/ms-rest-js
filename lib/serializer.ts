@@ -618,6 +618,34 @@ function deserializeCompositeType(serializer: Serializer, mapper: CompositeMappe
         instance[responsePropName] = serializer.deserialize(additionalPropertiesMapper, responseBody[responsePropName], objectName + '["' + responsePropName + '"]');
       }
     }
+  } else {
+    const containsSerializedName = (obj: {[propertyName: string]: Mapper}, serializedKey: string): boolean => {
+      for (const key of Object.keys(obj)) {
+        if (obj[key].serializedName === serializedKey) {
+          return true;
+        }
+      }
+
+      return false;
+    };
+
+    const isSpecialProperty = (propertyName: string): boolean => {
+      return [ "$", "_" ].includes(propertyName);
+    };
+
+    for (const key of Object.keys(responseBody)) {
+      const propertyMapper = modelProps[key];
+      const dictionaryMapper = propertyMapper as DictionaryMapper;
+      let finalKey = key;
+      if (dictionaryMapper) {
+        const headerCollectionPrefix = dictionaryMapper.headerCollectionPrefix;
+        finalKey = headerCollectionPrefix ? (key.replace(headerCollectionPrefix, "")) : key;
+      }
+
+      if (instance[finalKey] === undefined && !containsSerializedName(modelProps, finalKey) && !isSpecialProperty(finalKey)) {
+        instance[finalKey] = responseBody[finalKey];
+      }
+    }
   }
 
   return instance;
