@@ -1,22 +1,23 @@
+import { Config } from "karma";
+
 // Karma configuration
 // Generated on Fri Dec 07 2018 09:06:32 GMT-0800 (GMT-08:00)
 
-module.exports = function(config) {
+module.exports = function(config: Config) {
   config.set({
 
     // base path that will be used to resolve all patterns (eg. files, exclude)
-    basePath: '',
+    basePath: "",
 
 
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-    frameworks: ['mocha'],
+    frameworks: ["mocha"],
 
 
     // list of files / patterns to load in the browser
     files: [
-      'dist/*.js',
-      'test/**/*.ts'
+      "lib/**/*.ts"
     ],
 
 
@@ -24,17 +25,15 @@ module.exports = function(config) {
     exclude: [
     ],
 
-
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
-    preprocessors: {
-    },
+    preprocessors: {},
 
 
     // test results reporter to use
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    reporters: ['progress'],
+    reporters: ["progress"],
 
 
     // web server port
@@ -56,7 +55,7 @@ module.exports = function(config) {
 
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: ['Chrome', 'ChromeHeadless'],
+    browsers: ["ChromeHeadless"],
 
 
     // Continuous Integration mode
@@ -66,5 +65,5 @@ module.exports = function(config) {
     // Concurrency level
     // how many browser should be started simultaneous
     concurrency: Infinity
-  })
-}
+  });
+};
