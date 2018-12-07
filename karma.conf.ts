@@ -1,9 +1,9 @@
-import { Config } from "karma";
+// import { Config } from "karma";
 
 // Karma configuration
 // Generated on Fri Dec 07 2018 09:06:32 GMT-0800 (GMT-08:00)
 
-module.exports = function (config: Config) {
+module.exports = function (config: any) {
   config.set({
 
     // base path that will be used to resolve all patterns (eg. files, exclude)
@@ -12,13 +12,13 @@ module.exports = function (config: Config) {
 
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-    frameworks: ["mocha"],
+    frameworks: ["mocha", "karma-typescript"],
 
 
     // list of files / patterns to load in the browser
     files: [
-      { pattern: "es/lib/**/*.js", type: "module" },
-      { pattern: "es/test/**/*.js", type: "module" }
+      "lib/**/*.ts",
+      "test/**/*.ts"
     ],
 
 
@@ -28,13 +28,16 @@ module.exports = function (config: Config) {
 
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
-    preprocessors: {},
+    preprocessors: {
+      "lib/**/*.ts": "karma-typescript",
+      "test/**/*.ts": "karma-typescript"
+    },
 
 
     // test results reporter to use
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    reporters: ["progress"],
+    reporters: ["progress", "karma-typescript"],
 
 
     // web server port
@@ -65,6 +68,13 @@ module.exports = function (config: Config) {
 
     // Concurrency level
     // how many browser should be started simultaneous
-    concurrency: 1
+    concurrency: 1,
+
+    karmaTypescriptConfig: {
+      tsconfig: "./tsconfig.json",
+      bundlerOptions: {
+        transforms: [require("karma-typescript-es6-transform")()]
+      }
+    }
   });
 };
