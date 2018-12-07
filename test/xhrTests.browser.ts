@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 import assert from "assert";
-import { parseHeaders } from "../../lib/xhrHttpClient";
+import { parseHeaders } from "../lib/xhrHttpClient";
 
 describe("XhrHttpClient", function() {
   it("parses headers", function() {

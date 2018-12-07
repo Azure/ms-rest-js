@@ -2,10 +2,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 import assert from "assert";
-import * as msRest from "../../lib/msRest";
 import { should } from "chai";
-import "chai/register-should"
+import "chai/register-should";
 
+import * as msRest from "../lib/msRest";
 import { TestClient } from "./data/TestClient/lib/testClient";
 import { Mappers } from "./data/TestClient/lib/models/mappers";
 

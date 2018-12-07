@@ -2,13 +2,13 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 import assert from "assert";
-import { HttpClient } from "../../lib/httpClient";
-import { QueryCollectionFormat } from "../../lib/queryCollectionFormat";
-import { DictionaryMapper, MapperType, Serializer, Mapper } from "../../lib/serializer";
-import { serializeRequestBody, ServiceClient, getOperationArgumentValueFromParameterPath } from "../../lib/serviceClient";
-import { WebResource } from "../../lib/webResource";
-import { OperationArguments, HttpHeaders, deserializationPolicy } from "../../lib/msRest";
-import { ParameterPath } from "../../lib/operationParameter";
+import { HttpClient } from "../lib/httpClient";
+import { QueryCollectionFormat } from "../lib/queryCollectionFormat";
+import { DictionaryMapper, MapperType, Serializer, Mapper } from "../lib/serializer";
+import { serializeRequestBody, ServiceClient, getOperationArgumentValueFromParameterPath } from "../lib/serviceClient";
+import { WebResource } from "../lib/webResource";
+import { OperationArguments, HttpHeaders, deserializationPolicy } from "../lib/msRest";
+import { ParameterPath } from "../lib/operationParameter";
 
 describe("ServiceClient", function () {
   it("should serialize headerCollectionPrefix", async function () {

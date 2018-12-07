@@ -2,11 +2,11 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 import assert from "assert";
-import { HttpHeaders } from "../../lib/httpHeaders";
-import { HttpOperationResponse } from "../../lib/httpOperationResponse";
-import { LogPolicy } from "../../lib/policies/logPolicy";
-import { RequestPolicy, RequestPolicyOptions } from "../../lib/policies/requestPolicy";
-import { WebResource } from "../../lib/webResource";
+import { HttpHeaders } from "../lib/httpHeaders";
+import { HttpOperationResponse } from "../lib/httpOperationResponse";
+import { LogPolicy } from "../lib/policies/logPolicy";
+import { RequestPolicy, RequestPolicyOptions } from "../lib/policies/requestPolicy";
+import { WebResource } from "../lib/webResource";
 
 const emptyRequestPolicy: RequestPolicy = {
   sendRequest(request: WebResource): Promise<HttpOperationResponse> {

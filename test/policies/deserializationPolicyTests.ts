@@ -2,12 +2,12 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 import assert from "assert";
-import { HttpHeaders } from "../../../lib/httpHeaders";
-import { HttpOperationResponse } from "../../../lib/httpOperationResponse";
-import { HttpClient, OperationSpec, Serializer } from "../../../lib/msRest";
-import { DeserializationPolicy, deserializationPolicy, deserializeResponseBody, defaultJsonContentTypes, defaultXmlContentTypes } from "../../../lib/policies/deserializationPolicy";
-import { RequestPolicy, RequestPolicyOptions } from "../../../lib/policies/requestPolicy";
-import { WebResource } from "../../../lib/webResource";
+import { HttpHeaders } from "../../lib/httpHeaders";
+import { HttpOperationResponse } from "../../lib/httpOperationResponse";
+import { HttpClient, OperationSpec, Serializer } from "../../lib/msRest";
+import { DeserializationPolicy, deserializationPolicy, deserializeResponseBody, defaultJsonContentTypes, defaultXmlContentTypes } from "../../lib/policies/deserializationPolicy";
+import { RequestPolicy, RequestPolicyOptions } from "../../lib/policies/requestPolicy";
+import { WebResource } from "../../lib/webResource";
 
 describe("deserializationPolicy", function () {
   const mockPolicy: RequestPolicy = {

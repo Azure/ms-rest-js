@@ -2,11 +2,11 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 import assert from "assert";
 import { should } from "chai";
-import { DefaultHttpClient } from "../../lib/defaultHttpClient";
-import { RestError } from "../../lib/restError";
-import { isNode } from "../../lib/util/utils";
-import { WebResource, HttpRequestBody } from "../../lib/webResource";
-import { baseURL } from "../testUtils";
+import { DefaultHttpClient } from "../lib/defaultHttpClient";
+import { RestError } from "../lib/restError";
+import { isNode } from "../lib/util/utils";
+import { WebResource, HttpRequestBody } from "../lib/webResource";
+import { baseURL } from "./testUtils";
 import { createReadStream } from "fs";
 import { join } from "path";
 

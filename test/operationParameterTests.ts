@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 import assert from "assert";
-import { getPathStringFromParameter, OperationParameter } from "../../lib/operationParameter";
+import { getPathStringFromParameter, OperationParameter } from "../lib/operationParameter";
 
 describe("getParameterPathString()", () => {
   it("should throw when given undefined", () => {

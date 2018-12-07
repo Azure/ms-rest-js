@@ -17,7 +17,7 @@ module.exports = function (config: any) {
 
     // list of files / patterns to load in the browser
     files: [
-      "lib/**/*.ts",
+      "dist/msRest.browser.js",
       "test/**/*.ts"
     ],
 
@@ -29,7 +29,7 @@ module.exports = function (config: any) {
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
-      "lib/**/*.ts": "karma-typescript",
+      // "lib/**/*.ts": "karma-typescript",
       "test/**/*.ts": "karma-typescript"
     },
 
@@ -59,7 +59,7 @@ module.exports = function (config: any) {
 
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: ["Chrome"],
+    browsers: ["ChromeHeadless"],
 
 
     // Continuous Integration mode

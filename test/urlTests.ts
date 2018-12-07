@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 import assert from "assert";
-import { URLTokenizer, URLToken, URLBuilder, URLQuery } from "../../lib/url";
+import { URLTokenizer, URLToken, URLBuilder, URLQuery } from "../lib/url";
 
 describe("URLQuery", () => {
   it(`constructor()`, () => {

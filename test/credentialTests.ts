@@ -2,8 +2,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 import { should } from "chai";
-import * as msRest from "../../lib/msRest";
-import * as base64 from "../../lib/util/base64";
+import * as msRest from "../lib/msRest";
+import * as base64 from "../lib/util/base64";
 const TokenCredentials = msRest.TokenCredentials;
 const BasicAuthenticationCredentials = msRest.BasicAuthenticationCredentials;
 const ApiKeyCredentials = msRest.ApiKeyCredentials;
