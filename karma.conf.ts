@@ -3,7 +3,7 @@ import { Config } from "karma";
 // Karma configuration
 // Generated on Fri Dec 07 2018 09:06:32 GMT-0800 (GMT-08:00)
 
-module.exports = function(config: Config) {
+module.exports = function (config: Config) {
   config.set({
 
     // base path that will be used to resolve all patterns (eg. files, exclude)
@@ -17,7 +17,8 @@ module.exports = function(config: Config) {
 
     // list of files / patterns to load in the browser
     files: [
-      "lib/**/*.ts"
+      { pattern: "es/lib/**/*.js", type: "module" },
+      { pattern: "es/test/**/*.js", type: "module" }
     ],
 
 
@@ -55,7 +56,7 @@ module.exports = function(config: Config) {
 
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: ["ChromeHeadless"],
+    browsers: ["Chrome"],
 
 
     // Continuous Integration mode
@@ -64,6 +65,6 @@ module.exports = function(config: Config) {
 
     // Concurrency level
     // how many browser should be started simultaneous
-    concurrency: Infinity
+    concurrency: 1
   });
 };
