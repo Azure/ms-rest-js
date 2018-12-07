@@ -8,8 +8,11 @@ import { WebResource } from "../lib/webResource";
 import { userAgentPolicy } from "../lib/policies/userAgentPolicy";
 import { should } from "chai";
 import { isNode } from "../lib/util/utils";
+import { SuiteFunction, PendingSuiteFunction } from "mocha";
 
 const userAgentHeaderKey = Constants.HeaderConstants.USER_AGENT;
+export const browserDescribe: SuiteFunction | PendingSuiteFunction = (isNode ? describe.skip : describe);
+const nodeDescribe: SuiteFunction | PendingSuiteFunction = (!isNode ? describe.skip : describe);
 
 const emptyRequestPolicy: RequestPolicy = {
   sendRequest(request: WebResource): Promise<HttpOperationResponse> {
@@ -31,14 +34,8 @@ const getUserAgent = async (headerValue?: string): Promise<string> => {
   return userAgent!;
 };
 
-describe.only("MsRestUserAgentPolicy", () => {
-  describe("NodeJS", () => {
-    beforeEach(function() {
-      if (!isNode) {
-        this.skip();
-      }
-    });
-
+describe("MsRestUserAgentPolicy", () => {
+  nodeDescribe("NodeJS", () => {
     it("should not modify user agent header if already present", async () => {
       const userAgentPolicy = getPlainUserAgentPolicy();
       const customUserAgent = "my custom user agent";
@@ -101,13 +98,7 @@ describe.only("MsRestUserAgentPolicy", () => {
     });
   });
 
-  describe("Browser", function() {
-    beforeEach(function() {
-      if (isNode) {
-        this.skip();
-      }
-    });
-
+  browserDescribe("Browser", function() {
     const userAgentHeaderKey = "x-ms-command-name";
 
     const emptyRequestPolicy: RequestPolicy = {

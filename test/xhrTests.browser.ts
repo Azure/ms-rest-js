@@ -3,8 +3,9 @@
 
 import assert from "assert";
 import { parseHeaders } from "../lib/xhrHttpClient";
+import { browserDescribe } from "./msRestUserAgentPolicyTests";
 
-describe("XhrHttpClient", function() {
+browserDescribe("XhrHttpClient", function() {
   it("parses headers", function() {
     const xhr = {
       getAllResponseHeaders: () =>
