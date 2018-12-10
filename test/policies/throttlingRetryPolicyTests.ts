@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-import assert from "assert";
+import { assert, AssertionError } from "chai";
 import sinon from "sinon";
 import { ThrottlingRetryPolicy } from "../../lib/policies/throttlingRetryPolicy";
 import { WebResource } from "../../lib/webResource";
@@ -72,7 +72,7 @@ describe("ThrottlingRetryPolicy", () => {
                 }),
                 request: request
             };
-            const policy = createDefaultThrottlingRetryPolicy(mockResponse, _ => assert.fail());
+            const policy = createDefaultThrottlingRetryPolicy(mockResponse, _ => { throw new AssertionError("fail"); });
 
             const response = await policy.sendRequest(request);
 

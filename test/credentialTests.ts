@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-import { should } from "chai";
+import "chai/register-should";
 import * as msRest from "../lib/msRest";
 import * as base64 from "../lib/util/base64";
 const TokenCredentials = msRest.TokenCredentials;
@@ -19,7 +19,7 @@ describe("Token credentials", () => {
       const request = new msRest.WebResource();
 
       creds.signRequest(request).then((signedRequest: msRest.WebResource) => {
-        should().exist(signedRequest.headers.get("authorization"));
+        signedRequest.headers.get("authorization")!.should.exist;
         signedRequest.headers.get("authorization")!.should.match(new RegExp("^Bearer\\s+" + dummyToken + "$"));
         done();
       });

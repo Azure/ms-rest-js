@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-import assert from "assert";
+import { assert } from "chai";
 import { HttpClient } from "../lib/httpClient";
 import { QueryCollectionFormat } from "../lib/queryCollectionFormat";
 import { DictionaryMapper, MapperType, Serializer, Mapper } from "../lib/serializer";
@@ -70,7 +70,7 @@ describe("ServiceClient", function () {
       });
 
     assert(request!);
-    assert.deepStrictEqual(request!.headers.toJson(), expected);
+    assert.deepEqual(request!.headers.toJson(), expected);
   });
 
   it("responses should not show the _response property when serializing", async function () {
@@ -228,7 +228,7 @@ describe("ServiceClient", function () {
     });
 
     assert.strictEqual(res._response.status, 200);
-    assert.deepStrictEqual(res.slice(), [1,2,3]);
+    assert.deepEqual(res.slice(), [1,2,3]);
   });
 
   describe("serializeRequestBody()", () => {

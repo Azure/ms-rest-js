@@ -1,9 +1,10 @@
 import alias from "rollup-plugin-alias";
-import nodeResolve from "rollup-plugin-node-resolve";
 import commonjs from "rollup-plugin-commonjs";
-import visualizer from "rollup-plugin-visualizer";
 import json from "rollup-plugin-json";
+import multiEntry from "rollup-plugin-multi-entry";
+import nodeResolve from "rollup-plugin-node-resolve";
 import sourcemaps from "rollup-plugin-sourcemaps";
+import visualizer from "rollup-plugin-visualizer";
 
 const banner = `/** @license ms-rest-js
  * Copyright (c) Microsoft Corporation. All rights reserved.
@@ -32,11 +33,16 @@ const nodeConfig = {
     banner
   },
   plugins: [
-    nodeResolve({ module: true }),
+    nodeResolve({
+      module: true
+    }),
     commonjs(),
     sourcemaps(),
     json(),
-    visualizer({ filename: "dist/node-stats.html", sourcemap: true })
+    visualizer({
+      filename: "dist/node-stats.html",
+      sourcemap: true
+    })
   ]
 }
 
@@ -58,11 +64,46 @@ const browserConfig = {
       "./defaultHttpClient": "./defaultHttpClient.browser",
       "./msRestUserAgentPolicy": "./msRestUserAgentPolicy.browser"
     }),
-    nodeResolve({ module: true, browser: true }),
+    nodeResolve({
+      module: true,
+      browser: true
+    }),
     commonjs(),
     sourcemaps(),
-    visualizer({ filename: "dist/browser-stats.html", sourcemap: true })
+    visualizer({
+      filename: "dist/browser-stats.html",
+      sourcemap: true
+    })
   ]
 };
 
-export default [nodeConfig, browserConfig];
+/**
+ * @type {import('rollup').RollupFileOptions}
+ */
+const testConfig = {
+  input: './es/test/**/*.js',
+  external: [],
+  output: {
+    file: "./dist/msRest.browser.test.js",
+    format: "umd",
+    name: "msRest.tst",
+    sourcemap: true,
+    banner
+  },
+  plugins: [
+    multiEntry(),
+    nodeResolve({
+      module: true,
+      browser: true,
+      preferBuiltins: false
+    }),
+    commonjs({
+      namedExports: {
+        "chai": ["assert", "AssertionError"]
+      }
+    }),
+    sourcemaps()
+  ]
+};
+
+export default [nodeConfig, browserConfig, testConfig];

@@ -1,8 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-import assert from "assert";
-import { should } from "chai";
+import { assert } from "chai";
 import "chai/register-should";
 
 import * as msRest from "../lib/msRest";
@@ -588,7 +587,7 @@ describe("msrest", function () {
 
       // tslint:disable-next-line
       const result = Serializer.serialize(mapper, { length: null }, "testobj");
-      should().exist(result);
+      result.should.exist;
     });
 
     it("should not allow undefined when required: true and nullable: true", function () {
@@ -1103,7 +1102,7 @@ describe("msrest", function () {
         unrelated: 42
       };
       const actual = Serializer.deserialize(mapper, rawHeaders, "headers");
-      assert.deepStrictEqual(actual, expected);
+      assert.deepEqual(actual, expected);
     });
 
     describe("composite type", () => {

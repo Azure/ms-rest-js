@@ -1,14 +1,15 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
+import "chai/register-should";
+import { SuiteFunction, PendingSuiteFunction } from "mocha";
+
 import { HttpOperationResponse } from "../lib/httpOperationResponse";
 import { RequestPolicy, RequestPolicyOptions } from "../lib/policies/requestPolicy";
 import { Constants } from "../lib/util/constants";
 import { WebResource } from "../lib/webResource";
 import { userAgentPolicy } from "../lib/policies/userAgentPolicy";
-import { should } from "chai";
 import { isNode } from "../lib/util/utils";
-import { SuiteFunction, PendingSuiteFunction } from "mocha";
 
 const userAgentHeaderKey = Constants.HeaderConstants.USER_AGENT;
 export const browserDescribe: SuiteFunction | PendingSuiteFunction = (isNode ? describe.skip : describe);
@@ -16,7 +17,7 @@ const nodeDescribe: SuiteFunction | PendingSuiteFunction = (!isNode ? describe.s
 
 const emptyRequestPolicy: RequestPolicy = {
   sendRequest(request: WebResource): Promise<HttpOperationResponse> {
-    should().exist(request);
+    request.should.exist;
     return Promise.resolve({ request: request, status: 200, headers: request.headers });
   }
 };
@@ -103,7 +104,7 @@ describe("MsRestUserAgentPolicy", () => {
 
     const emptyRequestPolicy: RequestPolicy = {
       sendRequest(request: WebResource): Promise<HttpOperationResponse> {
-        should().exist(request);
+        request.should.exist;
         return Promise.resolve({ request: request, status: 200, headers: request.headers });
       }
     };

@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-import uuidv4 from "uuid/v4";
+import * as uuid from "uuid";
 import { HttpOperationResponse } from "../httpOperationResponse";
 import { RestError } from "../restError";
 import { WebResource } from "../webResource";
@@ -110,7 +110,7 @@ export function objectValues(obj: { [key: string]: any; }): any[] {
  * @return {string} RFC4122 v4 UUID.
  */
 export function generateUuid(): string {
-  return uuidv4();
+  return uuid.v4();
 }
 
 /**

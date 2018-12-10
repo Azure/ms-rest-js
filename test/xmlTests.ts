@@ -1,5 +1,5 @@
 import { parseXML } from "../lib/util/xml";
-import assert from "assert";
+import { assert } from "chai";
 import * as msAssert from "./msAssert";
 
 describe("XML serializer", function () {

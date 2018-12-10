@@ -1,7 +1,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
-import assert from "assert";
-import { should } from "chai";
+import { assert, AssertionError } from "chai";
+import "chai/register-should";
+
 import { DefaultHttpClient } from "../lib/defaultHttpClient";
 import { RestError } from "../lib/restError";
 import { isNode } from "../lib/util/utils";
@@ -27,7 +28,7 @@ describe("defaultHttpClient", function () {
     const httpClient = new DefaultHttpClient();
 
     const response = await httpClient.sendRequest(request);
-    assert.deepStrictEqual(response.request, request);
+    assert.deepEqual(response.request, request);
     assert.strictEqual(response.status, 200);
     assert(response.headers);
     // content-length varies based on OS line endings
@@ -96,7 +97,7 @@ describe("defaultHttpClient", function () {
     const httpClient = new DefaultHttpClient();
 
     const response = await httpClient.sendRequest(request);
-    should().exist(response);
+    response.should.exist;
   });
 
   it("should allow canceling requests", async function () {
@@ -109,7 +110,7 @@ describe("defaultHttpClient", function () {
       await promise;
       assert.fail("");
     } catch (err) {
-      err.should.not.be.instanceof(assert.AssertionError);
+      err.should.not.be.instanceof(AssertionError);
     }
   });
 
@@ -149,7 +150,7 @@ describe("defaultHttpClient", function () {
         await promise;
         assert.fail("");
       } catch (err) {
-        err.should.not.be.instanceof(assert.AssertionError);
+        err.should.not.be.instanceof(AssertionError);
       }
     }
   });
