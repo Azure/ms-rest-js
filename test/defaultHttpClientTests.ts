@@ -26,6 +26,7 @@ const baseURL = "https://example.com";
 describe("defaultHttpClient", function () {
   it("should send HTTP requests", async function () {
     const request = new WebResource("https://example.com/", "GET");
+    request.headers.set("Access-Control-Allow-Origin", "https://example.com");
     const httpClient = new DefaultHttpClient();
 
     const response = await httpClient.sendRequest(request);

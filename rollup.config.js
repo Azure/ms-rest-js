@@ -106,4 +106,4 @@ const testConfig = {
   ]
 };
 
-export default [nodeConfig, browserConfig, testConfig];
+export default [nodeConfig, browserConfig];

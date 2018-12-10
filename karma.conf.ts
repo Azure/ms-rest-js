@@ -1,3 +1,6 @@
+import * as path from "path";
+import { Configuration, NormalModuleReplacementPlugin } from "webpack";
+
 // import { Config } from "karma";
 
 // Karma configuration
@@ -18,11 +21,8 @@ module.exports = function (config: any) {
     // list of files / patterns to load in the browser
     files: [
       "dist/msRest.browser.js",
-      "dist/msRest.browser.js.map",
-      "dist/msRest.browser.test.js",
-      "dist/msRest.browser.test.js.map"
+      "es/test/**/*.js",
     ],
-
 
     // list of files / patterns to exclude
     exclude: [
@@ -31,8 +31,8 @@ module.exports = function (config: any) {
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
-      // "lib/**/*.ts": "karma-typescript",
-      // "test/**/*.ts": "karma-typescript"
+      "es/test/**/*.js": ["webpack"],
+      "**/*.js": ["sourcemap"]
     },
 
 
@@ -72,11 +72,30 @@ module.exports = function (config: any) {
     // how many browser should be started simultaneous
     concurrency: 1,
 
-    karmaTypescriptConfig: {
-      tsconfig: "./tsconfig.json",
-      bundlerOptions: {
-        transforms: [require("karma-typescript-es6-transform")()]
+    webpack: {
+      mode: "development",
+      devtool: "source-map",
+      plugins: [
+        new NormalModuleReplacementPlugin(/(\.).+util\/base64/, path.resolve(__dirname, "es/lib/util/base64.browser.js")),
+        new NormalModuleReplacementPlugin(/(\.).+util\/xml/, path.resolve(__dirname, "es/lib/util/xml.browser.js")),
+        new NormalModuleReplacementPlugin(/(\.).+defaultHttpClient/, path.resolve(__dirname, "es/lib/defaultHttpClient.browser.js")),
+        new NormalModuleReplacementPlugin(/(\.).+msRestUserAgentPolicy/, path.resolve(__dirname, "es/lib/policies/msRestUserAgentPolicy.browser.js"))
+      ],
+      resolve: {
+        extensions: [".js"]
+      },
+      node: {
+        fs: "empty",
+        net: false,
+        path: "empty",
+        dns: false,
+        tls: false,
+        tty: false,
+        v8: false,
+        Buffer: false,
+        process: false,
+        stream: "empty"
       }
-    }
+    } as Configuration
   });
 };

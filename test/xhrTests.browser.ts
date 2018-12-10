@@ -3,9 +3,8 @@
 
 import { assert } from "chai";
 import { parseHeaders } from "../lib/xhrHttpClient";
-import { browserDescribe } from "./msRestUserAgentPolicyTests";
 
-browserDescribe("XhrHttpClient", function() {
+describe("XhrHttpClient", function() {
   it("parses headers", function() {
     const xhr = {
       getAllResponseHeaders: () =>
