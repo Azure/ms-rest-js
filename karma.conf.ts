@@ -18,7 +18,9 @@ module.exports = function (config: any) {
     // list of files / patterns to load in the browser
     files: [
       "dist/msRest.browser.js",
-      "dist/msRest.browser.test.js"
+      "dist/msRest.browser.js.map",
+      "dist/msRest.browser.test.js",
+      "dist/msRest.browser.test.js.map"
     ],
 
 

@@ -7,7 +7,6 @@ import { DefaultHttpClient } from "../lib/defaultHttpClient";
 import { RestError } from "../lib/restError";
 import { isNode } from "../lib/util/utils";
 import { WebResource, HttpRequestBody } from "../lib/webResource";
-import { baseURL } from "./testUtils";
 import { createReadStream } from "fs";
 import { join } from "path";
 
@@ -22,9 +21,11 @@ function getAbortController(): AbortController {
   return controller;
 }
 
+const baseURL = "https://example.com";
+
 describe("defaultHttpClient", function () {
   it("should send HTTP requests", async function () {
-    const request = new WebResource(`${baseURL}/example-index.html`, "GET");
+    const request = new WebResource("https://example.com/", "GET");
     const httpClient = new DefaultHttpClient();
 
     const response = await httpClient.sendRequest(request);
@@ -88,8 +89,8 @@ describe("defaultHttpClient", function () {
 </html>
 `;
     assert.strictEqual(
-      responseBody && responseBody.replace(/\r\n/g, "\n"),
-      expectedResponseBody.replace(/\r\n/g, "\n"));
+      responseBody && responseBody.replace(/\s/g, ""),
+      expectedResponseBody.replace(/\s/g, ""));
   });
 
   it("should return a response instead of throwing for awaited 404", async function () {
