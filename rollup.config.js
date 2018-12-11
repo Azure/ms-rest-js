@@ -77,33 +77,4 @@ const browserConfig = {
   ]
 };
 
-/**
- * @type {import('rollup').RollupFileOptions}
- */
-const testConfig = {
-  input: './es/test/**/*.js',
-  external: [],
-  output: {
-    file: "./dist/msRest.browser.test.js",
-    format: "umd",
-    name: "msRest.tst",
-    sourcemap: true,
-    banner
-  },
-  plugins: [
-    multiEntry(),
-    nodeResolve({
-      module: true,
-      browser: true,
-      preferBuiltins: false
-    }),
-    commonjs({
-      namedExports: {
-        "chai": ["assert", "AssertionError"]
-      }
-    }),
-    sourcemaps()
-  ]
-};
-
 export default [nodeConfig, browserConfig];
