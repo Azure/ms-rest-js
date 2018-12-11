@@ -7,6 +7,10 @@ const multiEntry = require("rollup-plugin-multi-entry");
 
 // const rollupConfig = require("./rollup.config");
 
+const defaults = {
+  port: 9876
+};
+
 module.exports = function (config: any) {
   config.set({
     plugins: [
@@ -40,7 +44,7 @@ module.exports = function (config: any) {
 
 
     // web server port
-    port: 9876,
+    port: defaults.port,
 
 
     // enable / disable colors in the output (reporters and logs)
@@ -67,7 +71,7 @@ module.exports = function (config: any) {
 
     // Concurrency level
     // how many browser should be started simultaneous
-    concurrency: 1,
+    concurrency: Infinity,
 
     rollupPreprocessor: {
       external: [],
@@ -103,7 +107,7 @@ module.exports = function (config: any) {
     customLaunchers: {
       ChromeDebugging: {
         base: "Chrome",
-        flags: ["--remote-debugging-port=9333", "--auto-open-devtools-for-tabs", "http://localhost:9876/debug.html"]
+        flags: [`-app:http://localhost:${defaults.port}/debug.html`, "--auto-open-devtools-for-tabs"]
       }
     }
 
