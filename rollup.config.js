@@ -3,6 +3,7 @@ const commonjs = require("rollup-plugin-commonjs");
 const nodeResolve = require("rollup-plugin-node-resolve");
 const sourcemaps = require("rollup-plugin-sourcemaps");
 const visualizer = require("rollup-plugin-visualizer");
+const json = require("rollup-plugin-json");
 
 const banner = `/** @license ms-rest-js
  * Copyright (c) Microsoft Corporation. All rights reserved.
@@ -60,7 +61,9 @@ const browserConfig = {
   plugins: [
     alias({
       "./defaultHttpClient": "./defaultHttpClient.browser",
-      "./msRestUserAgentPolicy": "./msRestUserAgentPolicy.browser"
+      "./msRestUserAgentPolicy": "./msRestUserAgentPolicy.browser",
+      "./util/xml": "./util/xml.browser",
+      "./util/base64": "./util/base64.browser",
     }),
     nodeResolve({
       module: true,
@@ -75,4 +78,4 @@ const browserConfig = {
   ]
 };
 
-export default [nodeConfig, browserConfig];
+module.exports = [nodeConfig, browserConfig];
