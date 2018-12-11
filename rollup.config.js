@@ -1,10 +1,8 @@
-import alias from "rollup-plugin-alias";
-import commonjs from "rollup-plugin-commonjs";
-import json from "rollup-plugin-json";
-import multiEntry from "rollup-plugin-multi-entry";
-import nodeResolve from "rollup-plugin-node-resolve";
-import sourcemaps from "rollup-plugin-sourcemaps";
-import visualizer from "rollup-plugin-visualizer";
+const alias = require("rollup-plugin-alias");
+const commonjs = require("rollup-plugin-commonjs");
+const nodeResolve = require("rollup-plugin-node-resolve");
+const sourcemaps = require("rollup-plugin-sourcemaps");
+const visualizer = require("rollup-plugin-visualizer");
 
 const banner = `/** @license ms-rest-js
  * Copyright (c) Microsoft Corporation. All rights reserved.

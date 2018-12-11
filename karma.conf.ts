@@ -3,6 +3,9 @@ const commonjs = require("rollup-plugin-commonjs");
 const nodeResolve = require("rollup-plugin-node-resolve");
 const sourcemaps = require("rollup-plugin-sourcemaps");
 const visualizer = require("rollup-plugin-visualizer");
+const multiEntry = require("rollup-plugin-multi-entry");
+
+// const rollupConfig = require("./rollup.config");
 
 module.exports = function (config: any) {
   config.set({
@@ -10,6 +13,11 @@ module.exports = function (config: any) {
     // base path that will be used to resolve all patterns (eg. files, exclude)
     basePath: "",
 
+    plugins: [
+      "karma-mocha",
+      "karma-rollup-preprocessor",
+      "karma-chrome-launcher",
+    ],
 
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
@@ -18,8 +26,8 @@ module.exports = function (config: any) {
 
     // list of files / patterns to load in the browser
     files: [
-      "dist/msRest.browser.js",
-      "test/**/*.ts",
+      "dist/msRest.browser.test.js",
+       "dist/msRest.browser.test.js.map"
     ],
 
     // list of files / patterns to exclude
@@ -29,8 +37,8 @@ module.exports = function (config: any) {
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
-      "es/test/**/*.js": ["webpack"],
-      "**/*.js": ["sourcemap"]
+      "es/**/*.js": ["rollup"],
+      "es/**/*.js.map": ["rollup"]
     },
 
 
@@ -71,10 +79,9 @@ module.exports = function (config: any) {
     concurrency: 1,
 
     rollupPreprocessor: {
-      input: "./es/lib/msRest.js",
       external: [],
       output: {
-        file: "./dist/msRest.browser.js",
+        file: "./dist/msRest.browser.test.js",
         format: "umd",
         name: "msRest",
         sourcemap: true,
@@ -88,13 +95,25 @@ module.exports = function (config: any) {
           module: true,
           browser: true
         }),
-        commonjs(),
+        multiEntry(),
+        commonjs({
+          namedExports: {
+            "chai": ["assert", "AssertionError"]
+          }
+        }),
         sourcemaps(),
         visualizer({
           filename: "dist/browser-stats.html",
           sourcemap: true
         })
       ]
+    },
+
+    customLaunchers: {
+      ChromeDebugging: {
+        base: "Chrome",
+        flags: [ "--remote-debugging-port=9333", "--auto-open-devtools-for-tabs", "http://localhost:9876/debug.html" ]
+      }
     }
 
     // webpack: {
