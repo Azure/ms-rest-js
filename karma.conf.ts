@@ -9,10 +9,6 @@ const multiEntry = require("rollup-plugin-multi-entry");
 
 module.exports = function (config: any) {
   config.set({
-
-    // base path that will be used to resolve all patterns (eg. files, exclude)
-    basePath: "",
-
     plugins: [
       "karma-mocha",
       "karma-rollup-preprocessor",
@@ -23,15 +19,10 @@ module.exports = function (config: any) {
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
     frameworks: ["mocha"],
 
-
     // list of files / patterns to load in the browser
     files: [
-      "dist/msRest.browser.test.js",
-       "dist/msRest.browser.test.js.map"
-    ],
-
-    // list of files / patterns to exclude
-    exclude: [
+      { pattern: "dist/msRest.browser.test.js" },
+      { pattern: "dist/msRest.browser.test.js.map", included: false }
     ],
 
     // preprocess matching files before serving them to the browser
@@ -112,7 +103,7 @@ module.exports = function (config: any) {
     customLaunchers: {
       ChromeDebugging: {
         base: "Chrome",
-        flags: [ "--remote-debugging-port=9333", "--auto-open-devtools-for-tabs", "http://localhost:9876/debug.html" ]
+        flags: ["--remote-debugging-port=9333", "--auto-open-devtools-for-tabs", "http://localhost:9876/debug.html"]
       }
     }
 
