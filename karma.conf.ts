@@ -1,17 +1,16 @@
-const alias = require("rollup-plugin-alias");
-const commonjs = require("rollup-plugin-commonjs");
-const nodeResolve = require("rollup-plugin-node-resolve");
-const sourcemaps = require("rollup-plugin-sourcemaps");
-const visualizer = require("rollup-plugin-visualizer");
-const multiEntry = require("rollup-plugin-multi-entry");
-const rollupConfig = require("./rollup.config");
+ /// <reference path=".typings/karma-plugin-multi-entry.d.ts" />
+
+import multiEntry from "rollup-plugin-multi-entry";
+import rollupConfig from "./rollup.config";
+import { Config } from "./.typings/karma";
+// import { multiEntry } from "./.typings/karma-plugin-multi-entry";
 
 const browserConfig = rollupConfig[1];
 const defaults = {
   port: 9876
 };
 
-module.exports = function (config: any) {
+module.exports = function (config: Config) {
   config.set({
     plugins: [
       "karma-mocha",
@@ -57,7 +56,6 @@ module.exports = function (config: any) {
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
     browsers: ["ChromeHeadless"],
-
 
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the tests and exits
