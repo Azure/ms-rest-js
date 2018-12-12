@@ -1,21 +1,17 @@
- /// <reference path=".typings/karma-plugin-multi-entry.d.ts" />
+import { NormalModuleReplacementPlugin } from "webpack";
+import glob from "glob";
+import path from "path";
 
-import multiEntry from "rollup-plugin-multi-entry";
-import rollupConfig from "./rollup.config";
-import { Config } from "./.typings/karma";
-// import { multiEntry } from "./.typings/karma-plugin-multi-entry";
-
-const browserConfig = rollupConfig[1];
 const defaults = {
   port: 9876
 };
 
-module.exports = function (config: Config) {
+module.exports = function (config: any) {
   config.set({
     plugins: [
       "karma-mocha",
-      "karma-rollup-preprocessor",
       "karma-chrome-launcher",
+      "karma-webpack"
     ],
 
     // frameworks to use
@@ -31,8 +27,7 @@ module.exports = function (config: Config) {
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
-      "es/**/*.js": ["rollup"],
-      "es/**/*.js.map": ["rollup"]
+      "test/**/*.ts": ["webpack"]
     },
 
     // test results reporter to use
@@ -65,21 +60,51 @@ module.exports = function (config: Config) {
     // how many browser should be started simultaneous
     concurrency: Infinity,
 
-    rollupPreprocessor: {
-      ...browserConfig,
-      input: undefined,
-      output: {
-        file: "./dist/msRest.browser.test.js",
-      },
-      plugins: [
-        multiEntry()
-      ]
-    },
-
     customLaunchers: {
       ChromeDebugging: {
         base: "Chrome",
         flags: [`http://localhost:${defaults.port}/debug.html`, "--auto-open-devtools-for-tabs"]
+      }
+    },
+
+    webpack: {
+      entry: [...glob.sync(path.join(__dirname, "test/**/*.ts"))],
+      mode: "development",
+      devtool: "source-map",
+      output: {
+        filename: "dist/msRest.browser.test.js",
+        path: __dirname
+      },
+      plugins: [
+        new NormalModuleReplacementPlugin(/(\.).+util\/base64/, path.resolve(__dirname, "./lib/util/base64.browser.ts")),
+        new NormalModuleReplacementPlugin(/(\.).+util\/xml/, path.resolve(__dirname, "./lib/util/xml.browser.ts")),
+        new NormalModuleReplacementPlugin(/(\.).+defaultHttpClient/, path.resolve(__dirname, "./lib/defaultHttpClient.browser.ts")),
+        new NormalModuleReplacementPlugin(/(\.).+msRestUserAgentPolicy/, path.resolve(__dirname, "./lib/policies/msRestUserAgentPolicy.browser.ts"))
+      ],
+      module: {
+        rules: [
+          {
+            test: /\.tsx?$/,
+            loader: "ts-loader",
+            exclude: /(node_modules)/,
+            options: { configFile: path.join(__dirname, "./tsconfig.es.json") }
+          }
+        ]
+      },
+      resolve: {
+        extensions: [".tsx", ".ts", ".js"]
+      },
+      node: {
+        fs: "empty",
+        net: false,
+        path: "empty",
+        dns: false,
+        tls: false,
+        tty: false,
+        v8: false,
+        Buffer: false,
+        process: false,
+        stream: "empty"
       }
     }
   });
