@@ -50,7 +50,7 @@
        sourcemap: true
      })
    ]
- }
+ };
 
  /**
   * @type {import('rollup').RollupFileOptions}
