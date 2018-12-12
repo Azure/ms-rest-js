@@ -7,7 +7,6 @@ module.exports = function (config: any) {
     plugins: [
       "karma-mocha",
       "karma-chrome-launcher",
-      "karma-webpack"
     ],
 
     // frameworks to use
@@ -16,6 +15,8 @@ module.exports = function (config: any) {
 
     // list of files / patterns to load in the browser
     files: [
+      { pattern: "dist/msRest.browser.js" },
+      { pattern: "dist/msRest.browser.js.map", included: false },
       { pattern: "test/msRest.browser.test.js" },
       { pattern: "test/msRest.browser.test.js.map", included: false }
     ],
@@ -54,6 +55,4 @@ module.exports = function (config: any) {
       }
     },
   });
-
-  console.log(config.rollupPreprocessor);
 };
