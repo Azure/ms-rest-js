@@ -131,7 +131,7 @@
     "test:tslint": "tslint -p . -c tslint.json --exclude \"./test/**/*.ts\"",
     "test:unit": "nyc mocha",
     "test:karma": "npm run build:test-browser && node ./node_modules/karma/bin/karma start karma.conf.ts --single-run",
-    "test:karma:debug": "npm run build:test-browser && node ./node_modules/karma/bin/karma start karma.conf.ts  --log-level debug --browsers ChromeDebugging --debug",
+    "test:karma:debug": "npm run build:test-browser && node ./node_modules/karma/bin/karma start karma.conf.ts  --log-level debug --browsers ChromeDebugging --debug --auto-watch",
     "publish-preview": "mocha --no-colors && shx rm -rf dist/test && node ./.scripts/publish",
     "local": "npm explore @ts-common/azure-js-dev-tools -- npm run local",
     "latest": "npm explore @ts-common/azure-js-dev-tools -- npm run latest",

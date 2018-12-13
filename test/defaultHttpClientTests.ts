@@ -111,15 +111,16 @@ describe("defaultHttpClient", function () {
     response.should.exist;
   });
 
-  it.only("should allow canceling requests", async function () {
+  it("should allow canceling requests", async function () {
     const resourceUrl = `${baseURL}/fileupload`;
-    mock.post(resourceUrl, async (_, res) => {
-      await delay(2000);
-      return res.status(200);
+    mock.post(resourceUrl, async () => {
+      await delay(1000);
+      throw new AssertionError("Request should be cancelled by now");
     });
 
     const controller = getAbortController();
-    const request = new WebResource(`${baseURL}/fileupload`, "POST", new Uint8Array(1024 * 1024 * 10), undefined, undefined, true, undefined, controller.signal);
+    const veryBigPayload = "very long string";
+    const request = new WebResource(`${baseURL}/fileupload`, "POST", veryBigPayload, undefined, undefined, true, undefined, controller.signal);
     const client = new DefaultHttpClient();
     const promise = client.sendRequest(request);
     controller.abort();
