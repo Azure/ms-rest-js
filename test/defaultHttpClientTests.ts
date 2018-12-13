@@ -2,13 +2,14 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 import { assert, AssertionError } from "chai";
 import "chai/register-should";
+import { createReadStream } from "fs";
+import { join } from "path";
+import mock from "xhr-mock";
 
 import { DefaultHttpClient } from "../lib/defaultHttpClient";
 import { RestError } from "../lib/restError";
 import { isNode } from "../lib/util/utils";
 import { WebResource, HttpRequestBody } from "../lib/webResource";
-import { createReadStream } from "fs";
-import { join } from "path";
 
 function getAbortController(): AbortController {
   let controller: AbortController;
@@ -24,6 +25,9 @@ function getAbortController(): AbortController {
 const baseURL = "https://example.com";
 
 describe("defaultHttpClient", function () {
+  beforeEach(() => mock.setup());
+  afterEach(() => mock.teardown());
+
   it("should send HTTP requests", async function () {
     const request = new WebResource("https://example.com/", "GET");
     request.headers.set("Access-Control-Allow-Origin", "https://example.com");
@@ -95,14 +99,25 @@ describe("defaultHttpClient", function () {
   });
 
   it("should return a response instead of throwing for awaited 404", async function () {
-    const request = new WebResource(`${baseURL}/nonexistent`, "GET");
+    const resourceUrl = `${baseURL}/nonexistent`;
+    mock.get(resourceUrl, {
+      status: 404
+    });
+
+    const request = new WebResource(resourceUrl, "GET");
     const httpClient = new DefaultHttpClient();
 
     const response = await httpClient.sendRequest(request);
     response.should.exist;
   });
 
-  it("should allow canceling requests", async function () {
+  it.only("should allow canceling requests", async function () {
+    const resourceUrl = `${baseURL}/fileupload`;
+    mock.post(resourceUrl, async (_, res) => {
+      await delay(2000);
+      return res.status(200);
+    });
+
     const controller = getAbortController();
     const request = new WebResource(`${baseURL}/fileupload`, "POST", new Uint8Array(1024 * 1024 * 10), undefined, undefined, true, undefined, controller.signal);
     const client = new DefaultHttpClient();

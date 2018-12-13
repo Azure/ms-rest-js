@@ -70,6 +70,7 @@
     "@types/uuid": "^3.4.4",
     "@types/webpack": "^4.4.13",
     "@types/webpack-dev-middleware": "^2.0.2",
+    "@types/xhr-mock": "^2.0.0",
     "@types/xml2js": "^0.4.3",
     "abortcontroller-polyfill": "^1.1.9",
     "chai": "^4.2.0",
@@ -107,6 +108,7 @@
     "webpack": "^4.27.1",
     "webpack-cli": "^3.1.2",
     "webpack-dev-middleware": "^3.1.2",
+    "xhr-mock": "^2.4.1",
     "yarn": "^1.6.0"
   },
   "homepage": "https://github.com/Azure/ms-rest-js",
