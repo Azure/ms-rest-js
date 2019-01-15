@@ -2,6 +2,22 @@ trigger:
 - master
 
 jobs:
+- job: Check_Everything
+  pool:
+    vmImage: 'Ubuntu 16.04'
+  steps:
+  - task: Npm@1
+    displayName: 'npm install'
+    inputs:
+      command: custom
+      verbose: false
+      customCommand: install
+  - task: Npm@1
+    displayName: 'npm run check:everything -- --azure-devops'
+    inputs:
+      command: custom
+      verbose: false
+      customCommand: run check:everything -- --azure-devops
 - job: Pack
   pool:
     vmImage: 'Ubuntu 16.04'
@@ -34,4 +50,9 @@ jobs:
 - template: azure-pipelines-job.yml
   parameters:
     nodeVersion: '8'
-
+- template: azure-pipelines-job.yml
+  parameters:
+    nodeVersion: '10'
+- template: azure-pipelines-job.yml
+  parameters:
+    nodeVersion: '11'

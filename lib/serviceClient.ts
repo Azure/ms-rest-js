@@ -12,7 +12,7 @@ import { isStreamOperation, OperationSpec } from "./operationSpec";
 import { deserializationPolicy, DeserializationContentTypes } from "./policies/deserializationPolicy";
 import { exponentialRetryPolicy } from "./policies/exponentialRetryPolicy";
 import { generateClientRequestIdPolicy } from "./policies/generateClientRequestIdPolicy";
-import { userAgentPolicy } from "./policies/userAgentPolicy";
+import { userAgentPolicy, getDefaultUserAgentValue } from "./policies/userAgentPolicy";
 import { redirectPolicy } from "./policies/redirectPolicy";
 import { RequestPolicy, RequestPolicyFactory, RequestPolicyOptions } from "./policies/requestPolicy";
 import { rpRegistrationPolicy } from "./policies/rpRegistrationPolicy";
@@ -33,10 +33,11 @@ import { throttlingRetryPolicy } from "./policies/throttlingRetryPolicy";
  */
 export interface ServiceClientOptions {
   /**
-   * An array of factories which get called to create the RequestPolicy pipeline
-   * used to send a HTTP request on the wire.
+   * An array of factories which get called to create the RequestPolicy pipeline used to send a HTTP
+   * request on the wire, or a function that takes in the defaultRequestPolicyFactories and returns
+   * the requestPolicyFactories that will be used.
    */
-  requestPolicyFactories?: RequestPolicyFactory[];
+  requestPolicyFactories?: RequestPolicyFactory[] | ((defaultRequestPolicyFactories: RequestPolicyFactory[]) => (void | RequestPolicyFactory[]));
   /**
    * The HttpClient that will be used to send HTTP requests.
    */
@@ -72,9 +73,10 @@ export interface ServiceClientOptions {
    */
   deserializationContentTypes?: DeserializationContentTypes;
   /**
-   * The string to be set to the telemetry header while sending the request.
+   * The string to be set to the telemetry header while sending the request, or a function that
+   * takes in the default user-agent string and returns the user-agent string that will be used.
    */
-  userAgent?: string;
+  userAgent?: string | ((defaultUserAgent: string) => string);
 }
 
 /**
@@ -123,7 +125,19 @@ export class ServiceClient {
     this._httpClient = options.httpClient || new DefaultHttpClient();
     this._requestPolicyOptions = new RequestPolicyOptions(options.httpPipelineLogger);
 
-    this._requestPolicyFactories = options.requestPolicyFactories || createDefaultRequestPolicyFactories(credentials, options);
+    let requestPolicyFactories: RequestPolicyFactory[];
+    if (Array.isArray(options.requestPolicyFactories)) {
+      requestPolicyFactories = options.requestPolicyFactories;
+    } else {
+      requestPolicyFactories = createDefaultRequestPolicyFactories(credentials, options);
+      if (options.requestPolicyFactories) {
+        const newRequestPolicyFactories: void | RequestPolicyFactory[] = options.requestPolicyFactories(requestPolicyFactories);
+        if (newRequestPolicyFactories) {
+          requestPolicyFactories = newRequestPolicyFactories;
+        }
+      }
+    }
+    this._requestPolicyFactories = requestPolicyFactories;
   }
 
   /**
@@ -359,7 +373,16 @@ function createDefaultRequestPolicyFactories(credentials: ServiceClientCredentia
     }
   }
 
-  factories.push(userAgentPolicy({ value: options.userAgent }));
+  let userAgentString: string;
+  if (typeof options.userAgent === "string") {
+    userAgentString = options.userAgent;
+  } else {
+    userAgentString = getDefaultUserAgentValue();
+    if (typeof options.userAgent === "function") {
+      userAgentString = options.userAgent(userAgentString);
+    }
+  }
+  factories.push(userAgentPolicy({ value: userAgentString }));
   factories.push(redirectPolicy());
   factories.push(rpRegistrationPolicy(options.rpRegistrationRetryTimeout));
 

@@ -87,6 +87,9 @@ dist/
 *.d.ts.map
 *.js
 *.js.map
+test-results.xml
+.nyc_output/
+coverage/
 
 # Rollup
 !rollup.config.js

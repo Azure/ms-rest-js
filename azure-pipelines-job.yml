@@ -26,3 +26,13 @@ jobs:
       artifactName: dist
       downloadPath: $(System.DefaultWorkingDirectory)
   - script: 'npm test'
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFiles: '$(System.DefaultWorkingDirectory)/test-results.xml'
+      testRunTitle: 'Test results for JavaScript'
+  - task: PublishCodeCoverageResults@1
+    inputs:
+      codeCoverageTool: Cobertura
+      summaryFileLocation: '$(System.DefaultWorkingDirectory)/coverage/cobertura-coverage.xml'
+      reportDirectory: '$(System.DefaultWorkingDirectory)/coverage/'
+      failIfCoverageEmpty: true

@@ -7,7 +7,7 @@ import { QueryCollectionFormat } from "../lib/queryCollectionFormat";
 import { DictionaryMapper, MapperType, Serializer, Mapper } from "../lib/serializer";
 import { serializeRequestBody, ServiceClient, getOperationArgumentValueFromParameterPath } from "../lib/serviceClient";
 import { WebResource } from "../lib/webResource";
-import { OperationArguments, HttpHeaders, deserializationPolicy } from "../lib/msRest";
+import { OperationArguments, HttpHeaders, deserializationPolicy, RestResponse, isNode } from "../lib/msRest";
 import { ParameterPath } from "../lib/operationParameter";
 
 describe("ServiceClient", function () {
@@ -112,7 +112,7 @@ describe("ServiceClient", function () {
           return Promise.resolve({ request, status: 200, headers: new HttpHeaders() });
         },
       },
-      requestPolicyFactories: [],
+      requestPolicyFactories: () => [],
     });
 
     await client.sendOperationRequest(
@@ -151,7 +151,7 @@ describe("ServiceClient", function () {
     assert(request!.url.endsWith(expected), `"${request!.url}" does not end with "${expected}"`);
   });
 
-  it("should apply withCredentials to requests", async function() {
+  it("should apply withCredentials to requests", async function () {
     let request: WebResource;
     const httpClient: HttpClient = {
       sendRequest: req => {
@@ -162,7 +162,7 @@ describe("ServiceClient", function () {
 
     const client1 = new ServiceClient(undefined, {
       httpClient,
-      requestPolicyFactories: []
+      requestPolicyFactories: () => []
     });
     await client1.sendOperationRequest(
       {},
@@ -191,7 +191,7 @@ describe("ServiceClient", function () {
     assert.strictEqual(request!.withCredentials, true);
   });
 
-  it("should deserialize response bodies", async function() {
+  it("should deserialize response bodies", async function () {
     let request: WebResource;
     const httpClient: HttpClient = {
       sendRequest: req => {
@@ -214,21 +214,99 @@ describe("ServiceClient", function () {
         responses: {
           200: {
             bodyMapper: {
-            type: {
-              name: "Sequence",
-              element: {
-                type: {
-                  name: "Number"
+              type: {
+                name: "Sequence",
+                element: {
+                  type: {
+                    name: "Number"
+                  }
                 }
               }
             }
           }
         }
-      }
-    });
+      });
 
     assert.strictEqual(res._response.status, 200);
-    assert.deepEqual(res.slice(), [1,2,3]);
+    assert.deepStrictEqual(res.slice(), [1, 2, 3]);
+  });
+
+  it("should use userAgent string from options", async function () {
+    const httpClient: HttpClient = {
+      sendRequest: (request: WebResource) => {
+        return Promise.resolve({ request, status: 200, headers: new HttpHeaders() });
+      }
+    };
+
+    const client1 = new ServiceClient(undefined, {
+      httpClient,
+      userAgent: "blah blah"
+    });
+
+    const response: RestResponse = await client1.sendOperationRequest(
+      {},
+      {
+        serializer: new Serializer(),
+        httpMethod: "GET",
+        baseUrl: "httpbin.org",
+        responses: {}
+      });
+
+    assert.strictEqual(response._response.status, 200);
+    assert.strictEqual(response._response.request.headers.get(isNode ? "user-agent" : "x-ms-command-name"), "blah blah");
+  });
+
+  it("should use userAgent function from options that appends to defaultUserAgent", async function () {
+    const httpClient: HttpClient = {
+      sendRequest: (request: WebResource) => {
+        return Promise.resolve({ request, status: 200, headers: new HttpHeaders() });
+      }
+    };
+
+    const client1 = new ServiceClient(undefined, {
+      httpClient,
+      userAgent: (defaultUserAgent: string) => `${defaultUserAgent}/blah blah`
+    });
+
+    const response: RestResponse = await client1.sendOperationRequest(
+      {},
+      {
+        serializer: new Serializer(),
+        httpMethod: "GET",
+        baseUrl: "httpbin.org",
+        responses: {}
+      });
+
+    assert.strictEqual(response._response.status, 200);
+    const userAgentHeaderValue: string | undefined = response._response.request.headers.get(isNode ? "user-agent" : "x-ms-command-name");
+    assert(userAgentHeaderValue);
+    assert(userAgentHeaderValue!.startsWith("ms-rest-js/"));
+    assert(userAgentHeaderValue!.endsWith("/blah blah"));
+  });
+
+  it("should use userAgent function from options that ignores defaultUserAgent", async function () {
+    const httpClient: HttpClient = {
+      sendRequest: (request: WebResource) => {
+        return Promise.resolve({ request, status: 200, headers: new HttpHeaders() });
+      }
+    };
+
+    const client1 = new ServiceClient(undefined, {
+      httpClient,
+      userAgent: () => `blah blah 2`
+    });
+
+    const response: RestResponse = await client1.sendOperationRequest(
+      {},
+      {
+        serializer: new Serializer(),
+        httpMethod: "GET",
+        baseUrl: "httpbin.org",
+        responses: {}
+      });
+
+    assert.strictEqual(response._response.status, 200);
+    assert.strictEqual(response._response.request.headers.get(isNode ? "user-agent" : "x-ms-command-name"), "blah blah 2");
   });
 
   describe("serializeRequestBody()", () => {
@@ -363,9 +441,9 @@ describe("ServiceClient", function () {
           serializer: new Serializer(),
           isXML: true
         });
-        assert.strictEqual(
-          httpRequest.body,
-          `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><bodyArg>SmF2YXNjcmlwdA==</bodyArg>`);
+      assert.strictEqual(
+        httpRequest.body,
+        `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><bodyArg>SmF2YXNjcmlwdA==</bodyArg>`);
     });
 
     it("should serialize an XML Stream request body", () => {
@@ -392,7 +470,7 @@ describe("ServiceClient", function () {
           serializer: new Serializer(),
           isXML: true
         });
-        assert.strictEqual(httpRequest.body, "body value");
+      assert.strictEqual(httpRequest.body, "body value");
     });
   });
 
