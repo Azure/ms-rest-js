@@ -2,10 +2,12 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 import "chai/register-should";
-import { proxyPolicy, ProxyPolicy } from "../../../lib/policies/proxyPolicy";
-import { ProxySettings } from "../../../lib/serviceClient";
-import { RequestPolicyOptions } from "../../../lib/policies/requestPolicy";
-import { HttpHeaders, WebResource } from "../../../lib/msRest";
+import { ProxySettings } from "../../lib/serviceClient";
+import { RequestPolicyOptions } from "../../lib/policies/requestPolicy";
+import { WebResource } from "../../lib/webResource";
+import { HttpHeaders } from "../../lib/httpHeaders";
+import { proxyPolicy, ProxyPolicy } from "../../lib/policies/proxyPolicy";
+
 
 
 describe("ProxyPolicy", function() {
