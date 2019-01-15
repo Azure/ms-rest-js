@@ -23,7 +23,9 @@ export class ProxyPolicy extends BaseRequestPolicy {
   }
 
   public sendRequest(request: WebResource): Promise<HttpOperationResponse> {
-    request.proxySettings = this.proxySettings;
+    if (!request.proxySettings) {
+      request.proxySettings = this.proxySettings;
+    }
     return this._nextPolicy.sendRequest(request);
   }
 }

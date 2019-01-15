@@ -48,4 +48,15 @@ describe("ProxyPolicy", function() {
 
         request.proxySettings!.should.be.deep.equal(proxySettings);
     });
+
+    it("should not override proxy settings to the web request", async () => {
+        const policy = new ProxyPolicy(emptyRequestPolicy, emptyPolicyOptions, proxySettings);
+        const request = new WebResource();
+        const requestSpecificProxySettings = { host: "http://overriden.host", port: 80 };
+        request.proxySettings = requestSpecificProxySettings;
+
+        await policy.sendRequest(request);
+
+        request.proxySettings!.should.be.deep.equal(requestSpecificProxySettings);
+    });
 });
