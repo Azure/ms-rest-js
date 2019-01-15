@@ -4,7 +4,6 @@ import { assert, AssertionError } from "chai";
 import "chai/register-should";
 import { createReadStream } from "fs";
 import { join } from "path";
-import mock from "xhr-mock";
 
 import { DefaultHttpClient } from "../lib/defaultHttpClient";
 import { RestError } from "../lib/restError";
@@ -25,9 +24,6 @@ function getAbortController(): AbortController {
 const baseURL = "https://example.com";
 
 describe.skip("defaultHttpClient", function () {
-  beforeEach(() => mock.setup());
-  afterEach(() => mock.teardown());
-
   it("should send HTTP requests", async function () {
     const request = new WebResource("https://example.com/", "GET");
     request.headers.set("Access-Control-Allow-Origin", "https://example.com");
@@ -100,10 +96,6 @@ describe.skip("defaultHttpClient", function () {
 
   it("should return a response instead of throwing for awaited 404", async function () {
     const resourceUrl = `${baseURL}/nonexistent`;
-    mock.get(resourceUrl, {
-      status: 404
-    });
-
     const request = new WebResource(resourceUrl, "GET");
     const httpClient = new DefaultHttpClient();
 
@@ -112,12 +104,6 @@ describe.skip("defaultHttpClient", function () {
   });
 
   it("should allow canceling requests", async function () {
-    const resourceUrl = `${baseURL}/fileupload`;
-    mock.post(resourceUrl, async () => {
-      await delay(1000);
-      throw new AssertionError("Request should be cancelled by now");
-    });
-
     const controller = getAbortController();
     const veryBigPayload = "very long string";
     const request = new WebResource(`${baseURL}/fileupload`, "POST", veryBigPayload, undefined, undefined, true, undefined, controller.signal);

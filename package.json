@@ -111,7 +111,6 @@
     "webpack": "^4.27.1",
     "webpack-cli": "^3.1.2",
     "webpack-dev-middleware": "^3.1.2",
-    "xhr-mock": "^2.4.1",
     "yarn": "^1.6.0"
   },
   "homepage": "https://github.com/Azure/ms-rest-js",
@@ -130,7 +129,7 @@
     "build:rollup": "rollup -c rollup.config.ts",
     "build:minify-browser": "uglifyjs -c -m --comments --source-map \"content='./dist/msRest.browser.js.map'\" -o ./dist/msRest.browser.min.js ./dist/msRest.browser.js",
     "build:test-browser": "webpack --config webpack.testconfig.ts",
-    "test": "run-p test:tslint test:unit",
+    "test": "run-p test:tslint test:unit test:karma",
     "test:tslint": "tslint -p . -c tslint.json --exclude \"./test/**/*.ts\"",
     "test:unit": "nyc mocha",
     "test:karma": "npm run build:test-browser && node ./node_modules/karma/bin/karma start karma.conf.ts --single-run",
