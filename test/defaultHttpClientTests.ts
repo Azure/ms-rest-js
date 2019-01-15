@@ -24,7 +24,7 @@ function getAbortController(): AbortController {
 
 const baseURL = "https://example.com";
 
-describe("defaultHttpClient", function () {
+describe.skip("defaultHttpClient", function () {
   beforeEach(() => mock.setup());
   afterEach(() => mock.teardown());
 
@@ -132,7 +132,7 @@ describe("defaultHttpClient", function () {
     }
   });
 
-  it.only("should not overwrite a user-provided cookie (nodejs only)", async function () {
+  it("should not overwrite a user-provided cookie (nodejs only)", async function () {
     // Cookie is only allowed to be set by the browser based on an actual response Set-Cookie header
     if (!isNode) {
       this.skip();
