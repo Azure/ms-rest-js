@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
+import axios, { AxiosError, AxiosRequestConfig, AxiosResponse, AxiosProxyConfig, AxiosInstance } from "axios";
 import { Transform, Readable } from "stream";
 import FormData from "form-data";
 import * as tough from "tough-cookie";
@@ -10,15 +10,14 @@ import { HttpHeaders } from "./httpHeaders";
 import { HttpOperationResponse } from "./httpOperationResponse";
 import { RestError } from "./restError";
 import { WebResource, HttpRequestBody } from "./webResource";
-
-const axiosClient = axios.create();
-// Workaround for https://github.com/axios/axios/issues/1158
-axiosClient.interceptors.request.use(config => ({ ...config, method: config.method && config.method.toUpperCase() as any }));
+import { ProxySettings } from "./serviceClient";
+import * as tunnel from "tunnel";
 
 /**
  * A HttpClient implementation that uses axios to send HTTP requests.
  */
 export class AxiosHttpClient implements HttpClient {
+  // public static readonly axiosClient = axios.create();
   private readonly cookieJar = new tough.CookieJar();
 
   public async sendRequest(httpRequest: WebResource): Promise<HttpOperationResponse> {
@@ -96,8 +95,8 @@ export class AxiosHttpClient implements HttpClient {
       // Workaround for https://github.com/axios/axios/issues/755
       // tslint:disable-next-line:no-null-keyword
       typeof httpRequestBody === "undefined" ? null :
-      typeof httpRequestBody === "function" ? httpRequestBody() :
-      httpRequestBody;
+        typeof httpRequestBody === "function" ? httpRequestBody() :
+          httpRequestBody;
 
     const onUploadProgress = httpRequest.onUploadProgress;
     if (onUploadProgress && axiosBody) {
@@ -130,8 +129,24 @@ export class AxiosHttpClient implements HttpClient {
         maxContentLength: 1024 * 1024 * 1024 * 10,
         responseType: httpRequest.streamResponseBody ? "stream" : "text",
         cancelToken,
-        timeout: httpRequest.timeout
+        timeout: httpRequest.timeout,
       };
+
+      let axiosClient: AxiosInstance;
+      if (httpRequest.proxySettings) {
+        const agent = tunnel.httpsOverHttp({
+          proxy: {
+            host: httpRequest.proxySettings.host,
+            port: httpRequest.proxySettings.port,
+            headers: {}
+          }
+        });
+
+        axiosClient = axios.create({ httpAgent: agent, proxy: false });
+      } else {
+        axiosClient = axios.create();
+      }
+
       res = await axiosClient(config);
     } catch (err) {
       if (err instanceof axios.Cancel) {
@@ -196,6 +211,25 @@ export class AxiosHttpClient implements HttpClient {
 
     return operationResponse;
   }
+}
+
+export function convertToAxiosProxyConfig(proxySettings: ProxySettings | undefined): AxiosProxyConfig | undefined {
+  if (!proxySettings) {
+    return undefined;
+  }
+
+  const axiosAuthConfig = (proxySettings.username && proxySettings.password) ? {
+    username: proxySettings.username,
+    password: proxySettings.password
+  } : undefined;
+
+  const axiosProxyConfig: AxiosProxyConfig = {
+    host: proxySettings.host,
+    port: proxySettings.port,
+    auth: axiosAuthConfig
+  };
+
+  return axiosProxyConfig;
 }
 
 function isReadableStream(body: any): body is Readable {

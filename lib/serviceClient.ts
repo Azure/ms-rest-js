@@ -26,6 +26,17 @@ import { stringifyXML } from "./util/xml";
 import { RequestOptionsBase, RequestPrepareOptions, WebResource } from "./webResource";
 import { OperationResponse } from "./operationResponse";
 import { ServiceCallback } from "./util/utils";
+import { proxyPolicy, getDefaultProxySettings } from "./policies/proxyPolicy";
+
+/**
+ * HTTP proxy settings (Node.js only)
+ */
+export interface ProxySettings {
+  host: string;
+  port: number;
+  username?: string;
+  password?: string;
+}
 
 /**
  * Options to be provided while creating the client.
@@ -74,6 +85,10 @@ export interface ServiceClientOptions {
    * The string to be set to the telemetry header while sending the request.
    */
   userAgent?: string;
+  /**
+   * Proxy settings which will be used for every HTTP request (Node.js only).
+   */
+  proxySettings?: ProxySettings;
 }
 
 /**
@@ -368,6 +383,10 @@ function createDefaultRequestPolicyFactories(credentials: ServiceClientCredentia
   }
 
   factories.push(deserializationPolicy(options.deserializationContentTypes));
+
+  if (options.proxySettings || (options.proxySettings = getDefaultProxySettings())) {
+    factories.push(proxyPolicy(options.proxySettings));
+  }
 
   return factories;
 }
