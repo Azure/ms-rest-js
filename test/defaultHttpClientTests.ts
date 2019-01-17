@@ -1,9 +1,11 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
+
 import { assert, AssertionError } from "chai";
 import "chai/register-should";
 import { createReadStream } from "fs";
 import { join } from "path";
+import mock, { proxy } from "xhr-mock";
 
 import { DefaultHttpClient } from "../lib/defaultHttpClient";
 import { RestError } from "../lib/restError";
@@ -23,9 +25,21 @@ function getAbortController(): AbortController {
 
 const baseURL = "https://example.com";
 
-describe.skip("defaultHttpClient", function () {
+describe.only("defaultHttpClient", function () {
+  const _ = new XMLHttpRequest();
+  console.log(_);
+  function sleep(ms: number) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  beforeEach(() => mock.setup());
+  afterEach(() => mock.teardown());
+
   it("should send HTTP requests", async function () {
-    const request = new WebResource("https://example.com/", "GET");
+    mock.use(proxy);
+    const request = new WebResource("https://example.com", "GET");
+    request.headers.set("Access-Control-Allow-Headers", "Content-Type");
+    request.headers.set("Access-Control-Allow-Methods", "GET");
     request.headers.set("Access-Control-Allow-Origin", "https://example.com");
     const httpClient = new DefaultHttpClient();
 
@@ -33,8 +47,6 @@ describe.skip("defaultHttpClient", function () {
     assert.deepEqual(response.request, request);
     assert.strictEqual(response.status, 200);
     assert(response.headers);
-    // content-length varies based on OS line endings
-    assert.strictEqual(response.headers.get("content-length"), response.bodyAsText!.length.toString());
     assert.strictEqual(response.headers.get("content-type")!.split(";")[0], "text/html");
     const responseBody: string | null | undefined = response.bodyAsText;
     const expectedResponseBody =
@@ -94,8 +106,15 @@ describe.skip("defaultHttpClient", function () {
       expectedResponseBody.replace(/\s/g, ""));
   });
 
-  it("should return a response instead of throwing for awaited 404", async function () {
-    const resourceUrl = `${baseURL}/nonexistent`;
+  it.only("should return a response instead of throwing for awaited 404", async function () {
+    const resourceUrl = "http://abasd.asd/nonexistent";
+    mock.get(resourceUrl, async (_, res) => {
+      console.log(_);
+      console.log("ABBB");
+      await sleep(100);
+      return res.status(404);
+    });
+
     const request = new WebResource(resourceUrl, "GET");
     const httpClient = new DefaultHttpClient();
 
@@ -104,9 +123,15 @@ describe.skip("defaultHttpClient", function () {
   });
 
   it("should allow canceling requests", async function () {
+    const resourceUrl = `/fileupload`;
+    mock.post(resourceUrl, async (_, res) => {
+      await sleep(10000);
+      assert.fail();
+      return res.status(201);
+    });
     const controller = getAbortController();
     const veryBigPayload = "very long string";
-    const request = new WebResource(`${baseURL}/fileupload`, "POST", veryBigPayload, undefined, undefined, true, undefined, controller.signal);
+    const request = new WebResource(resourceUrl, "POST", veryBigPayload, undefined, undefined, true, undefined, controller.signal);
     const client = new DefaultHttpClient();
     const promise = client.sendRequest(request);
     controller.abort();
@@ -139,11 +164,17 @@ describe.skip("defaultHttpClient", function () {
   });
 
   it("should allow canceling multiple requests with one token", async function () {
+    mock.post("/fileupload", async (_, res) => {
+      await sleep(1000);
+      assert.fail();
+      return res.status(201);
+    });
+
     const controller = getAbortController();
-    const buf = new Uint8Array(1024 * 1024 * 1);
+    const buf = "Very large string";
     const requests = [
-      new WebResource(`${baseURL}/fileupload`, "POST", buf, undefined, undefined, true, undefined, controller.signal),
-      new WebResource(`${baseURL}/fileupload`, "POST", buf, undefined, undefined, true, undefined, controller.signal)
+      new WebResource("/fileupload", "POST", buf, undefined, undefined, true, undefined, controller.signal),
+      new WebResource("/fileupload", "POST", buf, undefined, undefined, true, undefined, controller.signal)
     ];
     const client = new DefaultHttpClient();
     const promises = requests.map(r => client.sendRequest(r));
@@ -152,7 +183,7 @@ describe.skip("defaultHttpClient", function () {
     for (const promise of promises) {
       try {
         await promise;
-        assert.fail("");
+        assert.fail();
       } catch (err) {
         err.should.not.be.instanceof(AssertionError);
       }
@@ -160,11 +191,17 @@ describe.skip("defaultHttpClient", function () {
   });
 
   it("should report upload and download progress for simple bodies", async function () {
+    mock.post("/fileupload", async (_, res) => {
+      await sleep(1000);
+      assert.fail();
+      return res.status(201);
+    });
+
     let uploadNotified = false;
     let downloadNotified = false;
 
-    const body = isNode ? Buffer.alloc(1024 * 1024) : new Uint8Array(1024 * 1024);
-    const request = new WebResource(`${baseURL}/fileupload`, "POST", body, undefined, undefined, false, undefined, undefined, 0,
+    const body = "Very large string to upload";
+    const request = new WebResource("/fileupload", "POST", body, undefined, undefined, false, undefined, undefined, 0,
       ev => {
         uploadNotified = true;
         if (typeof ProgressEvent !== "undefined") {
