@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-import axios, { AxiosError, AxiosRequestConfig, AxiosResponse, AxiosProxyConfig } from "axios";
+import axios, { AxiosError, AxiosRequestConfig, AxiosResponse, AxiosProxyConfig, AxiosInstance } from "axios";
 import { Transform, Readable } from "stream";
 import FormData from "form-data";
 import * as tough from "tough-cookie";
@@ -11,15 +11,13 @@ import { HttpOperationResponse } from "./httpOperationResponse";
 import { RestError } from "./restError";
 import { WebResource, HttpRequestBody } from "./webResource";
 import { ProxySettings } from "./serviceClient";
-
-const axiosClient = axios.create();
-// Workaround for https://github.com/axios/axios/issues/1158
-axiosClient.interceptors.request.use(config => ({ ...config, method: config.method && config.method.toUpperCase() as any }));
+import * as tunnel from "tunnel";
 
 /**
  * A HttpClient implementation that uses axios to send HTTP requests.
  */
 export class AxiosHttpClient implements HttpClient {
+  // public static readonly axiosClient = axios.create();
   private readonly cookieJar = new tough.CookieJar();
 
   public async sendRequest(httpRequest: WebResource): Promise<HttpOperationResponse> {
@@ -134,6 +132,22 @@ export class AxiosHttpClient implements HttpClient {
         timeout: httpRequest.timeout,
         proxy: convertToAxiosProxyConfig(httpRequest.proxySettings)
       };
+
+      let axiosClient: AxiosInstance;
+      if (httpRequest.proxySettings) {
+        const agent = tunnel.httpsOverHttp({
+          proxy: {
+            host: httpRequest.proxySettings.host,
+            port: httpRequest.proxySettings.port,
+            headers: {}
+          }
+        });
+
+        axiosClient = axios.create({ httpAgent: agent, proxy: false });
+      } else {
+        axiosClient = axios.create();
+      }
+
       res = await axiosClient(config);
     } catch (err) {
       if (err instanceof axios.Cancel) {

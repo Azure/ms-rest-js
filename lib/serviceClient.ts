@@ -26,8 +26,8 @@ import { stringifyXML } from "./util/xml";
 import { RequestOptionsBase, RequestPrepareOptions, WebResource } from "./webResource";
 import { OperationResponse } from "./operationResponse";
 import { ServiceCallback } from "./util/utils";
+import { proxyPolicy, getDefaultProxySettings } from "./policies/proxyPolicy";
 import { throttlingRetryPolicy } from "./policies/throttlingRetryPolicy";
-import { proxyPolicy } from "./policies/proxyPolicy";
 
 
 /**
@@ -410,6 +410,7 @@ function createDefaultRequestPolicyFactories(credentials: ServiceClientCredentia
 
   factories.push(deserializationPolicy(options.deserializationContentTypes));
 
+  if (options.proxySettings || (options.proxySettings = getDefaultProxySettings())) {
   if (options.proxySettings) {
     factories.push(proxyPolicy(options.proxySettings));
   }
