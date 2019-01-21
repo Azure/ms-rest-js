@@ -45,7 +45,6 @@ class NodeHttpMock implements HttpMockFacade {
     }
 
     teardown(): void {
-        // this._mockAdapter.restore();
     }
 
     mockHttpMethod(method: HttpMethods, url: UrlFilter, response: MockResponse): void {
@@ -54,9 +53,7 @@ class NodeHttpMock implements HttpMockFacade {
 
         if (typeof response === "function") {
             mockCall.reply(async (config: AxiosRequestConfig) => {
-                console.debug(`Request: ${config.url}, ${config.method}, ${JSON.stringify(config.data, undefined, "  ")}, ${JSON.stringify(config.headers, undefined, "  ")}`);
                 const result = await response(config.url, config.method, config.data, config.headers);
-                console.debug(`Result: ${JSON.stringify(result, undefined, "  ")}`);
                 return [result.status, result.body, result.headers];
             });
         } else {
@@ -98,7 +95,6 @@ class BrowserHttpMock implements HttpMockFacade {
         if (typeof response === "function") {
             xhrMock.use(method, url, async (req, res) => {
                 const result = await response(req.url().toString(), req.method().toString(), req.body(), req.headers());
-                console.log(result);
                 return res.status(result.status || 200).body(result.body || {}).headers(result.headers || {});
             });
         } else {

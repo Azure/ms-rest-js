@@ -4,12 +4,11 @@
 import { assert, AssertionError } from "chai";
 import "chai/register-should";
 import { createReadStream } from "fs";
-import { join } from "path";
 
 import { DefaultHttpClient } from "../lib/defaultHttpClient";
 import { RestError } from "../lib/restError";
 import { isNode } from "../lib/util/utils";
-import { WebResource, HttpRequestBody } from "../lib/webResource";
+import { WebResource, HttpRequestBody, TransferProgressEvent } from "../lib/webResource";
 import { getHttpMock } from "./mockHttp";
 
 function getAbortController(): AbortController {
@@ -23,7 +22,6 @@ function getAbortController(): AbortController {
   return controller;
 }
 
-const baseURL = "https://example.com";
 const httpMock = getHttpMock();
 
 describe.only("defaultHttpClient", function () {
@@ -37,10 +35,7 @@ describe.only("defaultHttpClient", function () {
   it("should return a response instead of throwing for awaited 404", async function () {
     const resourceUrl = "/nonexistent/";
 
-    httpMock.get(resourceUrl, async (url?: string, method?: string) => {
-      console.log(url);
-      console.log(method);
-      await sleep(100);
+    httpMock.get(resourceUrl, async () => {
       return { status: 404 };
     });
 
@@ -134,79 +129,73 @@ describe.only("defaultHttpClient", function () {
     }
   });
 
-  it.only("should report upload and download progress for simple bodies", async function () {
-    httpMock.post("/fileupload", async () => {
-      await sleep(1000);
-      assert.fail();
-      return { status: 201 };
+  describe("should report upload and download progress", () => {
+    type Notified = { notified: boolean };
+    const listener = (operationStatus: Notified, ev: TransferProgressEvent) => {
+      operationStatus.notified = true;
+      if (typeof ProgressEvent !== "undefined") {
+        ev.should.not.be.instanceof(ProgressEvent);
+      }
+      ev.loadedBytes.should.be.a("Number");
+    };
+
+    it("for simple bodies", async function () {
+      httpMock.post("/fileupload", async (_url, _method, body) => {
+        return { status: 201, body: body, headers: { "Content-Length": "200" } };
+      });
+
+      const upload: Notified = { notified: false };
+      const download: Notified = { notified: false };
+
+      const body = "Very large string to upload";
+      const request = new WebResource("/fileupload", "POST", body, undefined, undefined, false, undefined, undefined, 0,
+        ev => listener(upload, ev),
+        ev => listener(download, ev));
+
+      const client = new DefaultHttpClient();
+      const response = await client.sendRequest(request);
+      response.should.exist;
+      upload.notified.should.be.true;
+      download.notified.should.be.true;
     });
 
-    let uploadNotified = false;
-    let downloadNotified = false;
+    it("for blob or stream bodies", async function () {
+      let payload: HttpRequestBody;
+      if (isNode) {
+        payload = () => createReadStream(__filename);
+      } else {
+        payload = new Blob([new Uint8Array(1024 * 1024)]);
+      }
 
-    const body = "Very large string to upload";
-    const request = new WebResource("/fileupload", "POST", body, undefined, undefined, false, undefined, undefined, 0,
-      ev => {
-        uploadNotified = true;
-        if (typeof ProgressEvent !== "undefined") {
-          ev.should.not.be.instanceof(ProgressEvent);
-        }
-        ev.loadedBytes.should.be.a("Number");
-      },
-      ev => {
-        downloadNotified = true;
-        if (typeof ProgressEvent !== "undefined") {
-          ev.should.not.be.instanceof(ProgressEvent);
-        }
-        ev.loadedBytes.should.be.a("Number");
+      const size = isNode ? payload.toString().length : undefined;
+
+      httpMock.post("/fileupload", async (_url, _method, _body) => {
+        return { status: 201, body: payload, headers: { "Content-Type": "text/javascript", "Content-length": size } };
       });
 
-    const client = new DefaultHttpClient();
-    await client.sendRequest(request);
-    assert(uploadNotified);
-    assert(downloadNotified);
-  });
+      const upload: Notified = { notified: false };
+      const download: Notified = { notified: false };
 
-  it("should report upload and download progress for blob or stream bodies", async function () {
-    let uploadNotified = false;
-    let downloadNotified = false;
+      const request = new WebResource("/fileupload", "POST", payload, undefined, undefined, true, undefined, undefined, 0,
+        ev => listener(upload, ev),
+        ev => listener(download, ev));
 
-    let body: HttpRequestBody;
-    if (isNode) {
-      body = () => createReadStream(join(__dirname, "..", "resources", "example-index.html"));
-    } else {
-      body = new Blob([new Uint8Array(1024 * 1024)]);
-    }
-    const request = new WebResource(`${baseURL}/fileupload`, "POST", body, undefined, undefined, true, undefined, undefined, 0,
-      ev => {
-        uploadNotified = true;
-        if (typeof ProgressEvent !== "undefined") {
-          ev.should.not.be.instanceof(ProgressEvent);
-        }
-        ev.loadedBytes.should.be.a("Number");
-      },
-      ev => {
-        downloadNotified = true;
-        if (typeof ProgressEvent !== "undefined") {
-          ev.should.not.be.instanceof(ProgressEvent);
-        }
-        ev.loadedBytes.should.be.a("Number");
-      });
+      const client = new DefaultHttpClient();
+      const response = await client.sendRequest(request);
+      if (response.blobBody) {
+        await response.blobBody;
+      } else if ((typeof response.readableStreamBody === "function")) {
+        const streamBody = (response.readableStreamBody as Function)();
+        streamBody.on("data", () => { });
+        await new Promise((resolve, reject) => {
+          streamBody.on("end", resolve);
+          streamBody.on("error", reject);
+        });
+      }
 
-    const client = new DefaultHttpClient();
-    const response = await client.sendRequest(request);
-    const streamBody = response.readableStreamBody;
-    if (response.blobBody) {
-      await response.blobBody;
-    } else if (streamBody) {
-      streamBody.on("data", () => { });
-      await new Promise((resolve, reject) => {
-        streamBody.on("end", resolve);
-        streamBody.on("error", reject);
-      });
-    }
-    assert(uploadNotified);
-    assert(downloadNotified);
+      upload.notified.should.be.true;
+      download.notified.should.be.true;
+    });
   });
 
   it("should honor request timeouts", async function () {
