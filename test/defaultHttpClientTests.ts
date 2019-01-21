@@ -5,12 +5,12 @@ import { assert, AssertionError } from "chai";
 import "chai/register-should";
 import { createReadStream } from "fs";
 import { join } from "path";
-import mock, { proxy } from "xhr-mock";
 
 import { DefaultHttpClient } from "../lib/defaultHttpClient";
 import { RestError } from "../lib/restError";
 import { isNode } from "../lib/util/utils";
 import { WebResource, HttpRequestBody } from "../lib/webResource";
+import { getHttpMock } from "./mockHttp";
 
 function getAbortController(): AbortController {
   let controller: AbortController;
@@ -24,110 +24,39 @@ function getAbortController(): AbortController {
 }
 
 const baseURL = "https://example.com";
+const httpMock = getHttpMock();
 
 describe.only("defaultHttpClient", function () {
-  const _ = new XMLHttpRequest();
-  console.log(_);
-  function sleep(ms: number) {
+  function sleep(ms: number): Promise<void> {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
 
-  beforeEach(() => mock.setup());
-  afterEach(() => mock.teardown());
+  beforeEach(() => httpMock.setup());
+  afterEach(() => httpMock.teardown());
 
-  it("should send HTTP requests", async function () {
-    mock.use(proxy);
-    const request = new WebResource("https://example.com", "GET");
-    request.headers.set("Access-Control-Allow-Headers", "Content-Type");
-    request.headers.set("Access-Control-Allow-Methods", "GET");
-    request.headers.set("Access-Control-Allow-Origin", "https://example.com");
-    const httpClient = new DefaultHttpClient();
+  it("should return a response instead of throwing for awaited 404", async function () {
+    const resourceUrl = "/nonexistent/";
 
-    const response = await httpClient.sendRequest(request);
-    assert.deepEqual(response.request, request);
-    assert.strictEqual(response.status, 200);
-    assert(response.headers);
-    assert.strictEqual(response.headers.get("content-type")!.split(";")[0], "text/html");
-    const responseBody: string | null | undefined = response.bodyAsText;
-    const expectedResponseBody =
-      `<!doctype html>
-<html>
-<head>
-    <title>Example Domain</title>
-
-    <meta charset="utf-8" />
-    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <style type="text/css">
-    body {
-        background-color: #f0f0f2;
-        margin: 0;
-        padding: 0;
-        font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
-
-    }
-    div {
-        width: 600px;
-        margin: 5em auto;
-        padding: 50px;
-        background-color: #fff;
-        border-radius: 1em;
-    }
-    a:link, a:visited {
-        color: #38488f;
-        text-decoration: none;
-    }
-    @media (max-width: 700px) {
-        body {
-            background-color: #fff;
-        }
-        div {
-            width: auto;
-            margin: 0 auto;
-            border-radius: 0;
-            padding: 1em;
-        }
-    }
-    </style>
-</head>
-
-<body>
-<div>
-    <h1>Example Domain</h1>
-    <p>This domain is established to be used for illustrative examples in documents. You may use this
-    domain in examples without prior coordination or asking for permission.</p>
-    <p><a href="http://www.iana.org/domains/example">More information...</a></p>
-</div>
-</body>
-</html>
-`;
-    assert.strictEqual(
-      responseBody && responseBody.replace(/\s/g, ""),
-      expectedResponseBody.replace(/\s/g, ""));
-  });
-
-  it.only("should return a response instead of throwing for awaited 404", async function () {
-    const resourceUrl = "http://abasd.asd/nonexistent";
-    mock.get(resourceUrl, async (_, res) => {
-      console.log(_);
-      console.log("ABBB");
+    httpMock.get(resourceUrl, async (url?: string, method?: string) => {
+      console.log(url);
+      console.log(method);
       await sleep(100);
-      return res.status(404);
+      return { status: 404 };
     });
 
     const request = new WebResource(resourceUrl, "GET");
     const httpClient = new DefaultHttpClient();
 
     const response = await httpClient.sendRequest(request);
-    response.should.exist;
+    response.status.should.equal(404);
   });
 
   it("should allow canceling requests", async function () {
     const resourceUrl = `/fileupload`;
-    mock.post(resourceUrl, async (_, res) => {
+    httpMock.post(resourceUrl, async () => {
       await sleep(10000);
       assert.fail();
-      return res.status(201);
+      return { status: 201 };
     });
     const controller = getAbortController();
     const veryBigPayload = "very long string";
@@ -149,25 +78,40 @@ describe.only("defaultHttpClient", function () {
       this.skip();
     }
 
+    httpMock.get("http://my.fake.domain/set-cookie", {
+      status: 200,
+      headers: {
+        "Set-Cookie": "data=123456"
+      }
+    });
+
+    httpMock.get("http://my.fake.domain/cookie", async (_url, _method, _body, headers) => {
+      return {
+        status: 200,
+        headers: headers
+      };
+    });
+
     const client = new DefaultHttpClient();
 
-    const request1 = new WebResource(`${baseURL}/set-cookie`);
-    await client.sendRequest(request1);
+    const request1 = new WebResource("http://my.fake.domain/set-cookie");
+    const response1 = await client.sendRequest(request1);
+    response1.headers.get("Set-Cookie")!.should.equal("data=123456");
 
-    const request2 = new WebResource(`${baseURL}/cookie`);
+    const request2 = new WebResource("http://my.fake.domain/cookie");
     const response2 = await client.sendRequest(request2);
     response2.headers.get("Cookie")!.should.equal("data=123456");
 
-    const request3 = new WebResource(`${baseURL}/cookie`, "GET", undefined, undefined, { Cookie: "data=abcdefg" });
+    const request3 = new WebResource("http://my.fake.domain/cookie", "GET", undefined, undefined, { Cookie: "data=abcdefg" });
     const response3 = await client.sendRequest(request3);
     response3.headers.get("Cookie")!.should.equal("data=abcdefg");
   });
 
   it("should allow canceling multiple requests with one token", async function () {
-    mock.post("/fileupload", async (_, res) => {
+    httpMock.post("/fileupload", async () => {
       await sleep(1000);
       assert.fail();
-      return res.status(201);
+      return { status: 201 };
     });
 
     const controller = getAbortController();
@@ -190,11 +134,11 @@ describe.only("defaultHttpClient", function () {
     }
   });
 
-  it("should report upload and download progress for simple bodies", async function () {
-    mock.post("/fileupload", async (_, res) => {
+  it.only("should report upload and download progress for simple bodies", async function () {
+    httpMock.post("/fileupload", async () => {
       await sleep(1000);
       assert.fail();
-      return res.status(201);
+      return { status: 201 };
     });
 
     let uploadNotified = false;
@@ -266,7 +210,9 @@ describe.only("defaultHttpClient", function () {
   });
 
   it("should honor request timeouts", async function () {
-    const request = new WebResource(`${baseURL}/slow`, "GET", undefined, undefined, undefined, false, false, undefined, 100);
+    httpMock.timeout("GET", "/slow");
+
+    const request = new WebResource("/slow", "GET", undefined, undefined, undefined, false, false, undefined, 100);
     const client = new DefaultHttpClient();
     try {
       await client.sendRequest(request);
@@ -277,7 +223,9 @@ describe.only("defaultHttpClient", function () {
   });
 
   it("should give a graceful error for nonexistent hosts", async function () {
-    const request = new WebResource(`http://foo.notawebsite/`);
+    const requestUrl = "http://foo.notawebsite/";
+    httpMock.passThrough(requestUrl);
+    const request = new WebResource(requestUrl);
     const client = new DefaultHttpClient();
     try {
       await client.sendRequest(request);
@@ -289,9 +237,94 @@ describe.only("defaultHttpClient", function () {
   });
 
   it("should interpret undefined as an empty body", async function () {
-    const request = new WebResource(`${baseURL}/expect-empty`, "PUT");
+    const requestUrl = "/expect-empty";
+    httpMock.put(requestUrl, async (_url, _method, body, _headers) => {
+      if (!body) {
+        return {
+          status: 200
+        };
+      } else {
+        return {
+          status: 400,
+          body: `Expected empty body but got "${JSON.stringify(body)}"`
+        };
+      }
+    });
+
+    const request = new WebResource(requestUrl, "PUT");
     const client = new DefaultHttpClient();
     const response = await client.sendRequest(request);
     response.status.should.equal(200, response.bodyAsText!);
+  });
+
+  it("should send HTTP requests", async function () {
+    httpMock.passThrough();
+    const request = new WebResource("https://example.com", "GET");
+    request.headers.set("Access-Control-Allow-Headers", "Content-Type");
+    request.headers.set("Access-Control-Allow-Methods", "GET");
+    request.headers.set("Access-Control-Allow-Origin", "https://example.com");
+    const httpClient = new DefaultHttpClient();
+
+    const response = await httpClient.sendRequest(request);
+    assert.deepEqual(response.request, request);
+    assert.strictEqual(response.status, 200);
+    assert(response.headers);
+    assert.strictEqual(response.headers.get("content-type")!.split(";")[0], "text/html");
+    const responseBody: string | null | undefined = response.bodyAsText;
+    const expectedResponseBody =
+      `<!doctype html>
+<html>
+<head>
+    <title>Example Domain</title>
+
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style type="text/css">
+    body {
+        background-color: #f0f0f2;
+        margin: 0;
+        padding: 0;
+        font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+    }
+    div {
+        width: 600px;
+        margin: 5em auto;
+        padding: 50px;
+        background-color: #fff;
+        border-radius: 1em;
+    }
+    a:link, a:visited {
+        color: #38488f;
+        text-decoration: none;
+    }
+    @media (max-width: 700px) {
+        body {
+            background-color: #fff;
+        }
+        div {
+            width: auto;
+            margin: 0 auto;
+            border-radius: 0;
+            padding: 1em;
+        }
+    }
+    </style>
+</head>
+
+<body>
+<div>
+    <h1>Example Domain</h1>
+    <p>This domain is established to be used for illustrative examples in documents. You may use this
+    domain in examples without prior coordination or asking for permission.</p>
+    <p><a href="http://www.iana.org/domains/example">More information...</a></p>
+</div>
+</body>
+</html>
+`;
+    assert.strictEqual(
+      responseBody && responseBody.replace(/\s/g, ""),
+      expectedResponseBody.replace(/\s/g, ""));
   });
 });

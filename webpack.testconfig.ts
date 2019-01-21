@@ -47,7 +47,7 @@ const config: webpack.Configuration = {
   },
   node: {
     fs: "empty",
-    net: false,
+    net: "empty",
     path: "empty",
     dns: false,
     tls: false,

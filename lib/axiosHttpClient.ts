@@ -12,7 +12,7 @@ import { RestError } from "./restError";
 import { WebResource, HttpRequestBody } from "./webResource";
 import { ProxySettings } from "./serviceClient";
 
-const axiosClient = axios.create();
+export const axiosClient = axios.create();
 
 /**
  * A HttpClient implementation that uses axios to send HTTP requests.
