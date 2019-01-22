@@ -24,7 +24,7 @@ function getAbortController(): AbortController {
 
 const httpMock = getHttpMock();
 
-describe.only("defaultHttpClient", function () {
+describe("defaultHttpClient", function () {
   function sleep(ms: number): Promise<void> {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
