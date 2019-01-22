@@ -101,7 +101,7 @@ describe("ServiceClient", function () {
     assert.strictEqual(JSON.stringify(response), "{}");
   });
 
-  it("Should serialize collection:multi query parameters", async function () {
+  it("should serialize collection:multi query parameters", async function () {
     const expected = "?q=1&q=2&q=3";
 
     let request: WebResource;
