@@ -3,7 +3,7 @@ import * as glob from "glob";
 import * as path from "path";
 
 const config: webpack.Configuration = {
-  entry: glob.sync(path.join(__dirname, "test/**/*.ts")),
+  entry: glob.sync(path.join(__dirname, "test/**/*[^node\.].ts")),
   mode: "development",
   devtool: "source-map",
   output: {
