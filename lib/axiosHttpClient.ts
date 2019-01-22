@@ -17,7 +17,6 @@ import * as tunnel from "tunnel";
  * A HttpClient implementation that uses axios to send HTTP requests.
  */
 export class AxiosHttpClient implements HttpClient {
-  // public static readonly axiosClient = axios.create();
   private readonly cookieJar = new tough.CookieJar();
 
   public async sendRequest(httpRequest: WebResource): Promise<HttpOperationResponse> {
