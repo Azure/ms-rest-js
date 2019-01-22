@@ -6,6 +6,22 @@ const config: webpack.Configuration = {
   entry: glob.sync(path.join(__dirname, "test/**/*[^node\.].ts")),
   mode: "development",
   devtool: "source-map",
+  stats: {
+    colors: true,
+    hash: false,
+    version: false,
+    timings: false,
+    assets: false,
+    chunks: false,
+    modules: false,
+    reasons: false,
+    children: false,
+    source: false,
+    errors: true,
+    errorDetails: false,
+    warnings: false,
+    publicPath: false
+  },
   output: {
     filename: "msRest.browser.test.js",
     path: path.resolve(__dirname, "test")
@@ -33,7 +49,7 @@ const config: webpack.Configuration = {
     Buffer: false,
     dns: false,
     fs: "empty",
-    net: false,
+    net: "empty",
     path: "empty",
     process: "mock",
     stream: "empty",
