@@ -11,6 +11,9 @@ import { isNode } from "../lib/util/utils";
 import { WebResource, HttpRequestBody, TransferProgressEvent } from "../lib/webResource";
 import { getHttpMock } from "./mockHttp";
 
+const nodeIt = isNode ? it : it.skip;
+const httpMock = getHttpMock();
+
 function getAbortController(): AbortController {
   let controller: AbortController;
   if (typeof AbortController === "function") {
@@ -21,8 +24,6 @@ function getAbortController(): AbortController {
   }
   return controller;
 }
-
-const httpMock = getHttpMock();
 
 describe("defaultHttpClient", function () {
   function sleep(ms: number): Promise<void> {
@@ -67,7 +68,7 @@ describe("defaultHttpClient", function () {
     }
   });
 
-  it("should not overwrite a user-provided cookie (nodejs only)", async function () {
+  nodeIt("should not overwrite a user-provided cookie (nodejs only)", async function () {
     // Cookie is only allowed to be set by the browser based on an actual response Set-Cookie header
     if (!isNode) {
       this.skip();
