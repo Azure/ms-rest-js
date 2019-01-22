@@ -8,7 +8,7 @@ import { RequestPolicyOptions } from "../../lib/policies/requestPolicy";
 import { WebResource } from "../../lib/webResource";
 import { HttpHeaders } from "../../lib/httpHeaders";
 import { proxyPolicy, ProxyPolicy, getDefaultProxySettings } from "../../lib/policies/proxyPolicy";
-import { Constants, isNode } from "../../lib/msRest";
+import { Constants } from "../../lib/msRest";
 
 describe("ProxyPolicy", function () {
     const proxySettings: ProxySettings = {
@@ -65,7 +65,7 @@ describe("ProxyPolicy", function () {
 
 });
 
-describe.only("getDefaultProxySettings", () => {
+describe("getDefaultProxySettings", () => {
     const proxyUrl = "https://proxy.microsoft.com";
     const defaultPort = 80;
 
