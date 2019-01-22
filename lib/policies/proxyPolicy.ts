@@ -13,18 +13,17 @@ function loadEnvironmentProxyValue(): string | undefined {
     return undefined;
   }
 
-  let proxyUrl = undefined;
   if (process.env[Constants.HTTPS_PROXY]) {
-    proxyUrl = process.env[Constants.HTTPS_PROXY];
+    return process.env[Constants.HTTPS_PROXY];
   } else if (process.env[Constants.HTTPS_PROXY.toLowerCase()]) {
-    proxyUrl = process.env[Constants.HTTPS_PROXY.toLowerCase()];
+    return process.env[Constants.HTTPS_PROXY.toLowerCase()];
   } else if (process.env[Constants.HTTP_PROXY]) {
-    proxyUrl = process.env[Constants.HTTP_PROXY];
+    return process.env[Constants.HTTP_PROXY];
   } else if (process.env[Constants.HTTP_PROXY.toLowerCase()]) {
-    proxyUrl = process.env[Constants.HTTP_PROXY.toLowerCase()];
+    return process.env[Constants.HTTP_PROXY.toLowerCase()];
   }
 
-  return proxyUrl;
+  return undefined;
 }
 
 export function getDefaultProxySettings(proxyUrl?: string): ProxySettings | undefined {
@@ -36,8 +35,8 @@ export function getDefaultProxySettings(proxyUrl?: string): ProxySettings | unde
   }
 
   const parsedUrl = URLBuilder.parse(proxyUrl);
-  return  {
-    host: parsedUrl.getScheme() + "//" + parsedUrl.getHost(),
+  return {
+    host: parsedUrl.getScheme() + "://" + parsedUrl.getHost(),
     port: Number.parseInt(parsedUrl.getPort() || "80")
   };
 }

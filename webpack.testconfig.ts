@@ -30,16 +30,16 @@ const config: webpack.Configuration = {
     extensions: [".tsx", ".ts", ".js"]
   },
   node: {
+    Buffer: false,
+    dns: false,
     fs: "empty",
     net: false,
     path: "empty",
-    dns: false,
+    process: "mock",
+    stream: "empty",
     tls: false,
     tty: false,
     v8: false,
-    Buffer: false,
-    process: false,
-    stream: "empty"
   }
 };
 
