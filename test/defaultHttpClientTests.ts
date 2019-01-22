@@ -70,10 +70,6 @@ describe("defaultHttpClient", function () {
 
   nodeIt("should not overwrite a user-provided cookie (nodejs only)", async function () {
     // Cookie is only allowed to be set by the browser based on an actual response Set-Cookie header
-    if (!isNode) {
-      this.skip();
-    }
-
     httpMock.get("http://my.fake.domain/set-cookie", {
       status: 200,
       headers: {
