@@ -766,7 +766,7 @@ describe("ServiceClient", function () {
 });
 
 function stringToByteArray(str: string): Uint8Array {
-  if (typeof Buffer === "function") {
+  if (typeof Buffer === "function" && isNode) {
     return Buffer.from(str, "utf-8");
   } else {
     return new TextEncoder().encode(str);
