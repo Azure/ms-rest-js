@@ -217,8 +217,8 @@ describe("defaultHttpClient", function () {
   });
 
   it("should give a graceful error for nonexistent hosts", async function () {
-    const requestUrl = "fake.domain";
-    httpMock.passThrough(requestUrl);
+    const requestUrl = "http://fake.domain";
+    httpMock.passThrough();
     const request = new WebResource(requestUrl, "GET");
     const client = new DefaultHttpClient();
     try {
