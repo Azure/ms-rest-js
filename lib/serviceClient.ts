@@ -410,8 +410,9 @@ function createDefaultRequestPolicyFactories(credentials: ServiceClientCredentia
 
   factories.push(deserializationPolicy(options.deserializationContentTypes));
 
-  if (options.proxySettings || (options.proxySettings = getDefaultProxySettings())) {
-    factories.push(proxyPolicy(options.proxySettings));
+  const proxySettings = options.proxySettings || getDefaultProxySettings();
+  if (proxySettings) {
+    factories.push(proxyPolicy(proxySettings));
   }
 
   return factories;
