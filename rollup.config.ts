@@ -70,6 +70,7 @@
      alias({
        "./defaultHttpClient": "./defaultHttpClient.browser",
        "./msRestUserAgentPolicy": "./msRestUserAgentPolicy.browser",
+       "./proxyPolicy": "./proxyPolicy.browser",
        "./util/xml": "./util/xml.browser",
        "./util/base64": "./util/base64.browser",
      }),
