@@ -5,6 +5,7 @@ import xhrMock, { proxy } from "xhr-mock";
 import MockAdapter from "axios-mock-adapter";
 import { isNode, HttpMethods } from "../lib/msRest";
 import { AxiosRequestConfig, AxiosInstance } from "axios";
+import fetchMock, * as fetch from "fetch-mock";
 
 export type UrlFilter = string | RegExp;
 
@@ -29,11 +30,58 @@ export interface HttpMockFacade {
     put(url: UrlFilter, response: MockResponse): void;
 }
 
-export function getHttpMock(axiosInstance?: AxiosInstance): HttpMockFacade {
-    return (isNode ? new NodeHttpMock(axiosInstance) : new BrowserHttpMock());
+export function getHttpMock(_axiosInstance?: AxiosInstance): HttpMockFacade {
+    return (isNode ? new FetchHttpMock() : new BrowserHttpMock());
 }
 
-class NodeHttpMock implements HttpMockFacade {
+class FetchHttpMock implements HttpMockFacade {
+    setup(): void {
+         fetchMock.resetHistory();
+    }
+
+    teardown(): void {
+        fetchMock.resetHistory();
+    }
+
+    passThrough(_url?: string | RegExp | undefined): void {
+        fetchMock.reset();
+    }
+
+    timeout(_method: HttpMethods, url: UrlFilter): void {
+        const delay = new Promise((resolve) => {
+            setTimeout(() => resolve({$uri: url, delay: 500}), 2500);
+        });
+
+        fetchMock.mock(url, delay);
+    }
+
+    mockHttpMethod(method: HttpMethods, url: UrlFilter, response: MockResponse) {
+        let mockResponse: fetch.MockResponse | fetch.MockResponseFunction = response;
+        if (typeof response === "function") {
+            const mockFunction: MockResponseFunction = response;
+            mockResponse = ((url: string, opts: any) => {
+                return mockFunction(url, method, opts.body, opts.headers);
+            }) as fetch.MockResponseFunction;
+        }
+
+        const matcher = (_url: string, opts: fetch.MockRequest) => (url === _url) && (opts.method === method);
+        fetchMock.mock(matcher, mockResponse);
+    }
+
+    get(url: UrlFilter, response: MockResponse): void {
+        this.mockHttpMethod("GET", url, response);
+    }
+
+    post(url: UrlFilter, response: MockResponse): void {
+        this.mockHttpMethod("POST", url, response);
+    }
+
+    put(url: UrlFilter, response: MockResponse): void {
+        this.mockHttpMethod("PUT", url, response);
+    }
+}
+
+export class NodeHttpMock implements HttpMockFacade {
     private _mockAdapter: MockAdapter;
 
     constructor(axiosInstance?: AxiosInstance) {

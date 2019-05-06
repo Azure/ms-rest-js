@@ -25,6 +25,7 @@
    external: [
      "axios",
      "form-data",
+     "node-fetch",
      "os",
      "stream",
      "tough-cookie",

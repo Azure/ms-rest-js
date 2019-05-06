@@ -6,7 +6,7 @@ import { Transform, Readable } from "stream";
 import FormData from "form-data";
 import * as tough from "tough-cookie";
 import { HttpClient } from "./httpClient";
-import { HttpHeaders } from "./httpHeaders";
+import { HttpHeaders, RawHttpHeaders } from "./httpHeaders";
 import { HttpOperationResponse } from "./httpOperationResponse";
 import { RestError } from "./restError";
 import { WebResource, HttpRequestBody } from "./webResource";
@@ -90,7 +90,7 @@ export class AxiosHttpClient implements HttpClient {
       abortSignal.addEventListener("abort", abortListener);
     });
 
-    const rawHeaders: { [headerName: string]: string } = httpRequest.headers.rawHeaders();
+    const rawHeaders: RawHttpHeaders = httpRequest.headers.rawHeaders();
 
     const httpRequestBody: HttpRequestBody = httpRequest.body;
     let axiosBody =
