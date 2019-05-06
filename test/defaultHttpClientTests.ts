@@ -40,7 +40,7 @@ describe("defaultHttpClient", function () {
   after(() => httpMock.teardown());
 
   it("should return a response instead of throwing for awaited 404", async function () {
-    const resourceUrl = "http://1.2.3.4/nonexistent/";
+    const resourceUrl = "/nonexistent";
 
     httpMock.get(resourceUrl, async () => {
       return { status: 404 };
