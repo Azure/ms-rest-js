@@ -47,7 +47,7 @@ export class ThrottlingRetryPolicy extends BaseRequestPolicy {
     if (retryAfterHeader) {
       const delayInMs: number | undefined = ThrottlingRetryPolicy.parseRetryAfterHeader(retryAfterHeader);
       if (delayInMs) {
-        return delay(delayInMs).then(_ => this._nextPolicy.sendRequest(httpRequest));
+        return delay(delayInMs).then((_: void) => this._nextPolicy.sendRequest(httpRequest));
       }
     }
 
