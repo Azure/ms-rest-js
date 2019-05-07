@@ -72,7 +72,6 @@
     "@types/uuid": "^3.4.4",
     "@types/webpack": "^4.4.13",
     "@types/webpack-dev-middleware": "^2.0.2",
-    "@types/xhr-mock": "^2.0.0",
     "@types/xml2js": "^0.4.3",
     "abortcontroller-polyfill": "^1.1.9",
     "axios-mock-adapter": "^1.16.0",
