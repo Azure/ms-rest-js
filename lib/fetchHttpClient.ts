@@ -14,17 +14,17 @@ import { RestError } from "./restError";
 import { Readable, Transform } from "stream";
 
 interface FetchError extends Error {
-  code: string | undefined;
-  errno: string | undefined;
-  type: string | undefined;
+  code?: string;
+  errno?: string;
+  type?: string;
 }
 
 export class FetchHttpClient implements HttpClient {
   private readonly cookieJar = new tough.CookieJar();
 
   async sendRequest(httpRequest: WebResource): Promise<HttpOperationResponse> {
-    if (!httpRequest) {
-      throw new Error("httpRequest (WebResource) cannot be null or undefined and must be of type object.");
+    if (!httpRequest && typeof httpRequest !== "object") {
+      throw new Error("'httpRequest' (WebResource) cannot be null or undefined and must be of type object.");
     }
 
     const abortController = new AbortController();
@@ -78,7 +78,7 @@ export class FetchHttpClient implements HttpClient {
         if (typeof requestForm.getBoundary === "function") {
           httpRequest.headers.set("Content-Type", `multipart/form-data; boundary=${requestForm.getBoundary()}`);
         } else {
-              // browser will automatically apply a suitable content-type header
+          // browser will automatically apply a suitable content-type header
           httpRequest.headers.remove("Content-Type");
         }
       }
