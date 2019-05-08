@@ -180,7 +180,7 @@ describe("defaultHttpClient", function () {
       const upload: Notified = { notified: false };
       const download: Notified = { notified: false };
 
-      const request = new WebResource("/fileupload", "POST", payload, undefined, { "Content-Length": 100 }, true, undefined, undefined, 0,
+      const request = new WebResource("/fileupload", "POST", payload, undefined, undefined, true, undefined, undefined, 0,
         ev => listener(upload, ev),
         ev => listener(download, ev));
 
