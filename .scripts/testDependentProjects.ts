@@ -12,6 +12,7 @@ function execAndLog(command: string, options?: ExecOptions) {
 console.log(`Passed parameters:\n${process.argv}`);
 
 const msRestJsDirectory = path.join(__dirname, "..");
+console.log(`ms-rest-js directory: ${msRestJsDirectory}`);
 
 const projectName = process.argv[2];
 const projectDirectory = `.tmp/${projectName}`;

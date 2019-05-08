@@ -67,14 +67,14 @@ jobs:
       verbose: false
       customCommand: install
   - task: Npm@1
-    displayName: 'npm run test:autorest.typescript'
-    inputs:
-      command: custom
-      verbose: false
-      customCommand: run test:autorest.typescript
-  - task: Npm@1
     displayName: 'npm run test:ms-rest-azure-js'
     inputs:
       command: custom
       verbose: false
       customCommand: run test:ms-rest-azure-js
+  - task: Npm@1
+    displayName: 'npm run test:autorest.typescript'
+    inputs:
+      command: custom
+      verbose: false
+      customCommand: run test:autorest.typescript
