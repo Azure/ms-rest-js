@@ -142,7 +142,7 @@ export class FetchHttpClient implements HttpClient {
         const bodyAsText = response.body ? await response.text() : undefined;
         operationResponse.bodyAsText = bodyAsText;
       } else {
-        const responseBody: ReadableStream<Uint8Array> | undefined = response.body ? response.body : undefined;
+        const responseBody: ReadableStream<Uint8Array> | undefined = response.body || undefined;
 
         if (isReadableStream(responseBody)) {
           let loadedBytes = 0;
