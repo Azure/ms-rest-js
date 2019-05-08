@@ -56,7 +56,7 @@ jobs:
 - template: azure-pipelines-job.yml
   parameters:
     nodeVersion: '11'
-- job: "Test dependent projects"
+- job: Test_dependent_projects
   pool:
     vmImage: 'Ubuntu 16.04'
   steps:
