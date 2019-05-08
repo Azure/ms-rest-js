@@ -9,9 +9,9 @@ function execAndLog(command: string, options?: ExecOptions) {
   });
 }
 
-const msRestJsDirectory = path.join(__dirname, "..");
+console.log(`Passed parameters:\n${process.argv}`);
 
-console.log(process.argv);
+const msRestJsDirectory = path.join(__dirname, "..");
 
 const projectName = process.argv[2];
 const projectDirectory = `.tmp/${projectName}`;
