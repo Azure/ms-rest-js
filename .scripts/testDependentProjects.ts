@@ -3,10 +3,12 @@ import path from "path";
 
 function execAndLog(command: string, options?: ExecOptions) {
   console.log(`\n\nExecuting "${command}"`);
-  execSync(command, {
+  const result = execSync(command, {
     ...options,
     stdio: "inherit"
   });
+
+  console.log(`\n\nResult of "${command}" command:\n${result.toString()}`);
 }
 
 console.log(`Passed parameters:\n${process.argv}`);
