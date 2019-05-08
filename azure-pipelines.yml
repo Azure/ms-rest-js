@@ -56,3 +56,25 @@ jobs:
 - template: azure-pipelines-job.yml
   parameters:
     nodeVersion: '11'
+- job: "Test dependent projects"
+  pool:
+    vmImage: 'Ubuntu 16.04'
+  steps:
+  - task: Npm@1
+    displayName: 'npm install'
+    inputs:
+      command: custom
+      verbose: false
+      customCommand: install
+  - task: Npm@1
+    displayName: 'npm run test:autorest.typescript'
+    inputs:
+      command: custom
+      verbose: false
+      customCommand: run test:autorest.typescript
+  - task: Npm@1
+    displayName: 'npm run test:ms-rest-azure-js'
+    inputs:
+      command: custom
+      verbose: false
+      customCommand: run test:ms-rest-azure-js
