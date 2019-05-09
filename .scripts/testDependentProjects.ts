@@ -8,7 +8,7 @@ function execAndLog(command: string, options?: ExecOptions) {
     stdio: "inherit"
   });
 
-  console.log(`\n\nResult of "${command}" command:\n${result.toString()}`);
+  console.log(`\n\nCommand "${command}" has finished. Result:\n${result && result.toString()}`);
 }
 
 console.log(`Passed parameters:\n${process.argv}`);
