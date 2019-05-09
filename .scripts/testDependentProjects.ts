@@ -2,6 +2,8 @@ import path from "path";
 import { run, RunResult, RunOptions } from "@ts-common/azure-js-dev-tools";
 
 async function execAndLog(command: string, args?: string[], options?: RunOptions): Promise<any> {
+  console.log("\n");
+
   const result: RunResult = await run(command, args, {
     ...options,
     log: console.log,
@@ -9,7 +11,7 @@ async function execAndLog(command: string, args?: string[], options?: RunOptions
     showResult: true,
   });
 
-  console.log(result.stdout);
+  console.log("\nRESULT: " + result.stdout + "\n");
 
   if (result.exitCode) {
     throw new Error(result.stderr);
