@@ -4,8 +4,7 @@ import path from "path";
 function execAndLog(command: string, options?: ExecOptions) {
   console.log(`\n\nExecuting "${command}"`);
   const result = execSync(command, {
-    ...options,
-    stdio: "inherit"
+    ...options
   });
 
   console.log(`\n\nCommand "${command}" has finished. Result:\n${result && result.toString()}`);
