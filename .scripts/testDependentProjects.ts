@@ -12,12 +12,11 @@ async function execAndLog(executable: string, args?: string[], options?: RunOpti
   const command: Command = {
     executable,
     args,
-    options: fullOptions
   };
 
   console.log(`\n\nRunning ${commandToString(command)}`);
 
-  const result: RunResult = await run(command);
+  const result: RunResult = await run(command, undefined, fullOptions);
 
   console.log("\nRESULT: " + result.stdout + "\n");
 
