@@ -14,6 +14,7 @@ async function execAndLog(command: string, args?: string[], options?: RunOptions
   console.log("\nRESULT: " + result.stdout + "\n");
 
   if (result.exitCode) {
+    console.error(`Error while running "${command}": ${result.error}`);
     throw new Error(result.stderr);
   }
 
@@ -40,7 +41,6 @@ async function execAndLog(command: string, args?: string[], options?: RunOptions
     await execAndLog(`npm`, ["run", "test"], { executionFolderPath: projectDirectory });
     await execAndLog(`rm`, ["-rf", projectDirectory]);
   } catch (error) {
-    console.error(error);
     process.exit(1);
   }
 })();
