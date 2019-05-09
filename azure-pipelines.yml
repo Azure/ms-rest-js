@@ -73,14 +73,14 @@ jobs:
       verbose: false
       customCommand: build
   - task: Npm@1
-    displayName: 'npm run test:ms-rest-azure-js'
+    displayName: 'npm run dep:ms-rest-azure-js'
     inputs:
       command: custom
       verbose: false
-      customCommand: run test:ms-rest-azure-js
+      customCommand: run dep:ms-rest-azure-js
   - task: Npm@1
-    displayName: 'npm run test:autorest.typescript'
+    displayName: 'npm run dep:autorest.typescript'
     inputs:
       command: custom
       verbose: false
-      customCommand: run test:autorest.typescript
+      customCommand: run dep:autorest.typescript

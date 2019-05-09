@@ -2,13 +2,6 @@ import path from "path";
 import { run, RunResult, RunOptions, Command, commandToString } from "@ts-common/azure-js-dev-tools";
 
 async function execAndLog(executable: string, args?: string[], options?: RunOptions): Promise<any> {
-  const fullOptions: RunOptions = {
-    ...options,
-    log: console.log,
-    showCommand: true,
-    showResult: true,
-  };
-
   const command: Command = {
     executable,
     args,
@@ -16,7 +9,12 @@ async function execAndLog(executable: string, args?: string[], options?: RunOpti
 
   console.log(`\n\nRunning ${commandToString(command)}`);
 
-  const result: RunResult = await run(command, undefined, fullOptions);
+  const result: RunResult = await run(command, undefined, {
+    ...options,
+    log: console.log,
+    showCommand: true,
+    showResult: true,
+  });
 
   console.log("\nRESULT: " + result.stdout + "\n");
 
