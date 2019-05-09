@@ -39,5 +39,6 @@ async function execAndLog(command: string, args?: string[], options?: RunOptions
     await execAndLog(`rm`, ["-rf", projectDirectory]);
   } catch (error) {
     console.error(error);
+    process.exit(1);
   }
 })();
