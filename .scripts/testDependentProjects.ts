@@ -2,13 +2,13 @@ import { spawnSync, SpawnSyncOptions } from "child_process";
 import path from "path";
 
 function execAndLog(command: string, args?: ReadonlyArray<string>, options?: SpawnSyncOptions) {
-  console.log(`\n\nExecuting "${command} ${args}"`);
+  console.log(`\n\nExecuting "${command} ${args && args.join(" ")}"`);
   const result = spawnSync(command, args, {
     ...options,
     stdio: "inherit"
   });
 
-  console.log(`\n\nCommand "${command}" has finished. Result:\n${result && JSON.stringify(result)}`);
+  console.log(`\n\nCommand "${command} ${args && args.join(" ")}" has finished. Result:\n${result && JSON.stringify(result)}`);
 }
 
 console.log(`Passed parameters:\n${process.argv}`);
