@@ -43,7 +43,7 @@ async function execAndLog(executable: string, args?: string[], options?: RunOpti
     const additionalCommands: string[] = process.argv.slice(3);
     additionalCommands.forEach(command => execAndLog(command, undefined, { executionFolderPath: projectDirectory }));
 
-    await execAndLog(`npm`, ["run", "test"], { executionFolderPath: projectDirectory });
+    // await execAndLog(`npm`, ["run", "test"], { executionFolderPath: projectDirectory });
     await execAndLog(`rm`, ["-rf", projectDirectory]);
   } catch (error) {
     process.exit(1);
