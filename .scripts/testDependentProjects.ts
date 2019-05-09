@@ -11,7 +11,7 @@ async function execAndLog(executable: string, args?: string[], options?: RunOpti
 
   const result: RunResult = await run(command, undefined, {
     ...options,
-    log: console.log,
+    // log: console.log,
     showCommand: true,
     showResult: true,
   });
