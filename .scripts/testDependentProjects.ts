@@ -41,7 +41,7 @@ async function execAndLog(executable: string, args?: string[], options?: RunOpti
     await execAndLog(`npm`, [ "install", msRestJsDirectory ], { executionFolderPath: projectDirectory });
 
     const additionalCommands: string[] = process.argv.slice(3);
-    additionalCommands.forEach(command => execAndLog(command, undefined, { executionFolderPath: projectDirectory }));
+    additionalCommands.forEach(async (command) => execAndLog(command, undefined, { executionFolderPath: projectDirectory }));
 
     // await execAndLog(`npm`, ["run", "test"], { executionFolderPath: projectDirectory });
     await execAndLog(`rm`, ["-rf", projectDirectory]);
