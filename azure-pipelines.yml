@@ -67,12 +67,6 @@ jobs:
       verbose: false
       customCommand: install
   - task: Npm@1
-    displayName: 'npm build'
-    inputs:
-      command: custom
-      verbose: false
-      customCommand: build
-  - task: Npm@1
     displayName: 'npm run test:ms-rest-azure-js'
     inputs:
       command: custom
