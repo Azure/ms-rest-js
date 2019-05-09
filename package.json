@@ -58,6 +58,7 @@
     "xml2js": "^0.4.19"
   },
   "devDependencies": {
+    "@azure/logger-js": "^1.0.2",
     "@ts-common/azure-js-dev-tools": "^15.2.0",
     "@types/chai": "^4.1.7",
     "@types/express": "^4.16.0",
