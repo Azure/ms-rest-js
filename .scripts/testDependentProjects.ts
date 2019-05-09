@@ -1,13 +1,14 @@
-import { ExecOptions, execSync } from "child_process";
+import { spawnSync, SpawnSyncOptions } from "child_process";
 import path from "path";
 
-function execAndLog(command: string, options?: ExecOptions) {
-  console.log(`\n\nExecuting "${command}"`);
-  const result = execSync(command, {
-    ...options
+function execAndLog(command: string, args?: ReadonlyArray<string>, options?: SpawnSyncOptions) {
+  console.log(`\n\nExecuting "${command} ${args}"`);
+  const result = spawnSync(command, args, {
+    ...options,
+    stdio: "inherit"
   });
 
-  console.log(`\n\nCommand "${command}" has finished. Result:\n${result && result.toString()}`);
+  console.log(`\n\nCommand "${command}" has finished. Result:\n${result && JSON.stringify(result)}`);
 }
 
 console.log(`Passed parameters:\n${process.argv}`);
@@ -17,14 +18,14 @@ console.log(`ms-rest-js directory: ${msRestJsDirectory}`);
 
 const projectName = process.argv[2];
 const projectDirectory = `.tmp/${projectName}`;
-const gitHubUrl = `https://github.com/Azure/${projectName}.git ${projectDirectory}`;
+const gitHubUrl = `https://github.com/Azure/${projectName}.git`;
 
-execAndLog(`git clone ${gitHubUrl} --recursive`);
-execAndLog(`npm install`, { cwd: projectDirectory });
-execAndLog(`npm install ${msRestJsDirectory}`, { cwd: projectDirectory });
+execAndLog("git", [ "clone", gitHubUrl, projectDirectory, "--recursive" ]);
+execAndLog(`npm`, [ "install" ], { cwd: projectDirectory });
+execAndLog(`npm`, [ "install", msRestJsDirectory ], { cwd: projectDirectory });
 
 const additionalCommands: string[] = process.argv.slice(3);
-additionalCommands.forEach(command => execAndLog(command, { cwd: projectDirectory }));
+additionalCommands.forEach(command => execAndLog(command, undefined, { cwd: projectDirectory }));
 
-execAndLog(`npm run test`, { cwd: projectDirectory });
-execAndLog(`rm -rf ${projectDirectory}`);
+execAndLog(`npm`, [ "run", "test"], { cwd: projectDirectory });
+execAndLog(`rm`, [ "-rf", projectDirectory ]);
