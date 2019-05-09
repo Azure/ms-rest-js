@@ -1,20 +1,28 @@
 import path from "path";
-import { run, RunResult, RunOptions } from "@ts-common/azure-js-dev-tools";
+import { run, RunResult, RunOptions, Command, commandToString } from "@ts-common/azure-js-dev-tools";
 
-async function execAndLog(command: string, args?: string[], options?: RunOptions): Promise<any> {
-  console.log("\n");
-
-  const result: RunResult = await run(command, args, {
+async function execAndLog(executable: string, args?: string[], options?: RunOptions): Promise<any> {
+  options = {
     ...options,
     log: console.log,
     showCommand: true,
     showResult: true,
-  });
+  };
+
+  const command: Command = {
+    executable,
+    args,
+    options
+  };
+
+  console.log(`\n\nRunning ${commandToString(command)}`);
+
+  const result: RunResult = await run(command);
 
   console.log("\nRESULT: " + result.stdout + "\n");
 
   if (result.exitCode) {
-    console.error(`Error while running "${command}": ${result.error}`);
+    console.error(`Error while running "${commandToString(command)}": ${result.error}`);
     throw new Error(result.stderr);
   }
 
