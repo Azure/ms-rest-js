@@ -37,12 +37,13 @@ async function execAndLog(executable: string, args?: string[], options?: RunOpti
     const gitHubUrl = `https://github.com/Azure/${projectName}.git`;
 
     await execAndLog(`git`, ["clone", gitHubUrl, projectDirectory, "--recursive"]);
-    await execAndLog(`npm`, [ "install" ], { executionFolderPath: projectDirectory });
     await execAndLog(`npm`, [ "install", msRestJsDirectory ], { executionFolderPath: projectDirectory });
+    await execAndLog(`npm`, [ "install" ], { executionFolderPath: projectDirectory });
 
     const additionalCommands: string[] = process.argv.slice(3);
-    // tslint:disable-next-line: no-return-await
-    additionalCommands.forEach(async (command) => await execAndLog(command, undefined, { executionFolderPath: projectDirectory }));
+    for (const command of additionalCommands) {
+      await execAndLog(command, undefined, { executionFolderPath: projectDirectory });
+    }
 
     // await execAndLog(`rm`, ["-rf", projectDirectory]);
   } catch (error) {
