@@ -33,7 +33,7 @@ async function execAndLog(executable: string, args?: string[], options?: RunOpti
     console.log(`ms-rest-js directory: ${msRestJsDirectory}`);
 
     const projectName = process.argv[2];
-    const projectDirectory = `../.tmp/${projectName}`;
+    const projectDirectory = path.join(msRestJsDirectory, `../.tmp/${projectName}`);
     const gitHubUrl = `https://github.com/Azure/${projectName}.git`;
 
     await execAndLog(`git`, ["clone", gitHubUrl, projectDirectory, "--recursive"]);
