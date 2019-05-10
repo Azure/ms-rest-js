@@ -33,11 +33,11 @@ async function execAndLog(executable: string, args?: string[], options?: RunOpti
     console.log(`ms-rest-js directory: ${msRestJsDirectory}`);
 
     const projectName = process.argv[2];
-    const projectDirectory = `.tmp/${projectName}`;
+    const projectDirectory = `../.tmp/${projectName}`;
     const gitHubUrl = `https://github.com/Azure/${projectName}.git`;
 
     await execAndLog(`git`, ["clone", gitHubUrl, projectDirectory, "--recursive"]);
-    // await execAndLog(`npm`, [ "install", "../.." ], { executionFolderPath: projectDirectory });
+    await execAndLog(`npm`, [ "install", msRestJsDirectory ], { executionFolderPath: projectDirectory });
     await execAndLog(`npm`, [ "install" ], { executionFolderPath: projectDirectory });
 
     const additionalCommands: string[] = process.argv.slice(3);
