@@ -79,26 +79,8 @@ jobs:
       verbose: true
       customCommand: run dep:ms-rest-azure-js
   - task: Npm@1
-    displayName: 'Build ms-rest-azure-js'
-    inputs:
-      command: 'custom'
-      workingDir: '../.tmp/ms-rest-azure-js'
-      customCommand: 'run build'
-  - task: Npm@1
-    displayName: 'Test ms-rest-azure-js'
-    inputs:
-      command: 'custom'
-      workingDir: '../.tmp/ms-rest-azure-js'
-      customCommand: 'test'
-  - task: Npm@1
     displayName: 'npm run dep:autorest.typescript'
     inputs:
       command: custom
       verbose: true
       customCommand: run dep:autorest.typescript
-  - task: Npm@1
-    displayName: 'Test autorest.typescript'
-    inputs:
-      command: 'custom'
-      workingDir: '../.tmp/autorest.typescript'
-      customCommand: 'test'
