@@ -67,11 +67,11 @@ jobs:
       verbose: false
       customCommand: install
   - task: Npm@1
-    displayName: 'npm build'
+    displayName: 'Build ms-rest-js'
     inputs:
       command: custom
       verbose: false
-      customCommand: build
+      customCommand: 'run build'
   - task: Npm@1
     displayName: 'npm run dep:ms-rest-azure-js'
     inputs:
@@ -83,7 +83,7 @@ jobs:
     inputs:
       command: 'custom'
       workingDir: '../.tmp/ms-rest-azure-js'
-      customCommand: 'build'
+      customCommand: 'run build'
   - task: Npm@1
     displayName: 'Test ms-rest-azure-js'
     inputs:
