@@ -38,7 +38,7 @@ async function execAndLog(executable: string, args?: string[], options?: RunOpti
 
     await execAndLog(`git`, ["clone", gitHubUrl, projectDirectory, "--recursive"]);
     await execAndLog(`npm`, [ "install", "@azure/ms-rest-js@latest" ], { executionFolderPath: projectDirectory });
-    await execAndLog(`npm`, [ "link", "../.." ], { executionFolderPath: projectDirectory });
+    await execAndLog(`npm`, [ "install", "../.." ], { executionFolderPath: projectDirectory });
 
     const additionalCommands: string[] = process.argv.slice(3);
     for (const command of additionalCommands) {
