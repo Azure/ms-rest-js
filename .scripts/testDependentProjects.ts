@@ -16,7 +16,7 @@ async function execAndLog(executable: string, args?: string[], options?: RunOpti
     showResult: true,
   });
 
-  console.log("\nRESULT: " + result.stdout + "\n");
+  console.log(`\nRESULT: ${result.exitCode}\n` + result.stdout + "\n");
 
   if (result.exitCode) {
     console.error(`Error while running "${commandToString(command)}": ${result.error}`);
@@ -37,8 +37,8 @@ async function execAndLog(executable: string, args?: string[], options?: RunOpti
     const gitHubUrl = `https://github.com/Azure/${projectName}.git`;
 
     await execAndLog(`git`, ["clone", gitHubUrl, projectDirectory, "--recursive"]);
-    await execAndLog(`npm`, [ "install", msRestJsDirectory ], { executionFolderPath: projectDirectory });
-    await execAndLog(`npm`, [ "install" ], { executionFolderPath: projectDirectory });
+    // await execAndLog(`npm`, [ "install", msRestJsDirectory ], { executionFolderPath: projectDirectory });
+    // await execAndLog(`npm`, [ "install" ], { executionFolderPath: projectDirectory });
 
     const additionalCommands: string[] = process.argv.slice(3);
     for (const command of additionalCommands) {
