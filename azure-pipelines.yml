@@ -82,13 +82,13 @@ jobs:
     displayName: 'Build ms-rest-azure-js'
     inputs:
       command: 'custom'
-      workingDir: '.tmp/ms-rest-azure-js'
+      workingDir: '../.tmp/ms-rest-azure-js'
       customCommand: 'build'
   - task: Npm@1
     displayName: 'Test ms-rest-azure-js'
     inputs:
       command: 'custom'
-      workingDir: '.tmp/ms-rest-azure-js'
+      workingDir: '../.tmp/ms-rest-azure-js'
       customCommand: 'test'
   - task: Npm@1
     displayName: 'npm run dep:autorest.typescript'
@@ -100,5 +100,5 @@ jobs:
     displayName: 'Test autorest.typescript'
     inputs:
       command: 'custom'
-      workingDir: '.tmp/autorest.typescript'
+      workingDir: '../.tmp/autorest.typescript'
       customCommand: 'test'
