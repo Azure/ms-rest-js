@@ -16,7 +16,7 @@ async function execAndLog(executable: string, args?: string[], options?: RunOpti
     showResult: true,
   });
 
-  console.log(`\nRESULT: ${result.exitCode}\n` + result.stdout + "\n");
+  console.log(`\Result of "${commandToString(command)}" [Exit code: ${result.exitCode}]:\n` + result.stdout + "\n");
 
   if (result.exitCode) {
     console.error(`Error while running "${commandToString(command)}": ${result.error}`);
