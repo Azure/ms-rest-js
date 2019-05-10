@@ -44,10 +44,6 @@ async function execAndLog(executable: string, args?: string[], options?: RunOpti
     // tslint:disable-next-line: no-return-await
     additionalCommands.forEach(async (command) => await execAndLog(command, undefined, { executionFolderPath: projectDirectory }));
 
-    setTimeout(async () => {
-      await execAndLog(`npm`, ["run", "test"], { executionFolderPath: projectDirectory });
-    }, 5000);
-
     // await execAndLog(`rm`, ["-rf", projectDirectory]);
   } catch (error) {
     process.exit(1);
