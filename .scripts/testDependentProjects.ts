@@ -36,10 +36,8 @@ async function execAndLog(executable: string, args?: string[], options?: RunOpti
     const projectDirectory = `.tmp/${projectName}`;
     const gitHubUrl = `https://github.com/Azure/${projectName}.git`;
 
-    await execAndLog(`tsc`, ["--version"]);
     await execAndLog(`git`, ["clone", gitHubUrl, projectDirectory, "--recursive"]);
-    await execAndLog(`tsc`, ["--version"], { executionFolderPath: projectDirectory });
-    await execAndLog(`npm`, [ "install", "../.." ], { executionFolderPath: projectDirectory });
+    // await execAndLog(`npm`, [ "install", "../.." ], { executionFolderPath: projectDirectory });
     await execAndLog(`npm`, [ "install" ], { executionFolderPath: projectDirectory });
 
     const additionalCommands: string[] = process.argv.slice(3);
