@@ -37,7 +37,6 @@ async function execAndLog(executable: string, args?: string[], options?: RunOpti
     const gitHubUrl = `https://github.com/Azure/${projectName}.git`;
 
     await execAndLog(`git`, ["clone", gitHubUrl, projectDirectory, "--recursive"]);
-    await execAndLog(`git`, ["checkout", "kamip/test"], { executionFolderPath: projectDirectory });
     await execAndLog(`npm`, [ "install", "../.." ], { executionFolderPath: projectDirectory });
     await execAndLog(`npm`, [ "install" ], { executionFolderPath: projectDirectory });
 
