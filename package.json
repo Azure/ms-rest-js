@@ -144,7 +144,6 @@
     "publish-preview": "mocha --no-colors && shx rm -rf dist/test && node ./.scripts/publish",
     "local": "ts-node ./.scripts/local.ts",
     "latest": "ts-node ./.scripts/latest.ts",
-    "prepack": "npm i && npm run build",
     "check:packagejsonversion": "ts-node ./.scripts/checkPackageJsonVersion.ts",
     "check:foronlycalls": "ts-node ./.scripts/checkForOnlyCalls.ts",
     "check:everything": "ts-node ./.scripts/checkEverything.ts"
