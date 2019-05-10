@@ -84,3 +84,15 @@ jobs:
       command: 'custom'
       workingDir: '.tmp/ms-rest-azure-js'
       customCommand: 'test'
+  - task: Npm@1
+    displayName: 'npm run dep:autorest.typescript'
+    inputs:
+      command: custom
+      verbose: true
+      customCommand: run dep:autorest.typescript
+  - task: Npm@1
+    displayName: 'Test autorest.typescript'
+    inputs:
+      command: 'custom'
+      workingDir: '.tmp/autorest.typescript'
+      customCommand: 'test'
