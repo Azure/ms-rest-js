@@ -31,54 +31,54 @@ export interface HttpMockFacade {
 }
 
 export function getHttpMock(_axiosInstance?: AxiosInstance): HttpMockFacade {
-    return (isNode ? new FetchHttpMock() : new BrowserHttpMock());
+  return (isNode ? new FetchHttpMock() : new BrowserHttpMock());
 }
 
 class FetchHttpMock implements HttpMockFacade {
-    setup(): void {
-         fetchMock.resetHistory();
+  setup(): void {
+    fetchMock.resetHistory();
+  }
+
+  teardown(): void {
+    fetchMock.resetHistory();
+  }
+
+  passThrough(_url?: string | RegExp | undefined): void {
+    fetchMock.reset();
+  }
+
+  timeout(_method: HttpMethods, url: UrlFilter): void {
+    const delay = new Promise((resolve) => {
+      setTimeout(() => resolve({$uri: url, delay: 500}), 2500);
+    });
+
+    fetchMock.mock(url, delay);
+  }
+
+  mockHttpMethod(method: HttpMethods, url: UrlFilter, response: MockResponse) {
+    let mockResponse: fetch.MockResponse | fetch.MockResponseFunction = response;
+    if (typeof response === "function") {
+      const mockFunction: MockResponseFunction = response;
+      mockResponse = ((url: string, opts: any) => {
+        return mockFunction(url, method, opts.body, opts.headers);
+      }) as fetch.MockResponseFunction;
     }
 
-    teardown(): void {
-        fetchMock.resetHistory();
-    }
+    const matcher = (_url: string, opts: fetch.MockRequest) => (url === _url) && (opts.method === method);
+    fetchMock.mock(matcher, mockResponse);
+  }
 
-    passThrough(_url?: string | RegExp | undefined): void {
-        fetchMock.reset();
-    }
+  get(url: UrlFilter, response: MockResponse): void {
+    this.mockHttpMethod("GET", url, response);
+  }
 
-    timeout(_method: HttpMethods, url: UrlFilter): void {
-        const delay = new Promise((resolve) => {
-            setTimeout(() => resolve({$uri: url, delay: 500}), 2500);
-        });
+  post(url: UrlFilter, response: MockResponse): void {
+    this.mockHttpMethod("POST", url, response);
+  }
 
-        fetchMock.mock(url, delay);
-    }
-
-    mockHttpMethod(method: HttpMethods, url: UrlFilter, response: MockResponse) {
-        let mockResponse: fetch.MockResponse | fetch.MockResponseFunction = response;
-        if (typeof response === "function") {
-            const mockFunction: MockResponseFunction = response;
-            mockResponse = ((url: string, opts: any) => {
-                return mockFunction(url, method, opts.body, opts.headers);
-            }) as fetch.MockResponseFunction;
-        }
-
-        const matcher = (_url: string, opts: fetch.MockRequest) => (url === _url) && (opts.method === method);
-        fetchMock.mock(matcher, mockResponse);
-    }
-
-    get(url: UrlFilter, response: MockResponse): void {
-        this.mockHttpMethod("GET", url, response);
-    }
-
-    post(url: UrlFilter, response: MockResponse): void {
-        this.mockHttpMethod("POST", url, response);
-    }
-
-    put(url: UrlFilter, response: MockResponse): void {
-        this.mockHttpMethod("PUT", url, response);
-    }
+  put(url: UrlFilter, response: MockResponse): void {
+    this.mockHttpMethod("PUT", url, response);
+  }
 }
 
 export class NodeHttpMock implements HttpMockFacade {
