@@ -1,8 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-import "isomorphic-fetch";
-import * as tough from "tough-cookie";
+import "cross-fetch/polyfill";
 import AbortController from "abort-controller";
 import FormData from "form-data";
 
@@ -19,9 +18,7 @@ interface FetchError extends Error {
   type?: string;
 }
 
-export class FetchHttpClient implements HttpClient {
-  private readonly cookieJar = new tough.CookieJar();
-
+export abstract class FetchHttpClient implements HttpClient {
   async sendRequest(httpRequest: WebResource): Promise<HttpOperationResponse> {
     if (!httpRequest && typeof httpRequest !== "object") {
       throw new Error("'httpRequest' (WebResource) cannot be null or undefined and must be of type object.");
@@ -106,19 +103,7 @@ export class FetchHttpClient implements HttpClient {
       body = uploadReportStream;
     }
 
-    if (this.cookieJar && !httpRequest.headers.get("Cookie")) {
-      const cookieString = await new Promise<string>((resolve, reject) => {
-        this.cookieJar!.getCookieString(httpRequest.url, (err, cookie) => {
-          if (err) {
-            reject(err);
-          } else {
-            resolve(cookie);
-          }
-        });
-      });
-
-      httpRequest.headers.set("Cookie", cookieString);
-    }
+    await this.prepareRequest(httpRequest);
 
     const requestInit: RequestInit = {
       body: body,
@@ -164,20 +149,7 @@ export class FetchHttpClient implements HttpClient {
         }
       }
 
-      if (this.cookieJar) {
-        const setCookieHeader = operationResponse.headers.get("Set-Cookie");
-        if (setCookieHeader != undefined) {
-          await new Promise((resolve, reject) => {
-            this.cookieJar!.setCookie(setCookieHeader, httpRequest.url, (err) => {
-              if (err) {
-                reject(err);
-              } else {
-                resolve();
-              }
-            });
-          });
-        }
-      }
+      await this.processRequest(operationResponse);
 
       return operationResponse;
     } catch (error) {
@@ -193,6 +165,9 @@ export class FetchHttpClient implements HttpClient {
     } finally {
     }
   }
+
+  abstract async prepareRequest(httpRequest: WebResource): Promise<void>;
+  abstract async processRequest(operationResponse: HttpOperationResponse): Promise<void>;
 }
 
 function isReadableStream(body: any): body is Readable {
