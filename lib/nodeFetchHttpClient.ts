@@ -8,7 +8,7 @@ import { FetchHttpClient } from "./fetchHttpClient";
 import { HttpOperationResponse } from "./httpOperationResponse";
 import { WebResource } from "./webResource";
 
-import { createProxyAgent } from "./proxyAgent";
+import { createProxyAgent, ProxyAgent } from "./proxyAgent";
 
 export class NodeFetchHttpClient extends FetchHttpClient {
   private readonly cookieJar = new tough.CookieJar();
@@ -35,7 +35,7 @@ export class NodeFetchHttpClient extends FetchHttpClient {
     }
 
     if (httpRequest.proxySettings) {
-      const tunnel = createProxyAgent(httpRequest.url, httpRequest.proxySettings!, httpRequest.headers);
+      const tunnel: ProxyAgent = createProxyAgent(httpRequest.url, httpRequest.proxySettings, httpRequest.headers);
       requestInit.agent = tunnel.agent;
     }
 

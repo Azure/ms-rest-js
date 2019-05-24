@@ -9,7 +9,7 @@ import { ProxySettings } from "./serviceClient";
 import { URLBuilder } from "./url";
 import { HttpHeaders } from "./httpHeaders";
 
-declare type ProxyAgent = { isHttps: boolean; agent: http.Agent | https.Agent };
+export type ProxyAgent = { isHttps: boolean; agent: http.Agent | https.Agent };
 export function createProxyAgent(requestUrl: string, proxySettings: ProxySettings, headers?: HttpHeaders): ProxyAgent {
   const tunnelOptions: tunnel.HttpsOverHttpsOptions = {
     proxy: {

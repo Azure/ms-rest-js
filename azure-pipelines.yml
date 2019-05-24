@@ -1,5 +1,7 @@
 trigger:
 - master
+pr:
+- '*'
 
 jobs:
 - job: Check_Everything
