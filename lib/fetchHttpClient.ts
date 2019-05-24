@@ -1,7 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-import "cross-fetch/polyfill";
 import AbortController from "abort-controller";
 import FormData from "form-data";
 
@@ -103,17 +102,18 @@ export abstract class FetchHttpClient implements HttpClient {
       body = uploadReportStream;
     }
 
-    await this.prepareRequest(httpRequest);
+    const platformSpecificRequestInit = await this.prepareRequest(httpRequest);
 
     const requestInit: RequestInit = {
       body: body,
       headers: httpRequest.headers.rawHeaders(),
       method: httpRequest.method,
-      signal: abortController.signal
+      signal: abortController.signal,
+      ...platformSpecificRequestInit
     };
 
     try {
-      const response: Response = await fetch(httpRequest.url, requestInit);
+      const response: Response = await this.fetch(httpRequest.url, requestInit);
 
       const headers = parseHeaders(response.headers);
       const operationResponse: HttpOperationResponse = {
@@ -166,8 +166,9 @@ export abstract class FetchHttpClient implements HttpClient {
     }
   }
 
-  abstract async prepareRequest(httpRequest: WebResource): Promise<void>;
+  abstract async prepareRequest(httpRequest: WebResource): Promise<Partial<RequestInit>>;
   abstract async processRequest(operationResponse: HttpOperationResponse): Promise<void>;
+  abstract async fetch(input: RequestInfo, init?: RequestInit): Promise<Response>;
 }
 
 function isReadableStream(body: any): body is Readable {

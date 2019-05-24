@@ -6,11 +6,15 @@ import { HttpOperationResponse } from "./httpOperationResponse";
 import { WebResource } from "./webResource";
 
 export class BrowserFetchHttpClient extends FetchHttpClient {
-  prepareRequest(_httpRequest: WebResource): Promise<void> {
-    return Promise.resolve();
+  prepareRequest(_httpRequest: WebResource): Promise<Partial<RequestInit>> {
+    return Promise.resolve({});
   }
 
   processRequest(_operationResponse: HttpOperationResponse): Promise<void> {
     return Promise.resolve();
+  }
+
+  fetch(input: RequestInfo, init?: RequestInit): Promise<Response> {
+    return fetch(input, init);
   }
 }
