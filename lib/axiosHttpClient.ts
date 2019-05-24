@@ -10,11 +10,7 @@ import { HttpHeaders, RawHttpHeaders } from "./httpHeaders";
 import { HttpOperationResponse } from "./httpOperationResponse";
 import { RestError } from "./restError";
 import { WebResource, HttpRequestBody } from "./webResource";
-import * as tunnel from "tunnel";
-import { ProxySettings } from "./serviceClient";
-import * as http from "http";
-import * as https from "https";
-import { URLBuilder } from "./url";
+import { createProxyAgent } from "./proxyAgent";
 
 /**
  * A HttpClient implementation that uses axios to send HTTP requests.
@@ -215,43 +211,4 @@ export class AxiosHttpClient implements HttpClient {
 
 function isReadableStream(body: any): body is Readable {
   return typeof body.pipe === "function";
-}
-
-declare type ProxyAgent = { isHttps: boolean; agent: http.Agent | https.Agent };
-export function createProxyAgent(requestUrl: string, proxySettings: ProxySettings, headers?: HttpHeaders): ProxyAgent {
-  const tunnelOptions: tunnel.HttpsOverHttpsOptions = {
-    proxy: {
-      host: URLBuilder.parse(proxySettings.host).getHost(),
-      port: proxySettings.port,
-      headers: (headers && headers.rawHeaders()) || {}
-    }
-  };
-
-  if ((proxySettings.username && proxySettings.password)) {
-    tunnelOptions.proxy!.proxyAuth = `${proxySettings.username}:${proxySettings.password}`;
-  }
-
-  const requestScheme = URLBuilder.parse(requestUrl).getScheme() || "";
-  const isRequestHttps = requestScheme.toLowerCase() === "https";
-  const proxyScheme = URLBuilder.parse(proxySettings.host).getScheme() || "";
-  const isProxyHttps = proxyScheme.toLowerCase() === "https";
-
-  const proxyAgent = {
-    isHttps: isRequestHttps,
-    agent: createTunnel(isRequestHttps, isProxyHttps, tunnelOptions)
-  };
-
-  return proxyAgent;
-}
-
-export function createTunnel(isRequestHttps: boolean, isProxyHttps: boolean, tunnelOptions: tunnel.HttpsOverHttpsOptions): http.Agent | https.Agent {
-  if (isRequestHttps && isProxyHttps) {
-    return tunnel.httpsOverHttps(tunnelOptions);
-  } else if (isRequestHttps && !isProxyHttps) {
-    return tunnel.httpsOverHttp(tunnelOptions);
-  } else if (!isRequestHttps && isProxyHttps) {
-    return tunnel.httpOverHttps(tunnelOptions);
-  } else {
-    return tunnel.httpOverHttp(tunnelOptions);
-  }
 }
