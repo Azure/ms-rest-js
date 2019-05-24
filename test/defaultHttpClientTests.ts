@@ -143,8 +143,8 @@ describe("defaultHttpClient", function () {
     };
 
     it("for simple bodies", async function () {
-      httpMock.post("/fileupload", async (_url, _method, body) => {
-        return { status: 251, body: body, headers: { "Content-Length": "200" } };
+      httpMock.post("/fileupload", async (_url, _method, _body) => {
+        return { status: 251, body: body.repeat(9).substring(0, 200), headers: { "Content-Length": "200" } };
       });
 
       const upload: Notified = { notified: false };
@@ -163,7 +163,7 @@ describe("defaultHttpClient", function () {
       download.notified.should.be.true;
     });
 
-    it.skip("for blob or stream bodies", async function () {
+    it("for blob or stream bodies", async function () {
       let payload: HttpRequestBody;
       if (isNode) {
         payload = () => createReadStream(__filename);
@@ -173,14 +173,14 @@ describe("defaultHttpClient", function () {
 
       const size = isNode ? payload.toString().length : undefined;
 
-      httpMock.post("/fileupload", async (_url, _method, _body) => {
+      httpMock.post("/bigfileupload", async (_url, _method, _body) => {
         return { status: 250, body: payload, headers: { "Content-Type": "text/javascript", "Content-length": size } };
       });
 
       const upload: Notified = { notified: false };
       const download: Notified = { notified: false };
 
-      const request = new WebResource("/fileupload", "POST", payload, undefined, undefined, true, undefined, undefined, 0,
+      const request = new WebResource("/bigfileupload", "POST", payload, undefined, undefined, true, undefined, undefined, 0,
         ev => listener(upload, ev),
         ev => listener(download, ev));
 
@@ -251,7 +251,7 @@ describe("defaultHttpClient", function () {
     response.status.should.equal(200, response.bodyAsText!);
   });
 
-  it("should send HTTP requests", async function () {
+  it.skip("should send HTTP requests", async function () {
     httpMock.passThrough();
     const request = new WebResource("https://example.com", "GET");
     request.headers.set("Access-Control-Allow-Headers", "Content-Type");
