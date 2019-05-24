@@ -5,7 +5,7 @@
     "email": "azsdkteam@microsoft.com",
     "url": "https://github.com/Azure/ms-rest-js"
   },
-  "version": "1.9.0-alpha.2",
+  "version": "1.9.0-alpha.4",
   "description": "Isomorphic client Runtime for Typescript/node.js/browser javascript client libraries generated using AutoRest",
   "tags": [
     "isomorphic",
@@ -48,11 +48,12 @@
   },
   "license": "MIT",
   "dependencies": {
+    "@types/node-fetch": "^2.3.4",
     "@types/tunnel": "0.0.0",
     "abort-controller": "^3.0.0",
     "axios": "^0.18.0",
-    "cross-fetch": "^3.0.2",
     "form-data": "^2.3.2",
+    "node-fetch": "^2.6.0",
     "tough-cookie": "^2.4.3",
     "tslib": "^1.9.2",
     "tunnel": "0.0.6",
