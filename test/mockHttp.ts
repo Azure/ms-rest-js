@@ -6,6 +6,7 @@ import MockAdapter from "axios-mock-adapter";
 import { isNode, HttpMethods } from "../lib/msRest";
 import { AxiosRequestConfig, AxiosInstance } from "axios";
 import fetchMock, * as fetch from "fetch-mock";
+import { Readable } from "stream";
 
 export type UrlFilter = string | RegExp;
 
@@ -30,8 +31,8 @@ export interface HttpMockFacade {
   put(url: UrlFilter, response: MockResponse): void;
 }
 
-export function getHttpMock(_axiosInstance?: AxiosInstance): HttpMockFacade {
-  return (isNode ? new FetchHttpMock() : new FetchHttpMock());
+export function getHttpMock(): HttpMockFacade {
+  return (isNode ? new FetchHttpMock() : new BrowserHttpMock());
 }
 
 class FetchHttpMock implements HttpMockFacade {
@@ -45,6 +46,7 @@ class FetchHttpMock implements HttpMockFacade {
 
   passThrough(_url?: string | RegExp | undefined): void {
     fetchMock.reset();
+    (global as any).fetch = require("node-fetch");
   }
 
   timeout(_method: HttpMethods, url: UrlFilter): void {
@@ -55,11 +57,31 @@ class FetchHttpMock implements HttpMockFacade {
     fetchMock.mock(url, delay);
   }
 
+  convertStreamToBuffer(stream: Readable): Promise<any> {
+    return new Promise((resolve) => {
+      const buffer: any = [];
+
+      stream.on("data", (chunk: any) => {
+        console.log(chunk);
+        buffer.push(chunk);
+      });
+
+      stream.on("end", () => {
+        return resolve(buffer);
+      });
+    });
+  }
+
   mockHttpMethod(method: HttpMethods, url: UrlFilter, response: MockResponse) {
     let mockResponse: fetch.MockResponse | fetch.MockResponseFunction = response;
+
     if (typeof response === "function") {
       const mockFunction: MockResponseFunction = response;
-      mockResponse = ((url: string, opts: any) => {
+      mockResponse = (async (url: string, opts: any) => {
+        if (opts.body && typeof opts.body.pipe === "function") {
+          opts.body = await this.convertStreamToBuffer(opts.body);
+        }
+
         return mockFunction(url, method, opts.body, opts.headers);
       }) as fetch.MockResponseFunction;
     }

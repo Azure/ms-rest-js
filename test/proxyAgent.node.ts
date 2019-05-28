@@ -7,7 +7,7 @@ import tunnel from "tunnel";
 import https from "https";
 
 import { HttpHeaders } from "../lib/msRest";
-import { createTunnel, createProxyAgent } from "../lib/axiosHttpClient";
+import { createProxyAgent, createTunnel } from "../lib/proxyAgent";
 
 describe("AxiosHttpClient", () => {
   describe("createProxyAgent", () => {
