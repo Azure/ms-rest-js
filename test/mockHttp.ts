@@ -31,7 +31,7 @@ export interface HttpMockFacade {
   put(url: UrlFilter, response: MockResponse): void;
 }
 
-export function getHttpMock(_axiosInstance?: AxiosInstance): HttpMockFacade {
+export function getHttpMock(): HttpMockFacade {
   return (isNode ? new FetchHttpMock() : new BrowserHttpMock());
 }
 
@@ -46,6 +46,7 @@ class FetchHttpMock implements HttpMockFacade {
 
   passThrough(_url?: string | RegExp | undefined): void {
     fetchMock.reset();
+    (global as any).fetch = require("node-fetch");
   }
 
   timeout(_method: HttpMethods, url: UrlFilter): void {

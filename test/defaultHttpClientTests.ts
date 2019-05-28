@@ -4,7 +4,6 @@
 import { assert, AssertionError } from "chai";
 import "chai/register-should";
 import { createReadStream } from "fs";
-import axios from "axios";
 
 import { DefaultHttpClient } from "../lib/defaultHttpClient";
 import { RestError } from "../lib/restError";
@@ -33,7 +32,7 @@ describe("defaultHttpClient", function () {
 
   let httpMock: HttpMockFacade;
   beforeEach(() => {
-    httpMock = getHttpMock(axios);
+    httpMock = getHttpMock();
     httpMock.setup();
   });
   afterEach(() => httpMock.teardown());
@@ -251,7 +250,7 @@ describe("defaultHttpClient", function () {
     response.status.should.equal(200, response.bodyAsText!);
   });
 
-  it.skip("should send HTTP requests", async function () {
+  it("should send HTTP requests", async function () {
     httpMock.passThrough();
     const request = new WebResource("https://example.com", "GET");
     request.headers.set("Access-Control-Allow-Headers", "Content-Type");
