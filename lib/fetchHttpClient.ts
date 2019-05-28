@@ -102,7 +102,7 @@ export abstract class FetchHttpClient implements HttpClient {
       body = uploadReportStream;
     }
 
-    const platformSpecificRequestInit = await this.prepareRequest(httpRequest);
+    const platformSpecificRequestInit: Partial<RequestInit> = await this.prepareRequest(httpRequest);
 
     const requestInit: RequestInit = {
       body: body,
