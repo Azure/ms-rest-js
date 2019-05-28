@@ -32,7 +32,7 @@ export interface HttpMockFacade {
 }
 
 export function getHttpMock(_axiosInstance?: AxiosInstance): HttpMockFacade {
-  return (isNode ? new FetchHttpMock() : new FetchHttpMock());
+  return (isNode ? new FetchHttpMock() : new BrowserHttpMock());
 }
 
 class FetchHttpMock implements HttpMockFacade {
