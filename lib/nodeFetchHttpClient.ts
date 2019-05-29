@@ -9,11 +9,16 @@ import { HttpOperationResponse } from "./httpOperationResponse";
 import { WebResource } from "./webResource";
 import { createProxyAgent, ProxyAgent } from "./proxyAgent";
 
+interface GlobalWithFetch extends NodeJS.Global {
+  fetch(input: RequestInfo, init?: RequestInit): Promise<Response>;
+}
+
 export class NodeFetchHttpClient extends FetchHttpClient {
   private readonly cookieJar = new tough.CookieJar();
 
   async fetch(input: RequestInfo, init?: RequestInit): Promise<Response> {
-    return (global as any).fetch(input as any, init as any) as any;
+    const fetch = (global as GlobalWithFetch).fetch || require("node-fetch");
+    return fetch(input, init);
   }
 
   async prepareRequest(httpRequest: WebResource): Promise<Partial<RequestInit>> {
