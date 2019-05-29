@@ -25,7 +25,6 @@ const nodeConfig = {
   external: [
     "axios",
     "form-data",
-    "cross-fetch",
     "node-fetch",
     "os",
     "stream",
