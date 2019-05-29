@@ -7,14 +7,13 @@ import "node-fetch";
 import { FetchHttpClient } from "./fetchHttpClient";
 import { HttpOperationResponse } from "./httpOperationResponse";
 import { WebResource } from "./webResource";
-
 import { createProxyAgent, ProxyAgent } from "./proxyAgent";
 
 export class NodeFetchHttpClient extends FetchHttpClient {
   private readonly cookieJar = new tough.CookieJar();
 
   async fetch(input: RequestInfo, init?: RequestInit): Promise<Response> {
-    return fetch(input as any, init as any) as any;
+    return (global as any).fetch(input as any, init as any) as any;
   }
 
   async prepareRequest(httpRequest: WebResource): Promise<Partial<RequestInit>> {
