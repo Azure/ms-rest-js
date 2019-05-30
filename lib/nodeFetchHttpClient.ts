@@ -10,14 +10,20 @@ import { WebResource } from "./webResource";
 import { createProxyAgent, ProxyAgent } from "./proxyAgent";
 
 interface GlobalWithFetch extends NodeJS.Global {
-  fetch(input: RequestInfo, init?: RequestInit): Promise<Response>;
+  fetch: (input: RequestInfo, init?: RequestInit) => Promise<Response>;
 }
+
+const globalWithFetch = global as GlobalWithFetch;
+if (typeof globalWithFetch.fetch !== "function") {
+  const fetch = require("node-fetch");
+  globalWithFetch.fetch = fetch;
+}
+
 
 export class NodeFetchHttpClient extends FetchHttpClient {
   private readonly cookieJar = new tough.CookieJar();
 
   async fetch(input: RequestInfo, init?: RequestInit): Promise<Response> {
-    const fetch = (global as GlobalWithFetch).fetch || require("node-fetch");
     return fetch(input, init);
   }
 

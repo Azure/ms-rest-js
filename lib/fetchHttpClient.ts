@@ -120,7 +120,7 @@ export abstract class FetchHttpClient implements HttpClient {
         headers: headers,
         request: httpRequest,
         status: response.status,
-        readableStreamBody: httpRequest.streamResponseBody ? (response.body as any) as NodeJS.ReadableStream : undefined,
+        readableStreamBody: httpRequest.streamResponseBody ? (response.body as unknown) as NodeJS.ReadableStream : undefined,
         bodyAsText: !httpRequest.streamResponseBody ? await response.text() : undefined,
       };
 
