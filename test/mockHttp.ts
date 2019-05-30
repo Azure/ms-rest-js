@@ -62,7 +62,6 @@ class FetchHttpMock implements HttpMockFacade {
       const buffer: any = [];
 
       stream.on("data", (chunk: any) => {
-        console.log(chunk);
         buffer.push(chunk);
       });
 

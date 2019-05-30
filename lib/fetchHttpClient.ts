@@ -119,14 +119,13 @@ export abstract class FetchHttpClient implements HttpClient {
       const operationResponse: HttpOperationResponse = {
         headers: headers,
         request: httpRequest,
-        status: response.status
+        status: response.status,
+        readableStreamBody: httpRequest.streamResponseBody ? (response.body as any) as NodeJS.ReadableStream : undefined,
+        bodyAsText: !httpRequest.streamResponseBody ? await response.text() : undefined,
       };
 
       const onDownloadProgress = httpRequest.onDownloadProgress;
-      if (!onDownloadProgress) {
-        const bodyAsText = response.body ? await response.text() : undefined;
-        operationResponse.bodyAsText = bodyAsText;
-      } else {
+      if (onDownloadProgress)  {
         const responseBody: ReadableStream<Uint8Array> | undefined = response.body || undefined;
 
         if (isReadableStream(responseBody)) {
@@ -143,7 +142,7 @@ export abstract class FetchHttpClient implements HttpClient {
         } else {
           const length = parseInt(headers.get("Content-Length")!) || undefined;
           if (length) {
-                    // Calling callback for non-stream response for consistency with browser
+            // Calling callback for non-stream response for consistency with browser
             onDownloadProgress({ loadedBytes: length });
           }
         }
@@ -154,11 +153,10 @@ export abstract class FetchHttpClient implements HttpClient {
       return operationResponse;
     } catch (error) {
       const fetchError: FetchError = error;
-      if (fetchError.code = "ENOTFOUND") {
-        throw new RestError(
-                    fetchError.message,
-                    RestError.REQUEST_SEND_ERROR
-                );
+      if (fetchError.code === "ENOTFOUND") {
+        throw new RestError(fetchError.message, RestError.REQUEST_SEND_ERROR, undefined, httpRequest);
+      } else if (fetchError.type === "aborted") {
+        throw new RestError("The request was aborted", RestError.REQUEST_ABORTED_ERROR, undefined, httpRequest);
       }
 
       throw fetchError;
@@ -172,7 +170,7 @@ export abstract class FetchHttpClient implements HttpClient {
 }
 
 function isReadableStream(body: any): body is Readable {
-  return typeof body.pipe === "function";
+  return body && typeof body.pipe === "function";
 }
 
 export function parseHeaders(headers: Headers): HttpHeaders {
