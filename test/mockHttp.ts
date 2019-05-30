@@ -46,7 +46,6 @@ class FetchHttpMock implements HttpMockFacade {
 
   passThrough(_url?: string | RegExp | undefined): void {
     fetchMock.reset();
-    (global as any).fetch = require("node-fetch");
   }
 
   timeout(_method: HttpMethods, url: UrlFilter): void {
