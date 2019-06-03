@@ -20,7 +20,12 @@ jobs:
     displayName: 'npm install'
     inputs:
       verbose: false
-  - script: 'npm test'
+  - task: Npm@1
+    displayName: 'npm test'
+    inputs:
+      command: custom
+      verbose: false
+      customCommand: test
   - task: PublishTestResults@2
     inputs:
       testResultsFiles: '$(System.DefaultWorkingDirectory)/test-results.xml'
