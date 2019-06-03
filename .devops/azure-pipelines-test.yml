@@ -5,7 +5,7 @@ jobs:
 - job: 'testOn${{parameters.nodeVersion}}'
   pool:
     vmImage: 'Ubuntu 16.04'
-  dependsOn: Pack
+  dependsOn: Build
   condition: succeeded()
   steps:
   - script: 'sudo apt-get update'
