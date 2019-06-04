@@ -15,12 +15,12 @@ jobs:
       command: custom
       verbose: false
       customCommand: 'run build'
-  - task: Npm@1
-    displayName: 'npm run dep:ms-rest-azure-js'
-    inputs:
-      command: custom
-      verbose: true
-      customCommand: run dep:ms-rest-azure-js
+  # - task: Npm@1
+  #   displayName: 'npm run dep:ms-rest-azure-js'
+  #   inputs:
+  #     command: custom
+  #     verbose: true
+  #     customCommand: run dep:ms-rest-azure-js
   - task: Npm@1
     displayName: 'npm run dep:autorest.typescript'
     inputs:
