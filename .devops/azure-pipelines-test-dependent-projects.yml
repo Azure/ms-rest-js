@@ -22,8 +22,8 @@ jobs:
       verbose: true
       customCommand: run dep:ms-rest-azure-js
   - task: Npm@1
-    displayName: 'npm run dep:autorest.typescript'
+    displayName: 'npm run dep:autorest-typescript'
     inputs:
       command: custom
       verbose: true
-      customCommand: run dep:autorest.typescript
+      customCommand: run dep:autorest-typescript
