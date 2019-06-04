@@ -3,6 +3,8 @@ jobs:
   pool:
     vmImage: 'Ubuntu 16.04'
   steps:
+  - script: 'mkdir tmp'
+    workingDirectory: ".."
   - script: 'git clone https://github.com/Azure/ms-rest-azure-js.git ms-rest-azure-js'
     workingDirectory: '../tmp'
     displayName: "clone ms-rest-azure-js"
