@@ -1,5 +1,16 @@
 jobs:
-- job: Test_dependent_projects
+- job: clone_dependent_projects
+  pool:
+    vmImage: 'Ubuntu 16.04'
+  steps:
+  - script: 'git clone https://github.com/Azure/ms-rest-azure-js.git ms-rest-azure-js'
+    workingDirectory: '../tmp'
+    displayName: "clone ms-rest-azure-js"
+  - script: 'npm install'
+    workingDirectory: '../tmp/ms-rest-azure-js'
+    displayName: "npm install ms-rest-azure-js"
+- job: test_dependent_projects
+  dependsOn: clone_dependent_projects
   pool:
     vmImage: 'Ubuntu 16.04'
   steps:
@@ -15,15 +26,9 @@ jobs:
       command: custom
       verbose: false
       customCommand: 'run build'
-  - task: Npm@1
-    displayName: 'npm run dep:ms-rest-azure-js'
-    inputs:
-      command: custom
-      verbose: true
-      customCommand: run dep:ms-rest-azure-js
-  - task: Npm@1
-    displayName: 'npm run dep:autorest-typescript'
-    inputs:
-      command: custom
-      verbose: true
-      customCommand: run dep:autorest-typescript
+  - script: 'npm install $(Agent.BuildDirectory)'
+    workingDirectory: '../tmp/ms-rest-azure-js'
+    displayName: "npm install ms-rest-js"
+  - script: 'npm run test'
+    workingDirectory: '../tmp/ms-rest-azure-js'
+    displayName: "npm run test @ ms-rest-azure-js"
