@@ -11,11 +11,6 @@ jobs:
   - script: 'npm install'
     workingDirectory: '../tmp/ms-rest-azure-js'
     displayName: "npm install ms-rest-azure-js"
-- job: test_dependent_projects
-  dependsOn: clone_dependent_projects
-  pool:
-    vmImage: 'Ubuntu 16.04'
-  steps:
   - task: Npm@1
     displayName: 'npm install'
     inputs:
