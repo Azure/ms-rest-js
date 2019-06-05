@@ -14,8 +14,8 @@ jobs:
   - task: CopyFiles@2
     displayName: 'Copy Files to: $(Build.StagingDirectory)'
     inputs:
-      Contents: '*.tgz'
-      TargetFolder: $(Build.ArtifactStagingDirectory)
+      Contents: '*.*'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)/ms-rest-js'
 
 - job: clone_dependent_projects
   dependsOn: prepare_ms_rest_js
@@ -30,9 +30,9 @@ jobs:
   - script: 'npm install --verbose'
     workingDirectory: '../tmp/ms-rest-azure-js'
     displayName: "npm install"
-  - script: 'npm install $(Build.ArtifactStagingDirectory)'
+  - script: 'npm install $(Build.ArtifactStagingDirectory)/ms-rest-js'
     workingDirectory: '../tmp/ms-rest-azure-js'
-    displayName: "npm install $(Build.ArtifactStagingDirectory)"
+    displayName: "npm install $(Build.ArtifactStagingDirectory)/ms-rest-js"
   - script: 'cat package.json'
     workingDirectory: '../tmp/ms-rest-azure-js'
     displayName: "cat package.json"
