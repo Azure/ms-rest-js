@@ -9,6 +9,8 @@ jobs:
     displayName: 'npm run build'
   - script: 'npm run test'
     displayName: 'npm run test'
+  - script: 'ls -a'
+    displayName: "ls -a"
 
 - job: clone_dependent_projects
   dependsOn: prepare_ms_rest_js
