@@ -9,19 +9,24 @@ jobs:
     displayName: 'npm run build'
   - script: 'npm run test'
     displayName: 'npm run test'
+  - script: 'mv azure-ms-rest-js-*.tgz azure-ms-rest-js.tgz'
+    displayName: 'mv azure-ms-rest-js-*.tgz azure-ms-rest-js.tgz'
   - script: 'ls -a'
     displayName: "ls -a"
-  - task: CopyFiles@2
-    displayName: 'Copy Files to: $(Build.StagingDirectory)'
+  - task: PublishPipelineArtifact@0
     inputs:
-      Contents: '**/*.*'
-      TargetFolder: '$(Build.ArtifactStagingDirectory)/ms-rest-js'
+      artifactName: 'ms-rest-js'
+      targetPath: 'azure-ms-rest-js.tgz'
 
 - job: clone_dependent_projects
   dependsOn: prepare_ms_rest_js
   pool:
     vmImage: 'Ubuntu 16.04'
   steps:
+  - task: DownloadPipelineArtifact@0
+    inputs:
+      artifactName: 'ms-rest-js'
+      targetPath: $(System.DefaultWorkingDirectory)
   - script: 'mkdir ../tmp'
     displayName: 'mkdir ../tmp'
   - script: 'git clone https://github.com/Azure/ms-rest-azure-js.git ms-rest-azure-js --depth 1'
@@ -30,9 +35,9 @@ jobs:
   - script: 'npm install --verbose'
     workingDirectory: '../tmp/ms-rest-azure-js'
     displayName: "npm install"
-  - script: 'npm install $(Build.ArtifactStagingDirectory)/ms-rest-js'
+  - script: 'npm install azure-ms-rest-js.tgz'
     workingDirectory: '../tmp/ms-rest-azure-js'
-    displayName: "npm install $(Build.ArtifactStagingDirectory)/ms-rest-js"
+    displayName: "npm install azure-ms-rest-js.tgz"
   - script: 'cat package.json'
     workingDirectory: '../tmp/ms-rest-azure-js'
     displayName: "cat package.json"
