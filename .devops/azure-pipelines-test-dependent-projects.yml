@@ -18,9 +18,9 @@ jobs:
     displayName: "[ms-rest-js] npm install"
   - script: 'npm build'
     displayName: "[ms-rest-js] npm build"
-  - script: 'npm install $(Agent.BuildDirectory)'
+  - script: 'npm install $(Build.SourcesDirectory)'
     workingDirectory: '../tmp/ms-rest-azure-js'
-    displayName: "npm install $(Agent.BuildDirectory)"
+    displayName: "npm install $(Build.SourcesDirectory)"
   - script: 'npm run test'
     workingDirectory: '../tmp/ms-rest-azure-js'
     displayName: "npm run test @ ms-rest-azure-js"
