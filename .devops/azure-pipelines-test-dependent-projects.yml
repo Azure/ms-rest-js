@@ -11,7 +11,17 @@ jobs:
     displayName: 'npm run test'
   - script: 'ls -a'
     displayName: "ls -a"
+  - task: CopyFiles@2
+    displayName: 'Copy Files to: $(Build.StagingDirectory)'
+    inputs:
+      Contents: '*.tgz'
+      TargetFolder: $(Build.ArtifactStagingDirectory)
 
+- job: clone_dependent_projects
+  dependsOn: prepare_ms_rest_js
+  pool:
+    vmImage: 'Ubuntu 16.04'
+  steps:
   - script: 'mkdir ../tmp'
     displayName: 'mkdir ../tmp'
   - script: 'git clone https://github.com/Azure/ms-rest-azure-js.git ms-rest-azure-js --depth 1'
@@ -20,9 +30,9 @@ jobs:
   - script: 'npm install --verbose'
     workingDirectory: '../tmp/ms-rest-azure-js'
     displayName: "npm install"
-  - script: 'npm install $(Build.SourcesDirectory)'
+  - script: 'npm install $(Build.ArtifactStagingDirectory)'
     workingDirectory: '../tmp/ms-rest-azure-js'
-    displayName: "npm install $(Build.SourcesDirectory)"
+    displayName: "npm install $(Build.ArtifactStagingDirectory)"
   - script: 'cat package.json'
     workingDirectory: '../tmp/ms-rest-azure-js'
     displayName: "cat package.json"
