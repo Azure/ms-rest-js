@@ -4,24 +4,28 @@ jobs:
     vmImage: 'Ubuntu 16.04'
   steps:
   - script: 'npm install'
+    displayName: 'npm install'
   - script: 'npm run build'
+    displayName: 'npm run build'
+  - script: 'npm run test'
+    displayName: 'npm run test'
 
 - job: clone_dependent_projects
   dependsOn: prepare_ms_rest_js
   pool:
     vmImage: 'Ubuntu 16.04'
   steps:
-  - script: 'mkdir tmp'
-    workingDirectory: ".."
-  - script: 'git clone https://github.com/Azure/ms-rest-azure-js.git ms-rest-azure-js'
+  - script: 'mkdir ../tmp'
+    displayName: 'mkdir ../tmp'
+  - script: 'git clone https://github.com/Azure/ms-rest-azure-js.git ms-rest-azure-js --depth 1'
     workingDirectory: '../tmp'
     displayName: "clone ms-rest-azure-js"
-  - script: 'pwd'
+  - script: 'ls'
     workingDirectory: '../tmp'
-    displayName: "pwd ms-rest-azure-js"
-  - script: 'npm install'
+    displayName: "ls ms-rest-azure-js"
+  - script: 'npm install --verbose'
     workingDirectory: '../tmp/ms-rest-azure-js'
-    displayName: "[ms-rest-azure-js] npm install"
+    displayName: "npm install"
   - script: 'npm install $(Build.SourcesDirectory)'
     workingDirectory: '../tmp/ms-rest-azure-js'
     displayName: "npm install $(Build.SourcesDirectory)"
