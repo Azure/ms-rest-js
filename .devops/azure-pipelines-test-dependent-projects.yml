@@ -5,8 +5,12 @@ jobs:
   steps:
   - script: 'mkdir tmp'
     workingDirectory: ".."
-  - script: 'git clone https://github.com/Azure/ms-rest-azure-js.git ../tmp/ms-rest-azure-js'
+  - script: 'git clone https://github.com/Azure/ms-rest-azure-js.git ms-rest-azure-js'
+    workingDirectory: '../tmp'
     displayName: "clone ms-rest-azure-js"
+  - script: 'pwd'
+    workingDirectory: '../tmp'
+    displayName: "pwd ms-rest-azure-js"
   - script: 'npm install'
     workingDirectory: '../tmp/ms-rest-azure-js'
     displayName: "[ms-rest-azure-js] npm install"
