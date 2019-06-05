@@ -12,11 +12,6 @@ jobs:
   - script: 'ls -a'
     displayName: "ls -a"
 
-- job: clone_dependent_projects
-  dependsOn: prepare_ms_rest_js
-  pool:
-    vmImage: 'Ubuntu 16.04'
-  steps:
   - script: 'mkdir ../tmp'
     displayName: 'mkdir ../tmp'
   - script: 'git clone https://github.com/Azure/ms-rest-azure-js.git ms-rest-azure-js --depth 1'
