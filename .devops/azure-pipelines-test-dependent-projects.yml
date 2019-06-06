@@ -1,46 +1,45 @@
+variables:
+  artifactName: ms-rest-js
+  msRestJsPackageName: azure-ms-rest-js.tgz
+  tempDirectory: $(Pipeline.Workspace)/.tmp
+  vmImage: 'Ubuntu 16.04'
+
 jobs:
 - job: prepare_ms_rest_js
   pool:
-    vmImage: 'Ubuntu 16.04'
+    vmImage: $(vmImage)
   steps:
   - script: 'npm pack'
     displayName: 'npm pack'
-  - script: 'mv azure-ms-rest-js-*.tgz azure-ms-rest-js.tgz'
-    displayName: 'mv azure-ms-rest-js-*.tgz azure-ms-rest-js.tgz'
-  - script: 'ls -a'
-    displayName: "ls -a"
+  - script: 'mv azure-ms-rest-js-*.tgz $(ms_rest_js_tgz)'
+    displayName: 'mv azure-ms-rest-js-*.tgz $(ms_rest_js_tgz)'
   - task: PublishPipelineArtifact@0
     inputs:
-      artifactName: 'ms-rest-js'
-      targetPath: 'azure-ms-rest-js.tgz'
+      artifactName: $(artifactName)
+      targetPath: $(msRestJsPackageName)
 
 - job: clone_dependent_projects
   dependsOn: prepare_ms_rest_js
   pool:
-    vmImage: 'Ubuntu 16.04'
+    vmImage: $(vmImage)
+  variables:
+    repoDir: '$(tempDirectory)/ms-rest-azure-js'
   steps:
   - task: DownloadPipelineArtifact@0
     inputs:
-      artifactName: 'ms-rest-js'
+      artifactName: $(artifactName)
       targetPath: $(System.DefaultWorkingDirectory)
-  - script: 'mkdir ../tmp'
-    displayName: 'mkdir ../tmp'
+  - script: 'mkdir $(tempDirectory)'
+    displayName: 'mkdir $(tempDirectory)'
   - script: 'git clone https://github.com/Azure/ms-rest-azure-js.git ms-rest-azure-js --depth 1'
-    workingDirectory: '../tmp'
+    workingDirectory: $(tempDirectory)
     displayName: "clone ms-rest-azure-js"
   - script: 'npm install --verbose'
-    workingDirectory: '../tmp/ms-rest-azure-js'
+    workingDirectory: $(repoDir)
     displayName: "npm install"
-  - script: 'ls -a'
-    displayName: "ls -a"
-  - script: 'npm install $(Build.SourcesDirectory)/azure-ms-rest-js.tgz'
-    workingDirectory: '../tmp/ms-rest-azure-js'
-    displayName: "npm install azure-ms-rest-js.tgz"
-  - script: 'cat package.json'
-    workingDirectory: '../tmp/ms-rest-azure-js'
-    displayName: "cat package.json"
-  - script: 'ls -a'
-    displayName: "ls -a"
+  - script: 'npm install $(Build.SourcesDirectory)/$(msRestJsPackageName)'
+    workingDirectory: $(repoDir)
+    displayName: "npm install @azure/ms-rest-js"
   - script: 'npm run test'
-    workingDirectory: '../tmp/ms-rest-azure-js'
-    displayName: "npm run test @ ms-rest-azure-js"
+    workingDirectory: $(repoDir)
+    displayName: "npm run test"
