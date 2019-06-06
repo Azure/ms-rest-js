@@ -3,12 +3,8 @@ jobs:
   pool:
     vmImage: 'Ubuntu 16.04'
   steps:
-  - script: 'npm install'
-    displayName: 'npm install'
-  - script: 'npm run build'
-    displayName: 'npm run build'
-  - script: 'npm run test'
-    displayName: 'npm run test'
+  - script: 'npm pack'
+    displayName: 'npm pack'
   - script: 'mv azure-ms-rest-js-*.tgz azure-ms-rest-js.tgz'
     displayName: 'mv azure-ms-rest-js-*.tgz azure-ms-rest-js.tgz'
   - script: 'ls -a'
