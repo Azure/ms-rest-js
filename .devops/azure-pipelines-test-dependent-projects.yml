@@ -31,8 +31,8 @@ jobs:
     inputs:
       artifactName: $(artifactName)
       targetPath: $(System.DefaultWorkingDirectory)
-  - script: 'mkdir $(tempDirectory)'
-    displayName: 'mkdir $(tempDirectory)'
+  - script: 'mkdir -p $(tempDirectory)'
+    displayName: 'mkdir -p $(tempDirectory)'
   - script: 'git clone https://github.com/Azure/ms-rest-azure-js.git ms-rest-azure-js --depth 1'
     workingDirectory: $(tempDirectory)
     displayName: "clone ms-rest-azure-js"
@@ -68,20 +68,23 @@ jobs:
     inputs:
       artifactName: $(msRestAzureArtifactName)
       targetPath: $(System.DefaultWorkingDirectory)
-  - script: 'mkdir $(tempDirectory)'
-    displayName: 'mkdir $(tempDirectory)'
+  - script: 'mkdir -p $(tempDirectory)'
+    displayName: 'mkdir -p $(tempDirectory)'
   - script: 'git clone https://github.com/Azure/autorest.typescript.git autorest.typescript --recursive --depth 1'
     workingDirectory: $(tempDirectory)
     displayName: "clone autorest.typescript"
   - script: 'npm install --verbose'
     workingDirectory: $(repoDir)
     displayName: "npm install"
+  - script: 'npm install $(Build.SourcesDirectory)/$(msRestAzureJsPackageName)'
+    workingDirectory: $(repoDir)
+    displayName: 'npm install @azure/ms-rest-azure-js'
   - script: 'npm install $(Build.SourcesDirectory)/$(msRestJsPackageName)'
     workingDirectory: $(repoDir)
     displayName: 'npm install @azure/ms-rest-js'
-  - script: 'npm install $(Build.SourcesDirectory)/$(msRestAzureJsPackageName)'
+  - script: 'cat package.json'
     workingDirectory: $(repoDir)
-    displayName: 'npm install @azure/ms-rest-js'
+    displayName: "debug"
   - script: 'gulp build'
     workingDirectory: $(repoDir)
     displayName: 'gulp build'
