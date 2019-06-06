@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-import axios, { AxiosError, AxiosRequestConfig, AxiosResponse, Method } from "axios";
+import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
 import { Transform, Readable } from "stream";
 import FormData from "form-data";
 import * as tough from "tough-cookie";
@@ -117,7 +117,7 @@ export class AxiosHttpClient implements HttpClient {
     let res: AxiosResponse;
     try {
       const config: AxiosRequestConfig = {
-        method: httpRequest.method as Method,
+        method: httpRequest.method,
         url: httpRequest.url,
         headers: rawHeaders,
         data: axiosBody,
