@@ -18,7 +18,7 @@ jobs:
       artifactName: $(artifactName)
       targetPath: $(msRestJsPackageName)
 
-- job: clone_dependent_projects
+- job: test_ms_azure_rest_js
   dependsOn: prepare_ms_rest_js
   pool:
     vmImage: $(vmImage)
@@ -39,7 +39,33 @@ jobs:
     displayName: "npm install"
   - script: 'npm install $(Build.SourcesDirectory)/$(msRestJsPackageName)'
     workingDirectory: $(repoDir)
-    displayName: "npm install @azure/ms-rest-js"
+    displayName: 'npm install @azure/ms-rest-js'
   - script: 'npm run test'
     workingDirectory: $(repoDir)
     displayName: "npm run test"
+
+- job: test_autorest_typescript
+  dependsOn: prepare_ms_rest_js
+  pool:
+    vmImage: $(vmImage)
+  variables:
+    repoDir: '$(tempDirectory)/autorest.typescript'
+  steps:
+  - task: DownloadPipelineArtifact@0
+    inputs:
+      artifactName: $(artifactName)
+      targetPath: $(System.DefaultWorkingDirectory)
+  - script: 'mkdir $(tempDirectory)'
+    displayName: 'mkdir $(tempDirectory)'
+  - script: 'git clone https://github.com/Azure/autorest.typescript.git autorest.typescript --recursive --depth 1'
+    workingDirectory: $(tempDirectory)
+    displayName: "clone autorest.typescript"
+  - script: 'npm install --verbose'
+    workingDirectory: $(repoDir)
+    displayName: "npm install"
+  - script: 'npm install $(Build.SourcesDirectory)/$(msRestJsPackageName)'
+    workingDirectory: $(repoDir)
+    displayName: 'npm install @azure/ms-rest-js'
+  - script: 'gulp build && gulp regenerate && gulp test'
+    workingDirectory: $(repoDir)
+    displayName: 'gulp build && gulp regenerate && gulp test'
