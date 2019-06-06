@@ -1,8 +1,6 @@
 import path from "path";
 import { run, RunResult, RunOptions, Command, commandToString } from "@ts-common/azure-js-dev-tools";
 
-console.log("$$DEBUG$$");
-
 async function execAndLog(executable: string, args?: string[], options?: RunOptions): Promise<any> {
   const command: Command = {
     executable,
