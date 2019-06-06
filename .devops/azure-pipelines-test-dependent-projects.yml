@@ -33,7 +33,7 @@ jobs:
     displayName: "npm install"
   - script: 'ls -a'
     displayName: "ls -a"
-  - script: 'npm install azure-ms-rest-js.tgz'
+  - script: 'npm install ./azure-ms-rest-js.tgz'
     workingDirectory: '../tmp/ms-rest-azure-js'
     displayName: "npm install azure-ms-rest-js.tgz"
   - script: 'cat package.json'
