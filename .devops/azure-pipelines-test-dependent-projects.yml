@@ -8,6 +8,7 @@ variables:
 
 jobs:
 - job: prepare_ms_rest_js
+  displayName: 'Pack and upload ms-rest-js'
   pool:
     vmImage: $(vmImage)
   steps:
@@ -20,7 +21,8 @@ jobs:
       artifactName: $(artifactName)
       targetPath: $(msRestJsPackageName)
 
-- job: test_ms_azure_rest_js
+- job: test_ms_rest_azure_js
+  displayName: 'Test ms-rest-azure-js with PR ms-rest-js'
   dependsOn: prepare_ms_rest_js
   pool:
     vmImage: $(vmImage)
@@ -54,7 +56,8 @@ jobs:
       targetPath: '$(repoDir)/$(msRestAzureJsPackageName)'
 
 - job: test_autorest_typescript
-  dependsOn: [prepare_ms_rest_js, test_ms_azure_rest_js]
+  displayName: 'Test autorest.typescript with PR ms-rest-js'
+  dependsOn: [prepare_ms_rest_js, test_ms_rest_azure_js]
   pool:
     vmImage: $(vmImage)
   variables:
