@@ -73,9 +73,6 @@ jobs:
   - script: 'git clone https://github.com/Azure/autorest.typescript.git autorest.typescript --recursive --depth 1'
     workingDirectory: $(tempDirectory)
     displayName: "clone autorest.typescript"
-  - script: 'npm install --verbose'
-    workingDirectory: $(repoDir)
-    displayName: "npm install"
   - script: 'npm install $(Build.SourcesDirectory)/$(msRestAzureJsPackageName)'
     workingDirectory: $(repoDir)
     displayName: 'npm install @azure/ms-rest-azure-js'
@@ -85,9 +82,9 @@ jobs:
   - script: 'cat package.json'
     workingDirectory: $(repoDir)
     displayName: "debug"
-  - script: 'gulp build'
+  - script: 'npm install --verbose'
     workingDirectory: $(repoDir)
-    displayName: 'gulp build'
+    displayName: "npm install"
   - script: 'gulp regenerate'
     workingDirectory: $(repoDir)
     displayName: 'gulp regenerate'
