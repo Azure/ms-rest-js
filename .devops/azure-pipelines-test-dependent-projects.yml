@@ -46,8 +46,10 @@ jobs:
     workingDirectory: $(repoDir)
     displayName: "npm run test"
   - script: 'npm pack'
+    workingDirectory: $(repoDir)
     displayName: 'npm pack'
   - script: 'mv azure-ms-rest-azure-js-*.tgz $(msRestAzureJsPackageName)'
+    workingDirectory: $(repoDir)
     displayName: 'rename artifact'
   - task: PublishPipelineArtifact@0
     inputs:
