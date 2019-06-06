@@ -48,6 +48,7 @@
   },
   "license": "MIT",
   "dependencies": {
+    "axios": "^0.18.0",
     "@types/node-fetch": "^2.3.4",
     "@types/tunnel": "0.0.0",
     "abort-controller": "^3.0.0",

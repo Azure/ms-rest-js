@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
+import axios, { AxiosError, AxiosRequestConfig, AxiosResponse, Method } from "axios";
 import { Transform, Readable } from "stream";
 import FormData from "form-data";
 import * as tough from "tough-cookie";
@@ -117,11 +117,11 @@ export class AxiosHttpClient implements HttpClient {
     let res: AxiosResponse;
     try {
       const config: AxiosRequestConfig = {
-        method: httpRequest.method as string,
+        method: httpRequest.method as Method,
         url: httpRequest.url,
         headers: rawHeaders,
         data: axiosBody,
-        transformResponse: undefined,
+        transformResponse: (data) => { return data; },
         validateStatus: () => true,
         // Workaround for https://github.com/axios/axios/issues/1362
         maxContentLength: Infinity,
@@ -139,9 +139,6 @@ export class AxiosHttpClient implements HttpClient {
           config.httpAgent = agent.agent;
         }
       }
-
-      // Workaround for https://github.com/axios/axios/issues/1158
-      axios.interceptors.request.use((config: AxiosRequestConfig) => ({ ...config, method: config.method && config.method.toUpperCase() }));
 
       res = await axios.request(config);
     } catch (err) {
