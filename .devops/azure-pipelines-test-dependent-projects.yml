@@ -11,8 +11,8 @@ jobs:
   steps:
   - script: 'npm pack'
     displayName: 'npm pack'
-  - script: 'mv azure-ms-rest-js-*.tgz $(ms_rest_js_tgz)'
-    displayName: 'mv azure-ms-rest-js-*.tgz $(ms_rest_js_tgz)'
+  - script: 'mv azure-ms-rest-js-*.tgz $(msRestJsPackageName)'
+    displayName: 'rename artifact'
   - task: PublishPipelineArtifact@0
     inputs:
       artifactName: $(artifactName)
