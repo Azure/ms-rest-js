@@ -1,6 +1,8 @@
 variables:
   artifactName: ms-rest-js
   msRestJsPackageName: azure-ms-rest-js.tgz
+  msRestAzureArtifactName: ms-rest-azure-js
+  msRestAzureJsPackageName: azure-ms-rest-azure-js.tgz
   tempDirectory: $(Pipeline.Workspace)/.tmp
   vmImage: 'Ubuntu 16.04'
 
@@ -43,6 +45,14 @@ jobs:
   - script: 'npm run test'
     workingDirectory: $(repoDir)
     displayName: "npm run test"
+  - script: 'npm pack'
+    displayName: 'npm pack'
+  - script: 'mv azure-ms-rest-azure-js-*.tgz $(msRestAzureJsPackageName)'
+    displayName: 'rename artifact'
+  - task: PublishPipelineArtifact@0
+    inputs:
+      artifactName: $(msRestAzureArtifactName)
+      targetPath: $(msRestAzureJsPackageName)
 
 - job: test_autorest_typescript
   dependsOn: prepare_ms_rest_js
@@ -55,6 +65,10 @@ jobs:
     inputs:
       artifactName: $(artifactName)
       targetPath: $(System.DefaultWorkingDirectory)
+  - task: DownloadPipelineArtifact@0
+    inputs:
+      artifactName: $(msRestAzureArtifactName)
+      targetPath: $(System.DefaultWorkingDirectory)
   - script: 'mkdir $(tempDirectory)'
     displayName: 'mkdir $(tempDirectory)'
   - script: 'git clone https://github.com/Azure/autorest.typescript.git autorest.typescript --recursive --depth 1'
@@ -66,6 +80,15 @@ jobs:
   - script: 'npm install $(Build.SourcesDirectory)/$(msRestJsPackageName)'
     workingDirectory: $(repoDir)
     displayName: 'npm install @azure/ms-rest-js'
-  - script: 'gulp build && gulp regenerate && gulp test'
+  - script: 'npm install $(Build.SourcesDirectory)/$(msRestAzureJsPackageName)'
     workingDirectory: $(repoDir)
-    displayName: 'gulp build && gulp regenerate && gulp test'
+    displayName: 'npm install @azure/ms-rest-js'
+  - script: 'gulp build'
+    workingDirectory: $(repoDir)
+    displayName: 'gulp build'
+  - script: 'gulp regenerate'
+    workingDirectory: $(repoDir)
+    displayName: 'gulp regenerate'
+  - script: 'gulp test'
+    workingDirectory: $(repoDir)
+    displayName: 'gulp test'
