@@ -146,7 +146,7 @@ export class AxiosHttpClient implements HttpClient {
       // storage data plane sdks.
       axios.interceptors.request.use((config: AxiosRequestConfig) => ({
         ...config,
-        method: (config.method as Method) && (config.method as Method).toUpperCase() as Method
+        method: (config.method) && (config.method).toUpperCase()
       }));
       res = await axios.request(config);
     } catch (err) {
