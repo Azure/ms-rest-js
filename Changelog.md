@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.8.12 - 2019-06-07
+- Added back the workaround of uppercasing method names otherwise axios causes issues with signing requests for storage data plane libraries.
+
+## 1.8.11 - 2019-06-06
+- Moved testing dependent projects from a script to Azure Devops Pipeline
+
 ## 1.8.10 - 2019-06-05
 - `axios` changed the way it treats properties of the request config in `0.19.0`. Previously we were setting `trasnformResponse` to `undefined`. This would indicate `axios` to not transform (`JSON.parse()`) the response body. In `0.19.0`, they are setting the default response transformer if transformResponse is set to `undefined`. This breaks our pasrsing logic where we are doing `JSON.parse()` on `operationResponse.bodyAsText`. Moreover, we are exposing the `bodyAsText` property in the generated clients. 
 Not populating this property or setting the value of this property to a parsed JSON would be a breaking change for our users.
