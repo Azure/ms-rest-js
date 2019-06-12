@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.8.13 - 2019-06-11
+## 1.8.13 - 2019-06-12
 - Added DomainCredentials class for providing credentials to publish to an Azure EventGrid domain.
 
 ## 1.8.12 - 2019-06-07
