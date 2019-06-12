@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.8.13 - 2019-06-11
+- Added DomainCredentials class for providing credentials to publish to an Azure EventGrid domain.
+
 ## 1.8.12 - 2019-06-07
 - Added back the workaround of uppercasing method names otherwise axios causes issues with signing requests for storage data plane libraries.
 
