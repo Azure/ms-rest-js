@@ -68,6 +68,7 @@ export class WebResource {
   withCredentials: boolean;
   timeout: number;
   proxySettings?: ProxySettings;
+  keepAlive?: boolean;
 
   abortSignal?: AbortSignalLike;
 
@@ -89,7 +90,8 @@ export class WebResource {
     timeout?: number,
     onUploadProgress?: (progress: TransferProgressEvent) => void,
     onDownloadProgress?: (progress: TransferProgressEvent) => void,
-    proxySettings?: ProxySettings) {
+    proxySettings?: ProxySettings,
+    keepAlive?: boolean) {
 
     this.streamResponseBody = streamResponseBody;
     this.url = url || "";
@@ -104,6 +106,7 @@ export class WebResource {
     this.onUploadProgress = onUploadProgress;
     this.onDownloadProgress = onDownloadProgress;
     this.proxySettings = proxySettings;
+    this.keepAlive = keepAlive;
   }
 
   /**

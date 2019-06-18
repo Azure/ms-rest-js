@@ -4,7 +4,7 @@
 import xhrMock, { proxy } from "xhr-mock";
 import MockAdapter from "axios-mock-adapter";
 import { isNode, HttpMethods } from "../lib/msRest";
-import { AxiosRequestConfig, AxiosInstance, Method } from "axios";
+import { AxiosRequestConfig, AxiosInstance } from "axios";
 import fetchMock, * as fetch from "fetch-mock";
 import { Readable } from "stream";
 
@@ -111,7 +111,7 @@ export class NodeHttpMock implements HttpMockFacade {
     this._mockAdapter = new MockAdapter(axiosInstance);
     axiosInstance.interceptors.request.use((config: AxiosRequestConfig) => ({
       ...config,
-      method: (config.method as Method) && (config.method as Method).toLowerCase() as Method
+      method: (config.method) && (config.method).toLowerCase()
     }));
   }
 
