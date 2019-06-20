@@ -24,6 +24,8 @@ const nodeConfig = {
   input: "./es/lib/msRest.js",
   external: [
     "form-data",
+    "http",
+    "https",
     "node-fetch",
     "os",
     "stream",
