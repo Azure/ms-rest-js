@@ -2,6 +2,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 import * as tough from "tough-cookie";
+import * as http from "http";
+import * as https from "https";
 import "node-fetch";
 
 import { FetchHttpClient } from "./fetchHttpClient";
@@ -47,6 +49,16 @@ export class NodeFetchHttpClient extends FetchHttpClient {
     if (httpRequest.proxySettings) {
       const tunnel: ProxyAgent = createProxyAgent(httpRequest.url, httpRequest.proxySettings, httpRequest.headers);
       requestInit.agent = tunnel.agent;
+    }
+
+    if (httpRequest.keepAlive === true) {
+      if (requestInit.agent) {
+        requestInit.agent.keepAlive = true;
+      } else {
+        const options: http.AgentOptions | https.AgentOptions = { keepAlive: true };
+        const agent = httpRequest.url.startsWith("https") ? new https.Agent(options) : new http.Agent(options);
+        requestInit.agent = agent;
+      }
     }
 
     return requestInit;
