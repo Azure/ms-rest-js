@@ -7,7 +7,7 @@ export const Constants = {
    * @const
    * @type {string}
    */
-  msRestVersion: "2.0.0-preview.1",
+  msRestVersion: "2.0.0",
 
   /**
    * Specifies HTTP.
