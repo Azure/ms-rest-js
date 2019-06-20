@@ -23,7 +23,6 @@ const banner = `/** @license ms-rest-js
 const nodeConfig = {
   input: "./es/lib/msRest.js",
   external: [
-    "axios",
     "form-data",
     "node-fetch",
     "os",

@@ -9,7 +9,7 @@ import https from "https";
 import { HttpHeaders } from "../lib/msRest";
 import { createProxyAgent, createTunnel } from "../lib/proxyAgent";
 
-describe("AxiosHttpClient", () => {
+describe("proxyAgent", () => {
   describe("createProxyAgent", () => {
     type HttpsAgent = https.Agent & {
       defaultPort: number | undefined,
