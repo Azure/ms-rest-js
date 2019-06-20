@@ -3,7 +3,8 @@
 ## 2.0.0 - 2019-06-21
 
 - Change default HTTP client in Node.js environment from `axios`-based to `node-fetch`-based.
-- Breaking changes:
+- Add `keepAlive` option to `WebResource` which sets proper header in Node.js HTTP client.
+- **Breaking changes**:
   - AbortController
     - added required `dispatchEvent` method
     - added required (or null) `onabort` method
