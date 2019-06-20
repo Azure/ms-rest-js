@@ -28,10 +28,10 @@ export type TransferProgressEvent = {
  */
 export interface AbortSignalLike {
   readonly aborted: boolean;
-  dispatchEvent(event: Event): boolean;
+  dispatchEvent: (event: Event) => boolean;
   onabort: ((this: AbortSignalLike, ev: Event) => any) | null;
-  addEventListener(type: "abort", listener: (this: AbortSignalLike, ev: Event) => any, options?: any): void;
-  removeEventListener(type: "abort", listener: (this: AbortSignalLike, ev: Event) => any, options?: any): void;
+  addEventListener: (type: "abort", listener: (this: AbortSignalLike, ev: Event) => any, options?: any) => void;
+  removeEventListener: (type: "abort", listener: (this: AbortSignalLike, ev: Event) => any, options?: any) => void;
 }
 
 /**
