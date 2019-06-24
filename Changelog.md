@@ -1,59 +1,86 @@
 # Changelog
 
+## 2.0.0 - 2019-06-21
+
+- Change default HTTP client in Node.js environment from `axios`-based to `node-fetch`-based.
+- Add `keepAlive` option to `WebResource` which sets proper header in Node.js HTTP client.
+- **Breaking changes**:
+  - AbortController
+    - added required `dispatchEvent` method
+    - added required (or null) `onabort` method
+    - enforce type `Event` for `ev` parameter in `listener` in `addEventListener` and `removeEventListener`
+
 ## 1.8.13 - 2019-06-12
+
 - Added DomainCredentials class for providing credentials to publish to an Azure EventGrid domain.
 
 ## 1.8.12 - 2019-06-07
+
 - Added back the workaround of uppercasing method names otherwise axios causes issues with signing requests for storage data plane libraries.
 
 ## 1.8.11 - 2019-06-06
+
 - Moved testing dependent projects from a script to Azure Devops Pipeline
 
 ## 1.8.10 - 2019-06-05
+
 - `axios` changed the way it treats properties of the request config in `0.19.0`. Previously we were setting `trasnformResponse` to `undefined`. This would indicate `axios` to not transform (`JSON.parse()`) the response body. In `0.19.0`, they are setting the default response transformer if transformResponse is set to `undefined`. This breaks our pasrsing logic where we are doing `JSON.parse()` on `operationResponse.bodyAsText`. Moreover, we are exposing the `bodyAsText` property in the generated clients. 
 Not populating this property or setting the value of this property to a parsed JSON would be a breaking change for our users.
 Hence we are setting the `transformResponse` property in the request config to an indentity function that returns the response body as-is.
 
 ## 1.8.9 - 2019-06-04
+
 - Added build job to CI pipeline
 
 ## 1.8.8 - 2019-06-03
+
 - Fixed vulnerabilities by bumping `axios` to `^0.19.0`.
 - New version of axios fixed some issues hence removed one of the workarounds of uppercasing method names while following redirects [axios PR](https://github.com/axios/axios/pull/1758). 
 
 ## 1.8.7 - 2019-05-16
+
 - Fixed issue [#347](https://github.com/Azure/ms-rest-js/issues/347), [#348](https://github.com/Azure/ms-rest-js/issues/348) in PR [#349](https://github.com/Azure/ms-rest-js/pull/349)
 
 ## 1.8.6 - 2019-05-10
+
 - Added script to run tests on dependent projects [#345](https://github.com/Azure/ms-rest-js/pull/345)
 
 ## 1.8.4 - 2019-05-07
+
 - Fixed incorrect undefined check in Axios client [62b65d](https://github.com/Azure/ms-rest-js/commit/ea7ceb86f1e6e6f7879e7e7ddfe791113762b65d#diff-b9cfc7f2cdf78a7f4b91a753d10865a2)
 - Added TSLint check. Fix TSLint errors [#344](https://github.com/Azure/ms-rest-js/pull/344)
 
 ## 1.8.2 - 2019-04-25
+
 - Fixed http over https bug [#341](https://github.com/Azure/ms-rest-js/pull/341)
 
 ## 1.8.1 - 2019-04-01
+
 - Fixed serialization issue when required object is empty [#337](https://github.com/Azure/ms-rest-js/pull/337)
 
 ## 1.8.0 - 2019-03-18
+
 - Added exports to several request policy factory methods [#336](https://github.com/Azure/ms-rest-js/pull/336)
 
 ## 1.7.0 - 2019-02-11
+
 - Added userAgentHeaderName to ServiceClientOptions [#330](https://github.com/Azure/ms-rest-js/pull/330)
 
 ## 1.6.0 - 2019-01-30
+
 - Fixed including proxy policy in browser [0c552f](https://github.com/Azure/ms-rest-js/commit/fafa26180e591db43d43c9cf0c7e93c8030c552f#diff-b9cfc7f2cdf78a7f4b91a753d10865a2)
 
-# 1.5.3 - 2019-01-25
+## 1.5.3 - 2019-01-25
+
 - Brought Axios interceptors back [c33602](https://github.com/Azure/ms-rest-js/commit/c1742fe6a80ed9b794115362633e0a8307c33602#diff-b9cfc7f2cdf78a7f4b91a753d10865a2)
 
 ## 1.5.2 - 2019-01-25
+
 - Added HTTP(S) over HTTP(S) proxy support [2b1844](https://github.com/Azure/ms-rest-js/commit/1ee5a40d5016e286a7492c8cbd7b08d5c92b1844#diff-b9cfc7f2cdf78a7f4b91a753d10865a2)
 - Added `@types/tunnel` [0865a2](https://github.com/Azure/ms-rest-js/commit/7a9b496d04294446f940f1549fb0a44dd9b94c01#diff-b9cfc7f2cdf78a7f4b91a753d10865a2)
 
 ## 1.5.1 - 2019-01-22
+
 - Fixed default HTTP client tests [c75b87](https://github.com/Azure/ms-rest-js/commit/4c2b1c5390deab989b5ec9cadb84891de9c75b87#diff-b9cfc7f2cdf78a7f4b91a753d10865a2)
 
 ## 1.5.0 - 2019-01-15
