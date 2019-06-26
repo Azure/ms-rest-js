@@ -53,7 +53,7 @@ export class Serializer {
         failValidation("MultipleOf", MultipleOf);
       }
       if (Pattern) {
-        const pattern: RegExp = typeof Pattern === "string" ? new RegExp(Pattern, "i") : Pattern;
+        const pattern: RegExp = typeof Pattern === "string" ? new RegExp(Pattern) : Pattern;
         if ((typeof value !== "string") || (value.match(pattern) === null)) {
           failValidation("Pattern", Pattern);
         }
