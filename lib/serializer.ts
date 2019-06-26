@@ -52,8 +52,11 @@ export class Serializer {
       if (MultipleOf != undefined && value % MultipleOf !== 0) {
         failValidation("MultipleOf", MultipleOf);
       }
-      if (Pattern && value.match(Pattern) === null) {
-        failValidation("Pattern", Pattern);
+      if (Pattern) {
+        const pattern: RegExp = typeof Pattern === "string" ? new RegExp(Pattern, "i") : Pattern;
+        if ((typeof value !== "string") || (value.match(pattern) === null)) {
+          failValidation("Pattern", Pattern);
+        }
       }
       if (UniqueItems && value.some((item: any, i: number, ar: Array<any>) => ar.indexOf(item) !== i)) {
         failValidation("UniqueItems", UniqueItems);
