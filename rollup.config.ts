@@ -1,9 +1,9 @@
- /// <reference path=".typings/rollup-plugin-alias.d.ts" />
- /// <reference path=".typings/rollup-plugin-commonjs.d.ts" />
- /// <reference path=".typings/rollup-plugin-json.d.ts" />
- /// <reference path=".typings/rollup-plugin-node-resolve.d.ts" />
- /// <reference path=".typings/rollup-plugin-sourcemaps.d.ts" />
- /// <reference path=".typings/rollup-plugin-visualizer.d.ts" />
+/// <reference path=".typings/rollup-plugin-alias.d.ts" />
+/// <reference path=".typings/rollup-plugin-commonjs.d.ts" />
+/// <reference path=".typings/rollup-plugin-json.d.ts" />
+/// <reference path=".typings/rollup-plugin-node-resolve.d.ts" />
+/// <reference path=".typings/rollup-plugin-sourcemaps.d.ts" />
+/// <reference path=".typings/rollup-plugin-visualizer.d.ts" />
 
 import alias from "rollup-plugin-alias";
 import commonjs from "rollup-plugin-commonjs";
@@ -17,9 +17,9 @@ const banner = `/** @license ms-rest-js
   * Licensed under the MIT License. See License.txt and ThirdPartyNotices.txt in the project root for license information.
   */`;
 
- /**
-  * @type {import('rollup').RollupFileOptions}
-  */
+/**
+ * @type {import('rollup').RollupFileOptions}
+ */
 const nodeConfig = {
   input: "./es/lib/msRest.js",
   external: [
@@ -43,7 +43,7 @@ const nodeConfig = {
   },
   plugins: [
     nodeResolve({
-      module: true
+      mainFields: ["module", "main"],
     }),
     commonjs(),
     sourcemaps(),
@@ -55,9 +55,9 @@ const nodeConfig = {
   ]
 };
 
- /**
-  * @type {import('rollup').RollupFileOptions}
-  */
+/**
+ * @type {import('rollup').RollupFileOptions}
+ */
 const browserConfig = {
   input: "./es/lib/msRest.js",
   external: [],
@@ -77,8 +77,7 @@ const browserConfig = {
       "./util/base64": "./util/base64.browser",
     }),
     nodeResolve({
-      module: true,
-      browser: true
+      mainFields: ["module", "main", "browser"]
     }),
     commonjs(),
     sourcemaps(),
