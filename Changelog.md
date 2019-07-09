@@ -1,4 +1,9 @@
 # Changelog
+## 2.0.2 - 2019-07-08
+- Updated `cookieJar.setCookie()` with `{ ignoreError: true }` for `NodeFetchHttpClient`. This should silently ignore things like parse errors and invalid domains. This should resolve issues where customers using the `@azure/arm-appservice` package get an error due to mismatch in the domain [Azure/azure-sdk-for-js#1008](https://github.com/Azure/azure-sdk-for-js/issues/1008). This behavior makes it consistent with the old package [azure-arm-website](https://www.npmjs.com/package/azure-arm-website) which depends on the runtime [ms-rest](https://www.npmjs.com/package/ms-rest) that depends on the [request](https://www.npmjs.com/package/request) library which uses the [tough-cookie](https://www.npmjs.com/package/tough-cookie) package in `{ looseMode: true }` by [default](https://github.com/request/request/blob/536f0e76b249e4545c3ba2ac75e643146ebf3824/lib/cookies.js#L21) with `{ ignoreError: true }` as can be seen [here](https://github.com/request/request/blob/df346d8531ac4b8c360df301f228d5767d0e374e/request.js#L969).
+
+## 2.0.1 - 2019-06-26
+- Updated tests to include Pattern constraint
 
 ## 2.0.0 - 2019-06-21
 

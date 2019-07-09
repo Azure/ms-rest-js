@@ -23,7 +23,7 @@ if (typeof globalWithFetch.fetch !== "function") {
 
 
 export class NodeFetchHttpClient extends FetchHttpClient {
-  private readonly cookieJar = new tough.CookieJar();
+  private readonly cookieJar = new tough.CookieJar(undefined, { looseMode: true });
 
   async fetch(input: RequestInfo, init?: RequestInit): Promise<Response> {
     return fetch(input, init);
@@ -69,13 +69,17 @@ export class NodeFetchHttpClient extends FetchHttpClient {
       const setCookieHeader = operationResponse.headers.get("Set-Cookie");
       if (setCookieHeader != undefined) {
         await new Promise((resolve, reject) => {
-          this.cookieJar!.setCookie(setCookieHeader, operationResponse.request.url, err => {
-            if (err) {
-              reject(err);
-            } else {
-              resolve();
-            }
-          });
+          this.cookieJar!.setCookie(
+            setCookieHeader,
+            operationResponse.request.url,
+            { ignoreError: true },
+            err => {
+              if (err) {
+                reject(err);
+              } else {
+                resolve();
+              }
+            });
         });
       }
     }

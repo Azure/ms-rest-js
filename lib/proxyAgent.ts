@@ -13,7 +13,7 @@ export type ProxyAgent = { isHttps: boolean; agent: http.Agent | https.Agent };
 export function createProxyAgent(requestUrl: string, proxySettings: ProxySettings, headers?: HttpHeaders): ProxyAgent {
   const tunnelOptions: tunnel.HttpsOverHttpsOptions = {
     proxy: {
-      host: URLBuilder.parse(proxySettings.host).getHost(),
+      host: URLBuilder.parse(proxySettings.host).getHost() as string,
       port: proxySettings.port,
       headers: (headers && headers.rawHeaders()) || {}
     }
