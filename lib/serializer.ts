@@ -85,7 +85,7 @@ export class Serializer {
       payload = [];
     }
 
-    if (object == undefined && (mapper.defaultValue != undefined || mapper.isConstant)) {
+    if (mapper.isConstant) {
       object = mapper.defaultValue;
     }
 
@@ -158,6 +158,9 @@ export class Serializer {
         // between the list being empty versus being missing,
         // so let's do the more user-friendly thing and return an empty list.
         responseBody = [];
+      }
+      if (mapper.defaultValue) {
+        responseBody = mapper.defaultValue;
       }
       return responseBody;
     }
@@ -525,7 +528,7 @@ function serializeCompositeType(serializer: Serializer, mapper: CompositeMapper,
       for (const clientPropName in object) {
         const isAdditionalProperty = propNames.every(pn => pn !== clientPropName);
         if (isAdditionalProperty) {
-          payload[clientPropName] = serializer.serialize(additionalPropertiesMapper, object[clientPropName], objectName + '["' + clientPropName + '"]');
+          payload[clientPropName] = serializer.serialize((additionalPropertiesMapper as DictionaryMapper).type.value, object[clientPropName], objectName + '["' + clientPropName + '"]');
         }
       }
     }
@@ -606,7 +609,7 @@ function deserializeCompositeType(serializer: Serializer, mapper: CompositeMappe
       if (Array.isArray(responseBody[key]) && modelProps[key].serializedName === "") {
         propertyInstance = responseBody[key];
         instance = serializer.deserialize(propertyMapper, propertyInstance, propertyObjectName);
-      } else if (propertyInstance !== undefined) {
+      } else if (propertyInstance !== undefined || propertyMapper.defaultValue !== undefined) {
         serializedValue = serializer.deserialize(propertyMapper, propertyInstance, propertyObjectName);
         instance[key] = serializedValue;
       }
@@ -627,7 +630,7 @@ function deserializeCompositeType(serializer: Serializer, mapper: CompositeMappe
 
     for (const responsePropName in responseBody) {
       if (isAdditionalProperty(responsePropName)) {
-        instance[responsePropName] = serializer.deserialize(additionalPropertiesMapper, responseBody[responsePropName], objectName + '["' + responsePropName + '"]');
+        instance[responsePropName] = serializer.deserialize((additionalPropertiesMapper as DictionaryMapper).type.value, responseBody[responsePropName], objectName + '["' + responsePropName + '"]');
       }
     }
   } else if (responseBody) {
