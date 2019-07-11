@@ -1125,7 +1125,7 @@ describe("msrest", function () {
       done();
     });
 
-    it.skip("should correctly deserialize without failing when encountering no discriminator", function (done) {
+    it("should correctly deserialize without failing when encountering no discriminator", function (done) {
       const client = new TestClient("http://localhost:9090");
       const mapper = Mappers.Fish;
       const responseBody = {
@@ -1158,11 +1158,11 @@ describe("msrest", function () {
       deserializedSawshark.siblings.length.should.equal(1);
       deserializedSawshark.siblings[0].fishtype.should.equal("mutatedshark");
       deserializedSawshark.siblings[0].species.should.equal("dangerous");
-      deserializedSawshark.siblings[0].should.not.have.property("birthday");
-      deserializedSawshark.siblings[0].should.not.have.property("age");
+      deserializedSawshark.siblings[0].birthday.should.equal("1900-01-05T01:00:00.000Z");
+      deserializedSawshark.siblings[0].age.should.equal(105);
       deserializedSawshark.siblings[0].siblings[0].fishtype.should.equal("mutatedshark");
       deserializedSawshark.siblings[0].siblings[0].species.should.equal("predator");
-      deserializedSawshark.siblings[0].siblings[0].should.not.have.property("age");
+      deserializedSawshark.siblings[0].siblings[0].age.should.equal(6);
       done();
     });
 
