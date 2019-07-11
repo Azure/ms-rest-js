@@ -529,7 +529,7 @@ function serializeCompositeType(serializer: Serializer, mapper: CompositeMapper,
       for (const clientPropName in object) {
         const isAdditionalProperty = propNames.every(pn => pn !== clientPropName);
         if (isAdditionalProperty) {
-          payload[clientPropName] = serializer.serialize((additionalPropertiesMapper as DictionaryMapper).type.value, object[clientPropName], objectName + '["' + clientPropName + '"]');
+          payload[clientPropName] = serializer.serialize(additionalPropertiesMapper, object[clientPropName], objectName + '["' + clientPropName + '"]');
         }
       }
     }
@@ -640,7 +640,7 @@ function deserializeCompositeType(serializer: Serializer, mapper: CompositeMappe
 
     for (const responsePropName in responseBody) {
       if (isAdditionalProperty(responsePropName)) {
-        instance[responsePropName] = serializer.deserialize((additionalPropertiesMapper as DictionaryMapper).type.value, responseBody[responsePropName], objectName + '["' + responsePropName + '"]');
+        instance[responsePropName] = serializer.deserialize(additionalPropertiesMapper, responseBody[responsePropName], objectName + '["' + responsePropName + '"]');
       }
     }
   } else if (responseBody) {

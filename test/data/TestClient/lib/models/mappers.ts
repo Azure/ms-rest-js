@@ -233,14 +233,7 @@ internalMappers.PetAP = {
     name: "Composite",
     additionalProperties: {
       type: {
-        name: "Dictionary",
-        value: {
-          required: false,
-          serializedName: "StringElementType",
-          type: {
-            name: "String"
-          }
-        }
+        name: "String"
       }
     },
     className: "PetAP",
