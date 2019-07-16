@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-import { HttpHeaders } from "./httpHeaders";
+import { IHttpHeaders, HttpHeaders } from "./httpHeaders";
 import { OperationSpec } from "./operationSpec";
 import { Mapper, Serializer } from "./serializer";
 import { generateUuid } from "./util/utils";
@@ -44,7 +44,7 @@ export class WebResource {
   url: string;
   method: HttpMethods;
   body?: any;
-  headers: HttpHeaders;
+  headers: IHttpHeaders;
   /**
    * Whether or not the body of the HttpOperationResponse should be treated as a stream.
    */

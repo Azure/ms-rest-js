@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 import { WebResource } from "./webResource";
-import { HttpHeaders } from "./httpHeaders";
+import { IHttpHeaders } from "./httpHeaders";
 
 /**
  * The properties on an HTTP response which will always be present.
@@ -21,7 +21,7 @@ export interface HttpResponse {
   /**
    * The HTTP response headers.
    */
-  headers: HttpHeaders;
+  headers: IHttpHeaders;
 }
 
 declare global {

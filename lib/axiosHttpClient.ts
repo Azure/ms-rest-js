@@ -6,7 +6,7 @@ import { Transform, Readable } from "stream";
 import FormData from "form-data";
 import * as tough from "tough-cookie";
 import { HttpClient } from "./httpClient";
-import { HttpHeaders } from "./httpHeaders";
+import { IHttpHeaders, HttpHeaders } from "./httpHeaders";
 import { HttpOperationResponse } from "./httpOperationResponse";
 import { RestError } from "./restError";
 import { WebResource, HttpRequestBody } from "./webResource";
@@ -223,7 +223,7 @@ function isReadableStream(body: any): body is Readable {
 }
 
 declare type ProxyAgent = { isHttps: boolean; agent: http.Agent | https.Agent };
-export function createProxyAgent(requestUrl: string, proxySettings: ProxySettings, headers?: HttpHeaders): ProxyAgent {
+export function createProxyAgent(requestUrl: string, proxySettings: ProxySettings, headers?: IHttpHeaders): ProxyAgent {
   const tunnelOptions: tunnel.HttpsOverHttpsOptions = {
     proxy: {
       host: URLBuilder.parse(proxySettings.host).getHost(),
