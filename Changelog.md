@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.8.14 - 2019-07-17
+- Introduced `IHttpHeaders` interface to improve compatibility with `@azure/core-http` for users of `@azure/ms-rest-nodeauth`
+
 ## 1.8.13 - 2019-06-12
 - Added DomainCredentials class for providing credentials to publish to an Azure EventGrid domain.
 
