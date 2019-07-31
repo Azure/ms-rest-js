@@ -1,4 +1,7 @@
 # Changelog
+## 2.0.4 - 2019-07-30
+- Ensure that a primitive type (string, number, boolean, null, undefined) response body with or without a `bodyMapper` is not flattened.
+
 ## 2.0.3 - 2019-07-11
 - Added support to not send default values while sending the request.
 - Added support to populate entities with it's default value if it is present in the mapper while deserializing the response.
