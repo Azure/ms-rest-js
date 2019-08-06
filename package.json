@@ -119,7 +119,7 @@
     "webpack-cli": "^3.3.5",
     "webpack-dev-middleware": "^3.7.0",
     "xhr-mock": "^2.4.1",
-    "yarn": "^1.16.0"
+    "yarn": "^1.17.3"
   },
   "homepage": "https://github.com/Azure/ms-rest-js",
   "repository": {
