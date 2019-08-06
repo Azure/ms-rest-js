@@ -1,4 +1,7 @@
 # Changelog
+## 2.0.5 - TBD
+- Update dev dependency `yarn`
+
 ## 2.0.4 - 2019-07-30
 - Ensure that a primitive type (string, number, boolean, null, undefined) response body with or without a `bodyMapper` is not flattened.
 
