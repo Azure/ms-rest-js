@@ -16,6 +16,7 @@ jobs:
       verbose: false
       customCommand: run build
 - job: Check_Everything
+  condition: eq(variables['System.PullRequest.TargetBranch'], 'master')
   pool:
     vmImage: 'Ubuntu 16.04'
   steps:
