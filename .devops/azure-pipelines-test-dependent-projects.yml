@@ -63,6 +63,11 @@ jobs:
   variables:
     repoDir: '$(tempDirectory)/autorest.typescript'
   steps:
+  # Autorest appears to use a version of gulp that doesn't yet work with node 12.x: https://stackoverflow.com/questions/55921442/how-to-fix-referenceerror-primordials-is-not-defined-in-node
+  - task: NodeTool@0
+    inputs:
+      versionSpec: 10.x
+    displayName: Use Node.js 10
   - task: DownloadPipelineArtifact@0
     inputs:
       artifactName: $(artifactName)
