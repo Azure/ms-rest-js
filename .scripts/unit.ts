@@ -75,13 +75,13 @@ function stopTestServer(testServer: ServerProcess): void {
 
 function runNodeJsUnitTests(): number {
   console.log(`Running Node.js Unit Tests...`);
-  return executeSync(`nyc mocha`, repositoryRootFolderPath).status || 1;
+  return executeSync(`nyc mocha`, repositoryRootFolderPath).status;
 }
 
 function runBrowserUnitTests(): number {
   console.log(`Running Browser Unit Tests...`);
   const portNumber: string | number = process.env.PORT || 3001;
-  return executeSync(`${mochaChromeFilePath} http://localhost:${portNumber} --timeout 60000`, repositoryRootFolderPath).status || 1;
+  return executeSync(`${mochaChromeFilePath} http://localhost:${portNumber} --timeout 60000`, repositoryRootFolderPath).status;
 }
 
 let exitCode = 0;
