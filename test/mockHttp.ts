@@ -35,16 +35,34 @@ export function getHttpMock(axiosInstance?: AxiosInstance): HttpMockFacade {
 
 class NodeHttpMock implements HttpMockFacade {
   private _mockAdapter: MockAdapter;
+  private interceptorIndex: number;
 
-  constructor(axiosInstance?: AxiosInstance) {
+  constructor(private axiosInstance?: AxiosInstance) {
     if (!axiosInstance) {
       throw new Error("Axios instance cannot be undefined");
     }
     this._mockAdapter = new MockAdapter(axiosInstance);
-    axiosInstance.interceptors.request.use((config: AxiosRequestConfig) => ({
-      ...config,
-      method: (config.method as Method) && (config.method as Method).toLowerCase() as Method
-    }));
+
+    // Reverse the upper-casing done in AxiosHttpClient because axios-mock-adapter
+    // doesn't support upper-case HTTP method names:
+    // https://github.com/ctimmerm/axios-mock-adapter/blob/8681af9c8375be4c5dc798f68a90154b5552cadd/src/index.js#L153-L166
+    axiosInstance.interceptors.request.use(
+      (config: AxiosRequestConfig) => ({
+          ...config,
+          method: (config.method as Method) && (config.method as Method).toLowerCase() as Method
+      }));
+
+    // Reverse order of the handlers because Axios interceptors are stored
+    // as a stack.  The interceptor we're trying to override from AxiosHttpClient
+    // gets added first so reversing the order causes this new interceptor to
+    // be executed after the original.
+    //
+    // Details can be found in this issuehere: https://github.com/axios/axios/issues/1663
+    (axiosInstance.interceptors.request as any).handlers.reverse();
+
+    // Keep track of the index where this interceptor should be so that we can
+    // remove it when the mock is shutting down
+    this.interceptorIndex = (axiosInstance.interceptors.request as any).handlers.length - 1;
   }
 
   setup(): void {
@@ -52,6 +70,9 @@ class NodeHttpMock implements HttpMockFacade {
   }
 
   teardown(): void {
+    if (this.axiosInstance) {
+      this.axiosInstance.interceptors.request.eject(this.interceptorIndex);
+    }
     this._mockAdapter.restore();
   }
 
@@ -137,4 +158,3 @@ class BrowserHttpMock implements HttpMockFacade {
     return this.mockHttpMethod(method, url, () => new Promise(() => { }));
   }
 }
-
