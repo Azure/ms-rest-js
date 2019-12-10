@@ -78,7 +78,7 @@ jobs:
       targetPath: $(System.DefaultWorkingDirectory)
   - script: 'mkdir -p $(tempDirectory)'
     displayName: 'mkdir -p $(tempDirectory)'
-  - script: 'git clone https://github.com/Azure/autorest.typescript.git autorest.typescript --recursive --depth 1'
+  - script: 'git clone https://github.com/daviwil/autorest.typescript.git --single-branch --branch v4-fix-ci autorest.typescript --recursive --depth 1'
     workingDirectory: $(tempDirectory)
     displayName: "clone autorest.typescript"
   - script: 'npm install $(Build.SourcesDirectory)/$(msRestAzureJsPackageName)'
