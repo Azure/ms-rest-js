@@ -78,7 +78,11 @@ jobs:
       targetPath: $(System.DefaultWorkingDirectory)
   - script: 'mkdir -p $(tempDirectory)'
     displayName: 'mkdir -p $(tempDirectory)'
-  - script: 'git clone https://github.com/daviwil/autorest.typescript.git --single-branch --branch v4-fix-ci autorest.typescript --recursive --depth 1'
+  # Clone back to the last commit where ms-rest-js 1.x was supported (version 4.1.1)
+  - script: |
+      git clone https://github.com/Azure/autorest.typescript.git autorest.typescript --recursive --depth 1
+      cd autorest.typescript
+      git reset --HARD 8b2d805c8df83889aac0fc3875b19d7a5bf13c6f
     workingDirectory: $(tempDirectory)
     displayName: "clone autorest.typescript"
   - script: 'npm install $(Build.SourcesDirectory)/$(msRestAzureJsPackageName)'
