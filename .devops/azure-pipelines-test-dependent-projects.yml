@@ -35,7 +35,7 @@ jobs:
       targetPath: $(System.DefaultWorkingDirectory)
   - script: 'mkdir -p $(tempDirectory)'
     displayName: 'mkdir -p $(tempDirectory)'
-  - script: 'git clone https://github.com/Azure/ms-rest-azure-js.git ms-rest-azure-js --depth 1'
+  - script: 'git clone https://github.com/Azure/ms-rest-azure-js.git --single-branch --branch 1.x ms-rest-azure-js --depth 1'
     workingDirectory: $(tempDirectory)
     displayName: "clone ms-rest-azure-js"
   - script: 'npm pack'
@@ -63,6 +63,11 @@ jobs:
   variables:
     repoDir: '$(tempDirectory)/autorest.typescript'
   steps:
+  # Autorest appears to use a version of gulp that doesn't yet work with node 12.x: https://stackoverflow.com/questions/55921442/how-to-fix-referenceerror-primordials-is-not-defined-in-node
+  - task: NodeTool@0
+    inputs:
+      versionSpec: 10.x
+    displayName: Use Node.js 10
   - task: DownloadPipelineArtifact@0
     inputs:
       artifactName: $(artifactName)
@@ -73,7 +78,11 @@ jobs:
       targetPath: $(System.DefaultWorkingDirectory)
   - script: 'mkdir -p $(tempDirectory)'
     displayName: 'mkdir -p $(tempDirectory)'
-  - script: 'git clone https://github.com/Azure/autorest.typescript.git autorest.typescript --recursive --depth 1'
+  # Clone back to the last commit where ms-rest-js 1.x was supported (version 4.1.1)
+  - script: |
+      git clone https://github.com/Azure/autorest.typescript.git autorest.typescript --recursive
+      cd autorest.typescript
+      git reset --hard 8b2d805c8df83889aac0fc3875b19d7a5bf13c6f
     workingDirectory: $(tempDirectory)
     displayName: "clone autorest.typescript"
   - script: 'npm install $(Build.SourcesDirectory)/$(msRestAzureJsPackageName)'
