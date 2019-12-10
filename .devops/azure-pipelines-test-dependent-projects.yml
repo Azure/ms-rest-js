@@ -35,7 +35,7 @@ jobs:
       targetPath: $(System.DefaultWorkingDirectory)
   - script: 'mkdir -p $(tempDirectory)'
     displayName: 'mkdir -p $(tempDirectory)'
-  - script: 'git clone https://github.com/Azure/ms-rest-azure-js.git ms-rest-azure-js --depth 1'
+  - script: 'git clone https://github.com/Azure/ms-rest-azure-js.git --single-branch --branch 1.x ms-rest-azure-js --depth 1'
     workingDirectory: $(tempDirectory)
     displayName: "clone ms-rest-azure-js"
   - script: 'npm pack'
