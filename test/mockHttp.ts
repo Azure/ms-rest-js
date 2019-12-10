@@ -48,8 +48,8 @@ class NodeHttpMock implements HttpMockFacade {
     // https://github.com/ctimmerm/axios-mock-adapter/blob/8681af9c8375be4c5dc798f68a90154b5552cadd/src/index.js#L153-L166
     axiosInstance.interceptors.request.use(
       (config: AxiosRequestConfig) => ({
-          ...config,
-          method: (config.method as Method) && (config.method as Method).toLowerCase() as Method
+        ...config,
+        method: (config.method as Method) && (config.method as Method).toLowerCase() as Method
       }));
 
     // Reverse order of the handlers because Axios interceptors are stored

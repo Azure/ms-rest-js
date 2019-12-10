@@ -11,7 +11,7 @@ import { isNode } from "../lib/util/utils";
 import { WebResource, HttpRequestBody, TransferProgressEvent } from "../lib/webResource";
 import { getHttpMock, HttpMockFacade } from "./mockHttp";
 import { TestFunction } from "mocha";
-import { axiosInstance } from '../lib/axiosHttpClient';
+import { axiosInstance } from "../lib/axiosHttpClient";
 
 const nodeIt = (isNode ? it : it.skip) as TestFunction;
 
