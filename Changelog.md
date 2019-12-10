@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.8.14 - 2019-12-10
+- Fixed an issue where making many requests will cause Node.js to reach the memory allocation limit ([PR #](https://github.com/Azure/ms-rest-js/pull/375)).
+
 ## 1.8.13 - 2019-06-12
 - Added DomainCredentials class for providing credentials to publish to an Azure EventGrid domain.
 

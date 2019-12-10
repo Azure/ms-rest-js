@@ -4,7 +4,6 @@
 import { assert, AssertionError } from "chai";
 import "chai/register-should";
 import { createReadStream } from "fs";
-import axios from "axios";
 
 import { DefaultHttpClient } from "../lib/defaultHttpClient";
 import { RestError } from "../lib/restError";
@@ -12,6 +11,7 @@ import { isNode } from "../lib/util/utils";
 import { WebResource, HttpRequestBody, TransferProgressEvent } from "../lib/webResource";
 import { getHttpMock, HttpMockFacade } from "./mockHttp";
 import { TestFunction } from "mocha";
+import { axiosInstance } from "../lib/axiosHttpClient";
 
 const nodeIt = (isNode ? it : it.skip) as TestFunction;
 
@@ -33,7 +33,7 @@ describe("defaultHttpClient", function () {
 
   let httpMock: HttpMockFacade;
   beforeEach(() => {
-    httpMock = getHttpMock(axios);
+    httpMock = getHttpMock(axiosInstance);
     httpMock.setup();
   });
   afterEach(() => httpMock.teardown());
