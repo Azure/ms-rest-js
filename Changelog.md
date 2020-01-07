@@ -1,4 +1,7 @@
 # Changelog
+## 2.0.5 - 2020-01-07
+- Fix node-fetch bundling when using Webpack (PR [#376](https://github.com/Azure/ms-rest-js/pull/376)).
+
 ## 2.0.4 - 2019-07-30
 - Ensure that a primitive type (string, number, boolean, null, undefined) response body with or without a `bodyMapper` is not flattened.
 
