@@ -9,7 +9,7 @@ import { Constants } from "../util/constants";
 import { URLBuilder } from "../url";
 
 function loadEnvironmentProxyValue(): string | undefined {
-  if (!process) {
+  if (typeof process === "undefined") {
     return undefined;
   }
 
