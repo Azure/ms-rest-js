@@ -5,9 +5,9 @@ import AbortController from "abort-controller";
 import FormData from "form-data";
 
 import { HttpClient } from "./httpClient";
-import { WebResource } from "./webResource";
+import { WebResourceLike } from "./webResource";
 import { HttpOperationResponse } from "./httpOperationResponse";
-import { HttpHeaders } from "./httpHeaders";
+import { HttpHeaders, HttpHeadersLike } from "./httpHeaders";
 import { RestError } from "./restError";
 import { Readable, Transform } from "stream";
 
@@ -18,7 +18,7 @@ interface FetchError extends Error {
 }
 
 export abstract class FetchHttpClient implements HttpClient {
-  async sendRequest(httpRequest: WebResource): Promise<HttpOperationResponse> {
+  async sendRequest(httpRequest: WebResourceLike): Promise<HttpOperationResponse> {
     if (!httpRequest && typeof httpRequest !== "object") {
       throw new Error("'httpRequest' (WebResource) cannot be null or undefined and must be of type object.");
     }
@@ -164,7 +164,7 @@ export abstract class FetchHttpClient implements HttpClient {
     }
   }
 
-  abstract async prepareRequest(httpRequest: WebResource): Promise<Partial<RequestInit>>;
+  abstract async prepareRequest(httpRequest: WebResourceLike): Promise<Partial<RequestInit>>;
   abstract async processRequest(operationResponse: HttpOperationResponse): Promise<void>;
   abstract async fetch(input: RequestInfo, init?: RequestInit): Promise<Response>;
 }
@@ -173,7 +173,7 @@ function isReadableStream(body: any): body is Readable {
   return body && typeof body.pipe === "function";
 }
 
-export function parseHeaders(headers: Headers): HttpHeaders {
+export function parseHeaders(headers: Headers): HttpHeadersLike {
   const httpHeaders = new HttpHeaders();
 
   headers.forEach((value, key) => {

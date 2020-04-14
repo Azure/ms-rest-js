@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 import { HttpOperationResponse } from "../httpOperationResponse";
-import { WebResource } from "../webResource";
+import { WebResourceLike } from "../webResource";
 import { BaseRequestPolicy, RequestPolicy, RequestPolicyFactory, RequestPolicyOptions } from "./requestPolicy";
 
 export function logPolicy(logger: any = console.log): RequestPolicyFactory {
@@ -21,7 +21,7 @@ export class LogPolicy extends BaseRequestPolicy {
     this.logger = logger;
   }
 
-  public sendRequest(request: WebResource): Promise<HttpOperationResponse> {
+  public sendRequest(request: WebResourceLike): Promise<HttpOperationResponse> {
     return this._nextPolicy.sendRequest(request).then(response => logResponse(this, response));
   }
 }
