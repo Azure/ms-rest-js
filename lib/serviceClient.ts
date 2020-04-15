@@ -245,14 +245,15 @@ export class ServiceClient {
                     queryParameterValue[index] = item == undefined ? "" : item.toString();
                   }
                 }
-              } else {
-                queryParameterValue = queryParameterValue.join(queryParameter.collectionFormat);
               }
             }
             if (!queryParameter.skipEncoding) {
               if (Array.isArray(queryParameterValue)) {
                 for (const index in queryParameterValue) {
                   queryParameterValue[index] = encodeURIComponent(queryParameterValue[index]);
+                }
+                if (queryParameter.collectionFormat !== QueryCollectionFormat.Multi) {
+                  queryParameterValue = queryParameterValue.join(queryParameter.collectionFormat);
                 }
               }
               else {
