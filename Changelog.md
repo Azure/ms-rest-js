@@ -1,4 +1,7 @@
 # Changelog
+## 2.0.6 - 2020-04-16
+- Fixes encoding query parameters in an array before joining them.(PR [#382](https://github.com/Azure/ms-rest-js/pull/382))
+
 ## 2.0.5 - 2020-01-07
 - Fix node-fetch bundling when using Webpack (PR [#376](https://github.com/Azure/ms-rest-js/pull/376)).
 
