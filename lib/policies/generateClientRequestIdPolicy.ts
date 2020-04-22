@@ -3,7 +3,7 @@
 
 import { HttpOperationResponse } from "../httpOperationResponse";
 import * as utils from "../util/utils";
-import { WebResource } from "../webResource";
+import { WebResourceLike } from "../webResource";
 import { BaseRequestPolicy, RequestPolicy, RequestPolicyFactory, RequestPolicyOptions } from "./requestPolicy";
 
 export function generateClientRequestIdPolicy(requestIdHeaderName = "x-ms-client-request-id"): RequestPolicyFactory {
@@ -19,7 +19,7 @@ export class GenerateClientRequestIdPolicy extends BaseRequestPolicy {
     super(nextPolicy, options);
   }
 
-  public sendRequest(request: WebResource): Promise<HttpOperationResponse> {
+  public sendRequest(request: WebResourceLike): Promise<HttpOperationResponse> {
     if (!request.headers.contains(this._requestIdHeaderName)) {
       request.headers.set(this._requestIdHeaderName, utils.generateUuid());
     }

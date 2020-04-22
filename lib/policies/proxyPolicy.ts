@@ -4,7 +4,7 @@
 import { BaseRequestPolicy, RequestPolicy, RequestPolicyFactory, RequestPolicyOptions } from "./requestPolicy";
 import { HttpOperationResponse } from "../httpOperationResponse";
 import { ProxySettings } from "../serviceClient";
-import { WebResource } from "../webResource";
+import { WebResourceLike } from "../webResource";
 import { Constants } from "../util/constants";
 import { URLBuilder } from "../url";
 
@@ -58,7 +58,7 @@ export class ProxyPolicy extends BaseRequestPolicy {
     this.proxySettings = proxySettings;
   }
 
-  public sendRequest(request: WebResource): Promise<HttpOperationResponse> {
+  public sendRequest(request: WebResourceLike): Promise<HttpOperationResponse> {
     if (!request.proxySettings) {
       request.proxySettings = this.proxySettings;
     }

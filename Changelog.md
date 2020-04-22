@@ -1,4 +1,8 @@
 # Changelog
+
+## 2.0.6 - 2020-04-15
+- A new interface `WebResourceLike` was introduced to avoid a direct dependency on the class `WebResource` in public interfaces. `HttpHeadersLike` was also added to replace references to `HttpHeaders`.  This change was added to improve compatibility between `@azure/core-http` and `@azure/ms-rest-nodeauth`.
+
 ## 2.0.5 - 2020-01-07
 - Fix node-fetch bundling when using Webpack (PR [#376](https://github.com/Azure/ms-rest-js/pull/376)).
 
