@@ -839,5 +839,5 @@ async function testSendOperationRequest(queryValue: any, queryCollectionFormat: 
   );
 
   assert(request!);
-  assert(request!.url.endsWith(expected), `"${request!.url}" does not end with "${expected}"`);  
+  assert(request!.url.endsWith(expected), `"${request!.url}" does not end with "${expected}"`);
 }
