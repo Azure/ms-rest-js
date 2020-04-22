@@ -6,7 +6,7 @@ import { HttpClient } from "../lib/httpClient";
 import { QueryCollectionFormat } from "../lib/queryCollectionFormat";
 import { DictionaryMapper, MapperType, Serializer, Mapper } from "../lib/serializer";
 import { serializeRequestBody, ServiceClient, getOperationArgumentValueFromParameterPath } from "../lib/serviceClient";
-import { WebResource } from "../lib/webResource";
+import { WebResourceLike, WebResource } from "../lib/webResource";
 import { OperationArguments, HttpHeaders, deserializationPolicy, RestResponse, isNode } from "../lib/msRest";
 import { ParameterPath } from "../lib/operationParameter";
 
@@ -18,7 +18,7 @@ describe("ServiceClient", function () {
       "unrelated": "42"
     };
 
-    let request: WebResource;
+    let request: WebResourceLike;
     const client = new ServiceClient(undefined, {
       httpClient: {
         sendRequest: req => {
@@ -74,7 +74,7 @@ describe("ServiceClient", function () {
   });
 
   it("responses should not show the _response property when serializing", async function () {
-    let request: WebResource;
+    let request: WebResourceLike;
     const client = new ServiceClient(undefined, {
       httpClient: {
         sendRequest: req => {
@@ -120,7 +120,7 @@ describe("ServiceClient", function () {
   });
 
   it("should apply withCredentials to requests", async function () {
-    let request: WebResource;
+    let request: WebResourceLike;
     const httpClient: HttpClient = {
       sendRequest: req => {
         request = req;
@@ -160,7 +160,7 @@ describe("ServiceClient", function () {
   });
 
   it("should deserialize response bodies", async function () {
-    let request: WebResource;
+    let request: WebResourceLike;
     const httpClient: HttpClient = {
       sendRequest: req => {
         request = req;
@@ -201,7 +201,7 @@ describe("ServiceClient", function () {
 
   it("should use userAgent header name value from options", async function () {
     const httpClient: HttpClient = {
-      sendRequest: (request: WebResource) => {
+      sendRequest: (request: WebResourceLike) => {
         return Promise.resolve({ request, status: 200, headers: new HttpHeaders() });
       }
     };
@@ -227,7 +227,7 @@ describe("ServiceClient", function () {
 
   it("should use userAgent header name function from options", async function () {
     const httpClient: HttpClient = {
-      sendRequest: (request: WebResource) => {
+      sendRequest: (request: WebResourceLike) => {
         return Promise.resolve({ request, status: 200, headers: new HttpHeaders() });
       }
     };
@@ -253,7 +253,7 @@ describe("ServiceClient", function () {
 
   it("should use userAgent string from options", async function () {
     const httpClient: HttpClient = {
-      sendRequest: (request: WebResource) => {
+      sendRequest: (request: WebResourceLike) => {
         return Promise.resolve({ request, status: 200, headers: new HttpHeaders() });
       }
     };
@@ -278,7 +278,7 @@ describe("ServiceClient", function () {
 
   it("should use userAgent function from options that appends to defaultUserAgent", async function () {
     const httpClient: HttpClient = {
-      sendRequest: (request: WebResource) => {
+      sendRequest: (request: WebResourceLike) => {
         return Promise.resolve({ request, status: 200, headers: new HttpHeaders() });
       }
     };
@@ -306,7 +306,7 @@ describe("ServiceClient", function () {
 
   it("should use userAgent function from options that ignores defaultUserAgent", async function () {
     const httpClient: HttpClient = {
-      sendRequest: (request: WebResource) => {
+      sendRequest: (request: WebResourceLike) => {
         return Promise.resolve({ request, status: 200, headers: new HttpHeaders() });
       }
     };
@@ -794,7 +794,7 @@ function stringToByteArray(str: string): Uint8Array {
 }
 
 async function testSendOperationRequest(queryValue: any, queryCollectionFormat: QueryCollectionFormat, skipEncodingParameter: boolean, expected: string) {
-  let request: WebResource;
+  let request: WebResourceLike;
   const client = new ServiceClient(undefined, {
     httpClient: {
       sendRequest: req => {
@@ -839,5 +839,5 @@ async function testSendOperationRequest(queryValue: any, queryCollectionFormat: 
   );
 
   assert(request!);
-  assert(request!.url.endsWith(expected), `"${request!.url}" does not end with "${expected}"`);
+  assert(request!.url.endsWith(expected), `"${request!.url}" does not end with "${expected}"`);  
 }

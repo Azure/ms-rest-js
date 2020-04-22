@@ -3,7 +3,7 @@
 
 import { HttpOperationResponse } from "../httpOperationResponse";
 import { URLBuilder } from "../url";
-import { WebResource } from "../webResource";
+import { WebResourceLike } from "../webResource";
 import { BaseRequestPolicy, RequestPolicy, RequestPolicyFactory, RequestPolicyOptions } from "./requestPolicy";
 
 export function redirectPolicy(maximumRetries = 20): RequestPolicyFactory {
@@ -19,7 +19,7 @@ export class RedirectPolicy extends BaseRequestPolicy {
     super(nextPolicy, options);
   }
 
-  public sendRequest(request: WebResource): Promise<HttpOperationResponse> {
+  public sendRequest(request: WebResourceLike): Promise<HttpOperationResponse> {
     return this._nextPolicy.sendRequest(request).then(response => handleRedirect(this, response, 0));
   }
 }
