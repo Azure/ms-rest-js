@@ -7,11 +7,11 @@ import { HttpOperationResponse } from "../../lib/httpOperationResponse";
 import { HttpClient, OperationSpec, Serializer } from "../../lib/msRest";
 import { DeserializationPolicy, deserializationPolicy, deserializeResponseBody, defaultJsonContentTypes, defaultXmlContentTypes } from "../../lib/policies/deserializationPolicy";
 import { RequestPolicy, RequestPolicyOptions } from "../../lib/policies/requestPolicy";
-import { WebResource, WebResourceLike } from "../../lib/webResource";
+import { WebResource } from "../../lib/webResource";
 
 describe("deserializationPolicy", function () {
   const mockPolicy: RequestPolicy = {
-    sendRequest(request: WebResourceLike): Promise<HttpOperationResponse> {
+    sendRequest(request: WebResource): Promise<HttpOperationResponse> {
       return Promise.resolve({
         request: request,
         status: 200,
@@ -31,7 +31,7 @@ describe("deserializationPolicy", function () {
   });
 
   it("should parse a JSON response body", async function () {
-    const request: WebResourceLike = createRequest();
+    const request: WebResource = createRequest();
     const mockClient: HttpClient = {
       sendRequest: req => Promise.resolve({
         request: req,
@@ -47,7 +47,7 @@ describe("deserializationPolicy", function () {
   });
 
   it("should parse a JSON response body with a charset specified in Content-Type", async function () {
-    const request: WebResourceLike = createRequest();
+    const request: WebResource = createRequest();
     const mockClient: HttpClient = {
       sendRequest: req => Promise.resolve({
         request: req,
@@ -63,7 +63,7 @@ describe("deserializationPolicy", function () {
   });
 
   it("should parse a JSON response body with an uppercase Content-Type", async function () {
-    const request: WebResourceLike = createRequest();
+    const request: WebResource = createRequest();
     const mockClient: HttpClient = {
       sendRequest: req => Promise.resolve({
         request: req,
@@ -79,7 +79,7 @@ describe("deserializationPolicy", function () {
   });
 
   it("should parse a JSON response body with a missing Content-Type", async function () {
-    const request: WebResourceLike = createRequest();
+    const request: WebResource = createRequest();
     const mockClient: HttpClient = {
       sendRequest: req => Promise.resolve({
         request: req,
@@ -467,7 +467,7 @@ function deserializeResponse(response: HttpOperationResponse): Promise<HttpOpera
   return deserializeResponseBody(defaultJsonContentTypes, defaultXmlContentTypes, response);
 }
 
-function createRequest(operationSpec?: OperationSpec): WebResourceLike {
+function createRequest(operationSpec?: OperationSpec): WebResource {
   const request = new WebResource();
   request.operationSpec = operationSpec;
   return request;

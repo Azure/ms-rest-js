@@ -1,10 +1,10 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-export { WebResource, WebResourceLike, HttpRequestBody, RequestPrepareOptions, HttpMethods, ParameterValue, RequestOptionsBase, TransferProgressEvent, AbortSignalLike } from "./webResource";
+export { WebResource, HttpRequestBody, RequestPrepareOptions, HttpMethods, ParameterValue, RequestOptionsBase, TransferProgressEvent, AbortSignalLike } from "./webResource";
 export { DefaultHttpClient } from "./defaultHttpClient";
 export { HttpClient } from "./httpClient";
-export { HttpHeaders, HttpHeadersLike } from "./httpHeaders";
+export { HttpHeaders } from "./httpHeaders";
 export { HttpOperationResponse, HttpResponse, RestResponse } from "./httpOperationResponse";
 export { HttpPipelineLogger } from "./httpPipelineLogger";
 export { HttpPipelineLogLevel } from "./httpPipelineLogLevel";

@@ -2,12 +2,12 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 import { BaseRequestPolicy, RequestPolicy, RequestPolicyOptions, RequestPolicyFactory } from "./requestPolicy";
-import { WebResourceLike } from "../webResource";
+import { WebResource } from "../webResource";
 import { HttpOperationResponse } from "../httpOperationResponse";
 import { Constants } from "../util/constants";
 import { delay } from "../util/utils";
 
-type ResponseHandler = (httpRequest: WebResourceLike, response: HttpOperationResponse) => Promise<HttpOperationResponse>;
+type ResponseHandler = (httpRequest: WebResource, response: HttpOperationResponse) => Promise<HttpOperationResponse>;
 const StatusCodes = Constants.HttpConstants.StatusCodes;
 
 export function throttlingRetryPolicy(): RequestPolicyFactory {
@@ -32,7 +32,7 @@ export class ThrottlingRetryPolicy extends BaseRequestPolicy {
     this._handleResponse = _handleResponse || this._defaultResponseHandler;
   }
 
-  public async sendRequest(httpRequest: WebResourceLike): Promise<HttpOperationResponse> {
+  public async sendRequest(httpRequest: WebResource): Promise<HttpOperationResponse> {
     return this._nextPolicy.sendRequest(httpRequest.clone()).then(response => {
       if (response.status !== StatusCodes.TooManyRequests) {
         return response;
@@ -42,7 +42,7 @@ export class ThrottlingRetryPolicy extends BaseRequestPolicy {
     });
   }
 
-  private async _defaultResponseHandler(httpRequest: WebResourceLike, httpResponse: HttpOperationResponse): Promise<HttpOperationResponse> {
+  private async _defaultResponseHandler(httpRequest: WebResource, httpResponse: HttpOperationResponse): Promise<HttpOperationResponse> {
     const retryAfterHeader: string | undefined = httpResponse.headers.get(Constants.HeaderConstants.RETRY_AFTER);
 
     if (retryAfterHeader) {

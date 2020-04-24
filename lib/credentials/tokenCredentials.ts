@@ -3,7 +3,7 @@
 
 import { HttpHeaders } from "../httpHeaders";
 import { Constants } from "../util/constants";
-import { WebResourceLike } from "../webResource";
+import { WebResource } from "../webResource";
 import { ServiceClientCredentials } from "./serviceClientCredentials";
 
 const HeaderConstants = Constants.HeaderConstants;
@@ -34,10 +34,10 @@ export class TokenCredentials implements ServiceClientCredentials {
   /**
    * Signs a request with the Authentication header.
    *
-   * @param {WebResourceLike} webResource The WebResourceLike to be signed.
-   * @return {Promise<WebResourceLike>} The signed request object.
+   * @param {WebResource} webResource The WebResource to be signed.
+   * @return {Promise<WebResource>} The signed request object.
    */
-  signRequest(webResource: WebResourceLike) {
+  signRequest(webResource: WebResource) {
     if (!webResource.headers) webResource.headers = new HttpHeaders();
     webResource.headers.set(HeaderConstants.AUTHORIZATION, `${this.authorizationScheme} ${this.token}`);
     return Promise.resolve(webResource);

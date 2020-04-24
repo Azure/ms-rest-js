@@ -8,7 +8,7 @@ import "node-fetch";
 
 import { FetchHttpClient } from "./fetchHttpClient";
 import { HttpOperationResponse } from "./httpOperationResponse";
-import { WebResourceLike } from "./webResource";
+import { WebResource } from "./webResource";
 import { createProxyAgent, ProxyAgent } from "./proxyAgent";
 
 interface GlobalWithFetch extends NodeJS.Global {
@@ -29,7 +29,7 @@ export class NodeFetchHttpClient extends FetchHttpClient {
     return fetch(input, init);
   }
 
-  async prepareRequest(httpRequest: WebResourceLike): Promise<Partial<RequestInit>> {
+  async prepareRequest(httpRequest: WebResource): Promise<Partial<RequestInit>> {
     const requestInit: Partial<RequestInit & { agent?: any }> = {};
 
     if (this.cookieJar && !httpRequest.headers.get("Cookie")) {

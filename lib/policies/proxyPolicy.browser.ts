@@ -4,7 +4,7 @@
 import { ProxySettings } from "../serviceClient";
 import { BaseRequestPolicy, RequestPolicy, RequestPolicyFactory, RequestPolicyOptions } from "./requestPolicy";
 import { HttpOperationResponse } from "../httpOperationResponse";
-import { WebResourceLike } from "../webResource";
+import { WebResource } from "../webResource";
 
 const proxyNotSupportedInBrowser = new Error("ProxyPolicy is not supported in browser environment");
 
@@ -26,7 +26,7 @@ export class ProxyPolicy extends BaseRequestPolicy {
     throw proxyNotSupportedInBrowser;
   }
 
-  public sendRequest(_request: WebResourceLike): Promise<HttpOperationResponse> {
+  public sendRequest(_request: WebResource): Promise<HttpOperationResponse> {
     throw proxyNotSupportedInBrowser;
   }
 }

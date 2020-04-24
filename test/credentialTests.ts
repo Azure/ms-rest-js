@@ -18,7 +18,7 @@ describe("Token credentials", () => {
       const creds = new TokenCredentials(dummyToken);
       const request = new msRest.WebResource();
 
-      creds.signRequest(request).then((signedRequest: msRest.WebResourceLike) => {
+      creds.signRequest(request).then((signedRequest: msRest.WebResource) => {
         signedRequest.headers.get("authorization")!.should.exist;
         signedRequest.headers.get("authorization")!.should.match(new RegExp("^Bearer\\s+" + dummyToken + "$"));
         done();
@@ -28,7 +28,7 @@ describe("Token credentials", () => {
     it("should set auth header with custom scheme in request", (done) => {
       const creds = new TokenCredentials(dummyToken, fakeScheme);
       const request = new msRest.WebResource();
-      creds.signRequest(request).then((signedRequest: msRest.WebResourceLike) => {
+      creds.signRequest(request).then((signedRequest: msRest.WebResource) => {
         signedRequest.headers.get("authorization")!.should.exist;
         signedRequest.headers.get("authorization")!.should.match(new RegExp("^" + fakeScheme + "\\s+" + dummyToken + "$"));
         done();
@@ -64,7 +64,7 @@ describe("Basic Authentication credentials", () => {
     it("should base64 encode the username and password and set auth header with baisc scheme in request", (done) => {
       const creds = new BasicAuthenticationCredentials(dummyUsername, dummyPassword);
       const request = new msRest.WebResource();
-      creds.signRequest(request).then((signedRequest: msRest.WebResourceLike) => {
+      creds.signRequest(request).then((signedRequest: msRest.WebResource) => {
         signedRequest.headers.get("authorization")!.should.exist;
         signedRequest.headers.get("authorization")!.should.match(new RegExp("^Basic\\s+" + encodedCredentials + "$"));
         done();
@@ -75,7 +75,7 @@ describe("Basic Authentication credentials", () => {
       const creds = new BasicAuthenticationCredentials(dummyUsername, dummyPassword, fakeScheme);
       const request = new msRest.WebResource();
 
-      creds.signRequest(request).then((signedRequest: msRest.WebResourceLike) => {
+      creds.signRequest(request).then((signedRequest: msRest.WebResource) => {
         signedRequest.headers.get("authorization")!.should.exist;
         signedRequest.headers.get("authorization")!.should.match(new RegExp("^" + fakeScheme + "\\s+" + encodedCredentials + "$"));
         done();

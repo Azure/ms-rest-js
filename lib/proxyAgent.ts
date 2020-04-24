@@ -7,10 +7,10 @@ import * as tunnel from "tunnel";
 
 import { ProxySettings } from "./serviceClient";
 import { URLBuilder } from "./url";
-import { HttpHeadersLike } from "./httpHeaders";
+import { HttpHeaders } from "./httpHeaders";
 
 export type ProxyAgent = { isHttps: boolean; agent: http.Agent | https.Agent };
-export function createProxyAgent(requestUrl: string, proxySettings: ProxySettings, headers?: HttpHeadersLike): ProxyAgent {
+export function createProxyAgent(requestUrl: string, proxySettings: ProxySettings, headers?: HttpHeaders): ProxyAgent {
   const tunnelOptions: tunnel.HttpsOverHttpsOptions = {
     proxy: {
       host: URLBuilder.parse(proxySettings.host).getHost() as string,

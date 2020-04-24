@@ -4,7 +4,7 @@
 import { HttpOperationResponse } from "../httpOperationResponse";
 import { HttpPipelineLogger } from "../httpPipelineLogger";
 import { HttpPipelineLogLevel } from "../httpPipelineLogLevel";
-import { WebResourceLike } from "../webResource";
+import { WebResource } from "../webResource";
 
 /**
  * Creates a new RequestPolicy per-request that uses the provided nextPolicy.
@@ -14,14 +14,14 @@ export type RequestPolicyFactory = {
 };
 
 export interface RequestPolicy {
-  sendRequest(httpRequest: WebResourceLike): Promise<HttpOperationResponse>;
+  sendRequest(httpRequest: WebResource): Promise<HttpOperationResponse>;
 }
 
 export abstract class BaseRequestPolicy implements RequestPolicy {
   protected constructor(readonly _nextPolicy: RequestPolicy, readonly _options: RequestPolicyOptions) {
   }
 
-  public abstract sendRequest(webResource: WebResourceLike): Promise<HttpOperationResponse>;
+  public abstract sendRequest(webResource: WebResource): Promise<HttpOperationResponse>;
 
   /**
    * Get whether or not a log with the provided log level should be logged.

@@ -1,8 +1,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-import { WebResourceLike } from "./webResource";
-import { HttpHeadersLike } from "./httpHeaders";
+import { WebResource } from "./webResource";
+import { HttpHeaders } from "./httpHeaders";
 
 /**
  * The properties on an HTTP response which will always be present.
@@ -11,7 +11,7 @@ export interface HttpResponse {
   /**
    * The raw request
    */
-  request: WebResourceLike;
+  request: WebResource;
 
   /**
    * The HTTP response status (e.g. 200)
@@ -21,7 +21,7 @@ export interface HttpResponse {
   /**
    * The HTTP response headers.
    */
-  headers: HttpHeadersLike;
+  headers: HttpHeaders;
 }
 
 declare global {

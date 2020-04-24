@@ -5,7 +5,7 @@ import "chai/register-should";
 import { should } from "chai";
 import { ProxySettings } from "../../lib/serviceClient";
 import { RequestPolicyOptions } from "../../lib/policies/requestPolicy";
-import { WebResource, WebResourceLike } from "../../lib/webResource";
+import { WebResource } from "../../lib/webResource";
 import { HttpHeaders } from "../../lib/httpHeaders";
 import { proxyPolicy, ProxyPolicy, getDefaultProxySettings } from "../../lib/policies/proxyPolicy";
 import { Constants } from "../../lib/msRest";
@@ -20,7 +20,7 @@ describe("ProxyPolicy", function () {
   };
 
   const emptyRequestPolicy = {
-    sendRequest: (_: WebResourceLike) => Promise.resolve({
+    sendRequest: (_: WebResource) => Promise.resolve({
       request: new WebResource(),
       status: 404,
       headers: new HttpHeaders(undefined)

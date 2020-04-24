@@ -4,14 +4,14 @@
 import { assert, AssertionError } from "chai";
 import sinon from "sinon";
 import { ThrottlingRetryPolicy } from "../../lib/policies/throttlingRetryPolicy";
-import { WebResource, WebResourceLike } from "../../lib/webResource";
+import { WebResource } from "../../lib/webResource";
 import { HttpOperationResponse } from "../../lib/httpOperationResponse";
 import { HttpHeaders, RequestPolicyOptions } from "../../lib/msRest";
 
 describe("ThrottlingRetryPolicy", () => {
   class PassThroughPolicy {
     constructor(private _response: HttpOperationResponse) { }
-    public sendRequest(request: WebResourceLike): Promise<HttpOperationResponse> {
+    public sendRequest(request: WebResource): Promise<HttpOperationResponse> {
       const response = {
         ...this._response,
         request: request
@@ -27,7 +27,7 @@ describe("ThrottlingRetryPolicy", () => {
     headers: new HttpHeaders()
   };
 
-  function createDefaultThrottlingRetryPolicy(response?: HttpOperationResponse, actionHandler?: (httpRequest: WebResourceLike, response: HttpOperationResponse) => Promise<HttpOperationResponse>) {
+  function createDefaultThrottlingRetryPolicy(response?: HttpOperationResponse, actionHandler?: (httpRequest: WebResource, response: HttpOperationResponse) => Promise<HttpOperationResponse>) {
     if (!response) {
       response = defaultResponse;
     }
@@ -40,7 +40,7 @@ describe("ThrottlingRetryPolicy", () => {
     it("should clone the request", async () => {
       const request = new WebResource();
       const nextPolicy = {
-        sendRequest: (requestToSend: WebResourceLike): Promise<HttpOperationResponse> => {
+        sendRequest: (requestToSend: WebResource): Promise<HttpOperationResponse> => {
           assert(request !== requestToSend);
           return Promise.resolve(defaultResponse);
         }

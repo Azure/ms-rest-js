@@ -8,7 +8,7 @@ import { RestError } from "../restError";
 import { Mapper, MapperType } from "../serializer";
 import * as utils from "../util/utils";
 import { parseXML } from "../util/xml";
-import { WebResourceLike } from "../webResource";
+import { WebResource } from "../webResource";
 import { BaseRequestPolicy, RequestPolicy, RequestPolicyFactory, RequestPolicyOptions } from "./requestPolicy";
 
 /**
@@ -59,14 +59,14 @@ export class DeserializationPolicy extends BaseRequestPolicy {
     this.xmlContentTypes = deserializationContentTypes && deserializationContentTypes.xml || defaultXmlContentTypes;
   }
 
-  public async sendRequest(request: WebResourceLike): Promise<HttpOperationResponse> {
+  public async sendRequest(request: WebResource): Promise<HttpOperationResponse> {
     return this._nextPolicy.sendRequest(request).then((response: HttpOperationResponse) => deserializeResponseBody(this.jsonContentTypes, this.xmlContentTypes, response));
   }
 }
 
 function getOperationResponse(parsedResponse: HttpOperationResponse): undefined | OperationResponse {
   let result: OperationResponse | undefined;
-  const request: WebResourceLike = parsedResponse.request;
+  const request: WebResource = parsedResponse.request;
   const operationSpec: OperationSpec | undefined = request.operationSpec;
   if (operationSpec) {
     const operationResponseGetter: undefined | ((operationSpec: OperationSpec, response: HttpOperationResponse) => (undefined | OperationResponse)) = request.operationResponseGetter;

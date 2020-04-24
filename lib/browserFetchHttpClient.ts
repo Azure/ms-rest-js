@@ -3,10 +3,10 @@
 
 import { FetchHttpClient } from "./fetchHttpClient";
 import { HttpOperationResponse } from "./httpOperationResponse";
-import { WebResourceLike } from "./webResource";
+import { WebResource } from "./webResource";
 
 export class BrowserFetchHttpClient extends FetchHttpClient {
-  prepareRequest(_httpRequest: WebResourceLike): Promise<Partial<RequestInit>> {
+  prepareRequest(_httpRequest: WebResource): Promise<Partial<RequestInit>> {
     return Promise.resolve({});
   }
 

@@ -3,7 +3,7 @@
 
 import { HttpOperationResponse } from "../httpOperationResponse";
 import * as utils from "../util/utils";
-import { WebResourceLike } from "../webResource";
+import { WebResource } from "../webResource";
 import { BaseRequestPolicy, RequestPolicy, RequestPolicyFactory, RequestPolicyOptions } from "./requestPolicy";
 
 export interface RetryData {
@@ -54,7 +54,7 @@ export class SystemErrorRetryPolicy extends BaseRequestPolicy {
     this.maxRetryInterval = typeof maxRetryInterval === "number" ? maxRetryInterval : this.DEFAULT_CLIENT_MAX_RETRY_INTERVAL;
   }
 
-  public sendRequest(request: WebResourceLike): Promise<HttpOperationResponse> {
+  public sendRequest(request: WebResource): Promise<HttpOperationResponse> {
     return this._nextPolicy.sendRequest(request.clone()).then(response => retry(this, request, response));
   }
 }
@@ -112,7 +112,7 @@ function updateRetryData(policy: SystemErrorRetryPolicy, retryData?: RetryData, 
   return retryData;
 }
 
-function retry(policy: SystemErrorRetryPolicy, request: WebResourceLike, operationResponse: HttpOperationResponse, retryData?: RetryData, err?: RetryError): Promise<HttpOperationResponse> {
+function retry(policy: SystemErrorRetryPolicy, request: WebResource, operationResponse: HttpOperationResponse, retryData?: RetryData, err?: RetryError): Promise<HttpOperationResponse> {
   retryData = updateRetryData(policy, retryData, err);
   if (err && err.code && shouldRetry(policy, retryData) &&
     (err.code === "ETIMEDOUT" || err.code === "ESOCKETTIMEDOUT" || err.code === "ECONNREFUSED" ||
