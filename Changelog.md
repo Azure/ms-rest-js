@@ -5,6 +5,9 @@
 - Replace public usage of `RequestPolicyOptions` to an interface `RequestPolicyOptionsLike` to avoid compatibility issues with private members.
 - Fix issue with null/undefined values in array and tabs/space delimiter arrays during sendOperationRequest. [PR #390](https://github.com/Azure/ms-rest-js/pull/390)
 
+## 2.0.7 - 2020-04-24
+- Fix in flattenResponse when expecting an array, checking for parsedBody to be an array before proceeding with flattening
+
 ## 2.0.6 - 2020-04-15
 - A new interface `WebResourceLike` was introduced to avoid a direct dependency on the class `WebResource` in public interfaces. `HttpHeadersLike` was also added to replace references to `HttpHeaders`.  This change was added to improve compatibility between `@azure/core-http` and `@azure/ms-rest-nodeauth`.
 
