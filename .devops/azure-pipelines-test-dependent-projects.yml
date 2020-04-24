@@ -81,12 +81,12 @@ jobs:
   - script: 'git clone --single-branch -b v4x https://github.com/Azure/autorest.typescript.git autorest.typescript --recursive --depth 1'
     workingDirectory: $(tempDirectory)
     displayName: "clone autorest.typescript"
-  - script: 'npm install $(Build.SourcesDirectory)/$(msRestJsPackageName)'
+  - script: 'npm install $(System.DefaultWorkingDirectory)/$(msRestJsPackageName)'
     workingDirectory: $(repoDir)
     displayName: 'npm install @azure/ms-rest-js'
-  - script: 'npm install $(Build.SourcesDirectory)/$(msRestAzureJsPackageName)'
+  - script: 'npm install $(System.DefaultWorkingDirectory)/$(msRestAzureJsPackageName)'
     workingDirectory: $(repoDir)
-    displayName: 'npm install @azure/ms-rest-azure-js' 
+    displayName: 'npm install @azure/ms-rest-azure-js'
   - script: 'cat package.json'
     workingDirectory: $(repoDir)
     displayName: "debug"
