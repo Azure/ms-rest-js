@@ -559,7 +559,7 @@ export function flattenResponse(_response: HttpOperationResponse, responseSpec: 
       // We're expecting a sequece(array) make sure that the response body is in the
       // correct format, if not make it an empty array []
       const parsedBody =
-        _response.parsedBody && Array.isArray(_response.parsedBody)
+        Array.isArray(_response.parsedBody)
           ? _response.parsedBody
           : [];
       const arrayResponse = [...parsedBody] as RestResponse & any[];
