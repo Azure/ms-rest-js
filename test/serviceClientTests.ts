@@ -231,6 +231,79 @@ describe("ServiceClient", function () {
     assert.deepStrictEqual(res.slice(), [1, 2, 3]);
   });
 
+  it("should deserialize response bodies with undefined array", async function () {
+    let request: WebResource;
+    const httpClient: HttpClient = {
+      sendRequest: (req) => {
+        request = req;
+        return Promise.resolve({
+          request,
+          status: 200,
+          headers: new HttpHeaders(),
+          bodyAsText: JSON.stringify({ nextLink: "mockLink" }),
+        });
+      },
+    };
+
+    const client1 = new ServiceClient(undefined, {
+      httpClient,
+      requestPolicyFactories: [deserializationPolicy()],
+    });
+
+    const res = (await client1.sendOperationRequest(
+      {},
+      {
+        serializer: new Serializer(),
+        httpMethod: "GET",
+        baseUrl: "httpbin.org",
+        responses: {
+          "200": {
+            bodyMapper: {
+              type: {
+                name: "Composite",
+                modelProperties: {
+                  value: {
+                    serializedName: "",
+                    type: {
+                      name: "Sequence",
+                      element: {
+                        type: { name: "String" },
+                      },
+                    },
+                  },
+                  nextLink: {
+                    serializedName: "nextLink",
+                    type: { name: "String" },
+                  },
+                },
+              },
+            },
+          },
+          default: {
+            bodyMapper: {
+              serializedName: "ErrorResponse",
+              type: {
+                name: "Composite",
+                className: "ErrorResponse",
+                modelProperties: {
+                  code: { serializedName: "code", type: { name: "String" } },
+                  message: {
+                    serializedName: "message",
+                    type: { name: "String" },
+                  },
+                },
+              },
+            },
+          },
+        },
+      }
+    )) as any;
+
+    assert.strictEqual(res._response.status, 200);
+    assert.deepStrictEqual(res.nextLink, "mockLink");
+    assert.deepStrictEqual(res, []);
+  });
+
   it("should use userAgent header name value from options", async function () {
     const httpClient: HttpClient = {
       sendRequest: (request: WebResource) => {
