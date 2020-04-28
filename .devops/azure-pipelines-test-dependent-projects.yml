@@ -96,6 +96,12 @@ jobs:
   - script: 'npm run build'
     workingDirectory: $(repoDir)
     displayName: "npm run build"
+  - script: 'cat node_modules/@azure/ms-rest-js/package.json'
+    workingDirectory: $(repoDir)
+    displayName: 'debug ms-rest-js/package.json'
+  - script: 'cat node_modules/@azure/ms-rest-azure-js/node_modules/@azure/ms-rest-js/package.json'
+    workingDirectory: $(repoDir)
+    displayName: 'debug @azure/ms-rest-azure-js/node_modules/@azure/ms-rest-js/package.json'
   - script: 'gulp regenerate'
     workingDirectory: $(repoDir)
     displayName: 'gulp regenerate'
