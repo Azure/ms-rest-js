@@ -96,6 +96,12 @@ jobs:
   - script: 'npm run build'
     workingDirectory: $(repoDir)
     displayName: "npm run build"
-  - script: 'gulp testci'
+  - script: 'gulp regenerate'
     workingDirectory: $(repoDir)
-    displayName: 'gulp testci'
+    displayName: 'gulp regenerate'
+  - script: 'cat package-lock.json'
+    workingDirectory: $(repoDir)
+    displayName: "debug package-lock"
+  - script: 'gulp test'
+    workingDirectory: $(repoDir)
+    displayName: 'gulp test'
