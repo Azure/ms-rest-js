@@ -257,7 +257,7 @@ export class ServiceClient {
                 queryParameterValue = encodeURIComponent(queryParameterValue);
               }
             }
-            if (queryParameter.collectionFormat !== QueryCollectionFormat.Multi) {
+            if (queryParameter.collectionFormat != undefined && queryParameter.collectionFormat !== QueryCollectionFormat.Multi) {
               queryParameterValue = queryParameterValue.join(queryParameter.collectionFormat);
             }
             requestUrl.setQueryParameter(queryParameter.mapper.serializedName || getPathStringFromParameter(queryParameter), queryParameterValue);
