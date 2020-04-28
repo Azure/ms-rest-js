@@ -93,9 +93,9 @@ jobs:
   - script: 'npm install --verbose'
     workingDirectory: $(repoDir)
     displayName: "npm install"
-  - script: 'gulp regenerate'
+  - script: 'npm run build'
     workingDirectory: $(repoDir)
-    displayName: 'gulp regenerate'
-  - script: 'gulp test'
+    displayName: "npm run build"
+  - script: 'gulp testci'
     workingDirectory: $(repoDir)
-    displayName: 'gulp test'
+    displayName: 'gulp testci'
