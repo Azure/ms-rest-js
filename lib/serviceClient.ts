@@ -245,8 +245,6 @@ export class ServiceClient {
                     queryParameterValue[index] = item == undefined ? "" : item.toString();
                   }
                 }
-              } else {
-                queryParameterValue = queryParameterValue.join(queryParameter.collectionFormat);
               }
             }
             if (!queryParameter.skipEncoding) {
@@ -258,6 +256,9 @@ export class ServiceClient {
               else {
                 queryParameterValue = encodeURIComponent(queryParameterValue);
               }
+            }
+            if (queryParameter.collectionFormat != undefined && queryParameter.collectionFormat !== QueryCollectionFormat.Multi) {
+              queryParameterValue = queryParameterValue.join(queryParameter.collectionFormat);
             }
             requestUrl.setQueryParameter(queryParameter.mapper.serializedName || getPathStringFromParameter(queryParameter), queryParameterValue);
           }
