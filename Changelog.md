@@ -1,5 +1,5 @@
 # Changelog
-## 2.0.7 - 2020-04-22
+## 2.0.7 - 2020-04-27
 - Fixes encoding query parameters in an array before joining them.(PR [#382](https://github.com/Azure/ms-rest-js/pull/382))
 
 ## 2.0.6 - 2020-04-15
