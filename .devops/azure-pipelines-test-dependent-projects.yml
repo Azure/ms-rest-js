@@ -102,7 +102,7 @@ jobs:
   - script: 'cat package-lock.json'
     workingDirectory: $(repoDir)
     displayName: "debug package-lock"
-  - script: 'cat node_modules\@azure\ms-rest-js\package.json'
+  - script: 'cat node_modules/@azure/ms-rest-js/package.json'
     workingDirectory: $(repoDir)
     displayName: "debug ms-rest-js"
   - script: 'gulp test'
