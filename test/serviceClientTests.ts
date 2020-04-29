@@ -113,17 +113,20 @@ describe("ServiceClient", function () {
     await testSendOperationRequest(["1,2", "3,4", "5"], QueryCollectionFormat.Csv, false, "?q=1%2C2,3%2C4,5");
   });
 
+  /* tslint:disable:no-null-keyword */
   it("should serialize collection:csv query parameters with undefined and null", async function() {
     await testSendOperationRequest(["1,2", undefined, "5"], QueryCollectionFormat.Csv, false, "?q=1%2C2,,5");
     await testSendOperationRequest(["1,2", null, "5"], QueryCollectionFormat.Csv, false, "?q=1%2C2,,5");
   });
 
+  /* tslint:disable:no-null-keyword */
   it("should serialize collection:tsv query parameters with undefined and null", async function() {
     await testSendOperationRequest(["1,2", undefined, "5"], QueryCollectionFormat.Tsv, false, "?q=1%2C2%09%095");
     await testSendOperationRequest(["1,2", null, "5"], QueryCollectionFormat.Tsv, false, "?q=1%2C2%09%095");
     await testSendOperationRequest(["1,2", "3", "5"], QueryCollectionFormat.Tsv, false, "?q=1%2C2%093%095");
   });
 
+  /* tslint:disable:no-null-keyword */
   it("should serialize collection:ssv query parameters with undefined and null", async function() {
     await testSendOperationRequest(["1,2", undefined, "5"], QueryCollectionFormat.Ssv, false, "?q=1%2C2%20%205");
     await testSendOperationRequest(["1,2", null, "5"], QueryCollectionFormat.Ssv, false, "?q=1%2C2%20%205");
