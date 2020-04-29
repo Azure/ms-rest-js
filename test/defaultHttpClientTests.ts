@@ -143,8 +143,8 @@ describe("defaultHttpClient", function () {
     };
 
     it("for simple bodies", async function () {
-      httpMock.post("/fileupload", async (_url, _method, body) => {
-        return { status: 251, body: body, headers: { "Content-Length": "200" } };
+      httpMock.post("/fileupload", async (_url, _method) => {
+        return { status: 251, body: {}, headers: { "Content-Length": "200" } };
       });
 
       const upload: Notified = { notified: false };
