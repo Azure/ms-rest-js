@@ -245,19 +245,23 @@ export class ServiceClient {
                     queryParameterValue[index] = item == undefined ? "" : item.toString();
                   }
                 }
+              } else if (queryParameter.collectionFormat === QueryCollectionFormat.Ssv || queryParameter.collectionFormat === QueryCollectionFormat.Tsv) {
+                queryParameterValue = queryParameterValue.join(queryParameter.collectionFormat);
               }
             }
             if (!queryParameter.skipEncoding) {
               if (Array.isArray(queryParameterValue)) {
                 for (const index in queryParameterValue) {
-                  queryParameterValue[index] = encodeURIComponent(queryParameterValue[index]);
+                  if (queryParameterValue[index] !== undefined && queryParameterValue[index] !== null) {
+                    queryParameterValue[index] = encodeURIComponent(queryParameterValue[index]);
+                  }
                 }
               }
               else {
                 queryParameterValue = encodeURIComponent(queryParameterValue);
               }
             }
-            if (queryParameter.collectionFormat != undefined && queryParameter.collectionFormat !== QueryCollectionFormat.Multi) {
+            if (queryParameter.collectionFormat != undefined && queryParameter.collectionFormat !== QueryCollectionFormat.Multi && queryParameter.collectionFormat !== QueryCollectionFormat.Ssv && queryParameter.collectionFormat !== QueryCollectionFormat.Tsv) {
               queryParameterValue = queryParameterValue.join(queryParameter.collectionFormat);
             }
             requestUrl.setQueryParameter(queryParameter.mapper.serializedName || getPathStringFromParameter(queryParameter), queryParameterValue);
