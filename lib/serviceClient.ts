@@ -551,7 +551,13 @@ export function flattenResponse(_response: HttpOperationResponse, responseSpec: 
     const modelProperties = typeName === "Composite" && (bodyMapper as CompositeMapper).type.modelProperties || {};
     const isPageableResponse = Object.keys(modelProperties).some(k => modelProperties[k].serializedName === "");
     if (typeName === "Sequence" || isPageableResponse) {
-      const arrayResponse = [...(_response.parsedBody || [])] as RestResponse & any[];
+      // We're expecting a sequence(array) make sure that the response body is in the
+      // correct format, if not make it an empty array []
+      const parsedBody =
+        Array.isArray(_response.parsedBody)
+          ? _response.parsedBody
+          : [];
+      const arrayResponse = [...parsedBody] as RestResponse & any[];
 
       for (const key of Object.keys(modelProperties)) {
         if (modelProperties[key].serializedName) {

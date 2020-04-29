@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.8.15 - 2020-04-28
+- Fix in flattenResponse when expecting an array, checking for parsedBody to be an array before proceeding with flattening
+
 ## 1.8.14 - 2019-12-10
 - Fixed an issue where making many requests will cause Node.js to reach the memory allocation limit ([PR #](https://github.com/Azure/ms-rest-js/pull/375)).
 
