@@ -1,4 +1,8 @@
 # Changelog
+
+## 2.0.8
+- Replace public usage of `RequestPolicyOptions` to an interface `RequestPolicyOptionsLike` to avoid compatibility issues with private members.
+
 ## 2.0.7 - 2020-04-27
 - Fixes encoding query parameters in an array before joining them.(PR [#382](https://github.com/Azure/ms-rest-js/pull/382))
 

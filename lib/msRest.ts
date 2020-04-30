@@ -17,7 +17,7 @@ export { ServiceClient, ServiceClientOptions, flattenResponse } from "./serviceC
 export { QueryCollectionFormat } from "./queryCollectionFormat";
 export { Constants } from "./util/constants";
 export { logPolicy } from "./policies/logPolicy";
-export { BaseRequestPolicy, RequestPolicy, RequestPolicyFactory, RequestPolicyOptions } from "./policies/requestPolicy";
+export { BaseRequestPolicy, RequestPolicy, RequestPolicyFactory, RequestPolicyOptions, RequestPolicyOptionsLike } from "./policies/requestPolicy";
 export { generateClientRequestIdPolicy } from "./policies/generateClientRequestIdPolicy";
 export { exponentialRetryPolicy } from "./policies/exponentialRetryPolicy";
 export { systemErrorRetryPolicy } from "./policies/systemErrorRetryPolicy";
