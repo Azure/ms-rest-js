@@ -1,10 +1,8 @@
 # Changelog
 
-## 2.0.8
-- Replace public usage of `RequestPolicyOptions` to an interface `RequestPolicyOptionsLike` to avoid compatibility issues with private members.
-
-## 2.0.7 - 2020-04-27
+## 2.0.7 - 2020-04-30
 - Fixes encoding query parameters in an array before joining them.(PR [#382](https://github.com/Azure/ms-rest-js/pull/382))
+- Replace public usage of `RequestPolicyOptions` to an interface `RequestPolicyOptionsLike` to avoid compatibility issues with private members.
 
 ## 2.0.6 - 2020-04-15
 - A new interface `WebResourceLike` was introduced to avoid a direct dependency on the class `WebResource` in public interfaces. `HttpHeadersLike` was also added to replace references to `HttpHeaders`.  This change was added to improve compatibility between `@azure/core-http` and `@azure/ms-rest-nodeauth`.
