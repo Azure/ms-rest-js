@@ -6,7 +6,7 @@ import { HttpOperationResponse } from "../httpOperationResponse";
 import { Constants } from "../util/constants";
 import { WebResourceLike } from "../webResource";
 import { getDefaultUserAgentKey, getPlatformSpecificData } from "./msRestUserAgentPolicy";
-import { BaseRequestPolicy, RequestPolicy, RequestPolicyFactory, RequestPolicyOptions } from "./requestPolicy";
+import { BaseRequestPolicy, RequestPolicy, RequestPolicyFactory, RequestPolicyOptionsLike } from "./requestPolicy";
 
 export type TelemetryInfo = { key?: string; value?: string };
 
@@ -40,14 +40,14 @@ export function userAgentPolicy(userAgentData?: TelemetryInfo): RequestPolicyFac
   const value: string = (!userAgentData || userAgentData.value == undefined) ?  getDefaultUserAgentValue() : userAgentData.value;
 
   return {
-    create: (nextPolicy: RequestPolicy, options: RequestPolicyOptions) => {
+    create: (nextPolicy: RequestPolicy, options: RequestPolicyOptionsLike) => {
       return new UserAgentPolicy(nextPolicy, options, key, value);
     }
   };
 }
 
 export class UserAgentPolicy extends BaseRequestPolicy {
-  constructor(readonly _nextPolicy: RequestPolicy, readonly _options: RequestPolicyOptions, protected headerKey: string, protected headerValue: string) {
+  constructor(readonly _nextPolicy: RequestPolicy, readonly _options: RequestPolicyOptionsLike, protected headerKey: string, protected headerValue: string) {
     super(_nextPolicy, _options);
   }
 

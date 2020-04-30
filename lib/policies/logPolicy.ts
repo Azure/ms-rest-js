@@ -3,11 +3,11 @@
 
 import { HttpOperationResponse } from "../httpOperationResponse";
 import { WebResourceLike } from "../webResource";
-import { BaseRequestPolicy, RequestPolicy, RequestPolicyFactory, RequestPolicyOptions } from "./requestPolicy";
+import { BaseRequestPolicy, RequestPolicy, RequestPolicyFactory, RequestPolicyOptionsLike } from "./requestPolicy";
 
 export function logPolicy(logger: any = console.log): RequestPolicyFactory {
   return {
-    create: (nextPolicy: RequestPolicy, options: RequestPolicyOptions) => {
+    create: (nextPolicy: RequestPolicy, options: RequestPolicyOptionsLike) => {
       return new LogPolicy(nextPolicy, options, logger);
     }
   };
@@ -16,7 +16,7 @@ export function logPolicy(logger: any = console.log): RequestPolicyFactory {
 export class LogPolicy extends BaseRequestPolicy {
   logger?: any;
 
-  constructor(nextPolicy: RequestPolicy, options: RequestPolicyOptions, logger: any = console.log) {
+  constructor(nextPolicy: RequestPolicy, options: RequestPolicyOptionsLike, logger: any = console.log) {
     super(nextPolicy, options);
     this.logger = logger;
   }

@@ -3,18 +3,18 @@
 import { HttpOperationResponse } from "../httpOperationResponse";
 import * as utils from "../util/utils";
 import { WebResourceLike } from "../webResource";
-import { BaseRequestPolicy, RequestPolicy, RequestPolicyFactory, RequestPolicyOptions } from "./requestPolicy";
+import { BaseRequestPolicy, RequestPolicy, RequestPolicyFactory, RequestPolicyOptionsLike } from "./requestPolicy";
 
 export function rpRegistrationPolicy(retryTimeout = 30): RequestPolicyFactory {
   return {
-    create: (nextPolicy: RequestPolicy, options: RequestPolicyOptions) => {
+    create: (nextPolicy: RequestPolicy, options: RequestPolicyOptionsLike) => {
       return new RPRegistrationPolicy(nextPolicy, options, retryTimeout);
     }
   };
 }
 
 export class RPRegistrationPolicy extends BaseRequestPolicy {
-  constructor(nextPolicy: RequestPolicy, options: RequestPolicyOptions, readonly _retryTimeout = 30) {
+  constructor(nextPolicy: RequestPolicy, options: RequestPolicyOptionsLike, readonly _retryTimeout = 30) {
     super(nextPolicy, options);
   }
 

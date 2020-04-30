@@ -4,18 +4,18 @@
 import { HttpOperationResponse } from "../httpOperationResponse";
 import { URLBuilder } from "../url";
 import { WebResourceLike } from "../webResource";
-import { BaseRequestPolicy, RequestPolicy, RequestPolicyFactory, RequestPolicyOptions } from "./requestPolicy";
+import { BaseRequestPolicy, RequestPolicy, RequestPolicyFactory, RequestPolicyOptionsLike } from "./requestPolicy";
 
 export function redirectPolicy(maximumRetries = 20): RequestPolicyFactory {
   return {
-    create: (nextPolicy: RequestPolicy, options: RequestPolicyOptions) => {
+    create: (nextPolicy: RequestPolicy, options: RequestPolicyOptionsLike) => {
       return new RedirectPolicy(nextPolicy, options, maximumRetries);
     }
   };
 }
 
 export class RedirectPolicy extends BaseRequestPolicy {
-  constructor(nextPolicy: RequestPolicy, options: RequestPolicyOptions, readonly maxRetries = 20) {
+  constructor(nextPolicy: RequestPolicy, options: RequestPolicyOptionsLike, readonly maxRetries = 20) {
     super(nextPolicy, options);
   }
 

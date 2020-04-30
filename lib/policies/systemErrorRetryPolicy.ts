@@ -4,7 +4,7 @@
 import { HttpOperationResponse } from "../httpOperationResponse";
 import * as utils from "../util/utils";
 import { WebResourceLike } from "../webResource";
-import { BaseRequestPolicy, RequestPolicy, RequestPolicyFactory, RequestPolicyOptions } from "./requestPolicy";
+import { BaseRequestPolicy, RequestPolicy, RequestPolicyFactory, RequestPolicyOptionsLike } from "./requestPolicy";
 
 export interface RetryData {
   retryCount: number;
@@ -20,7 +20,7 @@ export interface RetryError extends Error {
 
 export function systemErrorRetryPolicy(retryCount?: number, retryInterval?: number, minRetryInterval?: number, maxRetryInterval?: number): RequestPolicyFactory {
   return {
-    create: (nextPolicy: RequestPolicy, options: RequestPolicyOptions) => {
+    create: (nextPolicy: RequestPolicy, options: RequestPolicyOptionsLike) => {
       return new SystemErrorRetryPolicy(nextPolicy, options, retryCount, retryInterval, minRetryInterval, maxRetryInterval);
     }
   };
@@ -46,7 +46,7 @@ export class SystemErrorRetryPolicy extends BaseRequestPolicy {
   DEFAULT_CLIENT_MAX_RETRY_INTERVAL = 1000 * 90;
   DEFAULT_CLIENT_MIN_RETRY_INTERVAL = 1000 * 3;
 
-  constructor(nextPolicy: RequestPolicy, options: RequestPolicyOptions, retryCount?: number, retryInterval?: number, minRetryInterval?: number, maxRetryInterval?: number) {
+  constructor(nextPolicy: RequestPolicy, options: RequestPolicyOptionsLike, retryCount?: number, retryInterval?: number, minRetryInterval?: number, maxRetryInterval?: number) {
     super(nextPolicy, options);
     this.retryCount = typeof retryCount === "number" ? retryCount : this.DEFAULT_CLIENT_RETRY_COUNT;
     this.retryInterval = typeof retryInterval === "number" ? retryInterval : this.DEFAULT_CLIENT_RETRY_INTERVAL;
