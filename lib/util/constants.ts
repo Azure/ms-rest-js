@@ -55,12 +55,12 @@ export const Constants = {
       POST: "POST",
       MERGE: "MERGE",
       HEAD: "HEAD",
-      PATCH: "PATCH",
+      PATCH: "PATCH"
     },
 
     StatusCodes: {
-      TooManyRequests: 429,
-    },
+      TooManyRequests: 429
+    }
   },
 
   /**
@@ -93,6 +93,6 @@ export const Constants = {
      * @const
      * @type {string}
      */
-    USER_AGENT: "User-Agent",
-  },
+    USER_AGENT: "User-Agent"
+  }
 };
