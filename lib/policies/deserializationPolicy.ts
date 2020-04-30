@@ -9,7 +9,7 @@ import { Mapper, MapperType } from "../serializer";
 import * as utils from "../util/utils";
 import { parseXML } from "../util/xml";
 import { WebResourceLike } from "../webResource";
-import { BaseRequestPolicy, RequestPolicy, RequestPolicyFactory, RequestPolicyOptions } from "./requestPolicy";
+import { BaseRequestPolicy, RequestPolicy, RequestPolicyFactory, RequestPolicyOptionsLike } from "./requestPolicy";
 
 /**
  * The content-types that will indicate that an operation response should be deserialized in a
@@ -35,7 +35,7 @@ export interface DeserializationContentTypes {
  */
 export function deserializationPolicy(deserializationContentTypes?: DeserializationContentTypes): RequestPolicyFactory {
   return {
-    create: (nextPolicy: RequestPolicy, options: RequestPolicyOptions) => {
+    create: (nextPolicy: RequestPolicy, options: RequestPolicyOptionsLike) => {
       return new DeserializationPolicy(nextPolicy, deserializationContentTypes, options);
     }
   };
@@ -52,7 +52,7 @@ export class DeserializationPolicy extends BaseRequestPolicy {
   public readonly jsonContentTypes: string[];
   public readonly xmlContentTypes: string[];
 
-  constructor(nextPolicy: RequestPolicy, deserializationContentTypes: DeserializationContentTypes | undefined, options: RequestPolicyOptions) {
+  constructor(nextPolicy: RequestPolicy, deserializationContentTypes: DeserializationContentTypes | undefined, options: RequestPolicyOptionsLike) {
     super(nextPolicy, options);
 
     this.jsonContentTypes = deserializationContentTypes && deserializationContentTypes.json || defaultJsonContentTypes;

@@ -4,7 +4,7 @@
 import { HttpOperationResponse } from "../httpOperationResponse";
 import * as utils from "../util/utils";
 import { WebResourceLike } from "../webResource";
-import { BaseRequestPolicy, RequestPolicy, RequestPolicyFactory, RequestPolicyOptions } from "./requestPolicy";
+import { BaseRequestPolicy, RequestPolicy, RequestPolicyFactory, RequestPolicyOptionsLike } from "./requestPolicy";
 import { RestError } from "../restError";
 
 export interface RetryData {
@@ -21,7 +21,7 @@ export interface RetryError extends Error {
 
 export function exponentialRetryPolicy(retryCount?: number, retryInterval?: number, minRetryInterval?: number, maxRetryInterval?: number): RequestPolicyFactory {
   return {
-    create: (nextPolicy: RequestPolicy, options: RequestPolicyOptions) => {
+    create: (nextPolicy: RequestPolicy, options: RequestPolicyOptionsLike) => {
       return new ExponentialRetryPolicy(nextPolicy, options, retryCount, retryInterval, minRetryInterval, maxRetryInterval);
     }
   };
@@ -57,13 +57,13 @@ export class ExponentialRetryPolicy extends BaseRequestPolicy {
   /**
    * @constructor
    * @param {RequestPolicy} nextPolicy The next RequestPolicy in the pipeline chain.
-   * @param {RequestPolicyOptions} options The options for this RequestPolicy.
+   * @param {RequestPolicyOptionsLike} options The options for this RequestPolicy.
    * @param {number} [retryCount]        The client retry count.
    * @param {number} [retryInterval]     The client retry interval, in milliseconds.
    * @param {number} [minRetryInterval]  The minimum retry interval, in milliseconds.
    * @param {number} [maxRetryInterval]  The maximum retry interval, in milliseconds.
    */
-  constructor(nextPolicy: RequestPolicy, options: RequestPolicyOptions, retryCount?: number, retryInterval?: number, minRetryInterval?: number, maxRetryInterval?: number) {
+  constructor(nextPolicy: RequestPolicy, options: RequestPolicyOptionsLike, retryCount?: number, retryInterval?: number, minRetryInterval?: number, maxRetryInterval?: number) {
     super(nextPolicy, options);
     function isNumber(n: any): n is number { return typeof n === "number"; }
     this.retryCount = isNumber(retryCount) ? retryCount : DEFAULT_CLIENT_RETRY_COUNT;

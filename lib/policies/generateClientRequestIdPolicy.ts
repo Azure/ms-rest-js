@@ -4,18 +4,18 @@
 import { HttpOperationResponse } from "../httpOperationResponse";
 import * as utils from "../util/utils";
 import { WebResourceLike } from "../webResource";
-import { BaseRequestPolicy, RequestPolicy, RequestPolicyFactory, RequestPolicyOptions } from "./requestPolicy";
+import { BaseRequestPolicy, RequestPolicy, RequestPolicyFactory, RequestPolicyOptionsLike } from "./requestPolicy";
 
 export function generateClientRequestIdPolicy(requestIdHeaderName = "x-ms-client-request-id"): RequestPolicyFactory {
   return {
-    create: (nextPolicy: RequestPolicy, options: RequestPolicyOptions) => {
+    create: (nextPolicy: RequestPolicy, options: RequestPolicyOptionsLike) => {
       return new GenerateClientRequestIdPolicy(nextPolicy, options, requestIdHeaderName);
     }
   };
 }
 
 export class GenerateClientRequestIdPolicy extends BaseRequestPolicy {
-  constructor(nextPolicy: RequestPolicy, options: RequestPolicyOptions, private _requestIdHeaderName: string) {
+  constructor(nextPolicy: RequestPolicy, options: RequestPolicyOptionsLike, private _requestIdHeaderName: string) {
     super(nextPolicy, options);
   }
 

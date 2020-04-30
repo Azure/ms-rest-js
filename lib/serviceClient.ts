@@ -14,7 +14,7 @@ import { exponentialRetryPolicy } from "./policies/exponentialRetryPolicy";
 import { generateClientRequestIdPolicy } from "./policies/generateClientRequestIdPolicy";
 import { userAgentPolicy, getDefaultUserAgentHeaderName, getDefaultUserAgentValue } from "./policies/userAgentPolicy";
 import { redirectPolicy } from "./policies/redirectPolicy";
-import { RequestPolicy, RequestPolicyFactory, RequestPolicyOptions } from "./policies/requestPolicy";
+import { RequestPolicy, RequestPolicyFactory, RequestPolicyOptions, RequestPolicyOptionsLike } from "./policies/requestPolicy";
 import { rpRegistrationPolicy } from "./policies/rpRegistrationPolicy";
 import { signingPolicy } from "./policies/signingPolicy";
 import { systemErrorRetryPolicy } from "./policies/systemErrorRetryPolicy";
@@ -123,7 +123,7 @@ export class ServiceClient {
    * The HTTP client that will be used to send requests.
    */
   private readonly _httpClient: HttpClient;
-  private readonly _requestPolicyOptions: RequestPolicyOptions;
+  private readonly _requestPolicyOptions: RequestPolicyOptionsLike;
 
   private readonly _requestPolicyFactories: RequestPolicyFactory[];
   private readonly _withCredentials: boolean;
