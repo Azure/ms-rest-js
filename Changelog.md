@@ -1,4 +1,6 @@
 # Changelog
+## 2.0.8 - 2020-07-23
+- [BugFix] - Fixed loading of proxyPolicy.browser.js in the HTML files.(PR [#397](https://github.com/Azure/ms-rest-js/pull/397))
 
 ## 2.0.7 - 2020-04-30
 - Fixes encoding query parameters in an array before joining them.(PR [#382](https://github.com/Azure/ms-rest-js/pull/382))
