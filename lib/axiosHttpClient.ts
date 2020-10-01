@@ -28,6 +28,13 @@ axiosInstance.interceptors.request.use((config: AxiosRequestConfig) => ({
   method: (config.method as Method) && (config.method as Method).toUpperCase() as Method
 }));
 
+// keepalive agents are reused across instances to provide maximum socket reuse for
+// outbound requests
+const keepaliveAgents = {
+  http: new http.Agent({keepAlive: true}),
+  https: new https.Agent({keepAlive: true}),
+};
+
 /**
  * A HttpClient implementation that uses axios to send HTTP requests.
  */
@@ -154,7 +161,11 @@ export class AxiosHttpClient implements HttpClient {
         } else {
           config.httpAgent = agent.agent;
         }
+      } else if (httpRequest.keepAlive) {
+        config.httpAgent = keepaliveAgents.http;
+        config.httpsAgent = keepaliveAgents.https;
       }
+
       res = await axiosInstance.request(config);
     } catch (err) {
       if (err instanceof axios.Cancel) {
