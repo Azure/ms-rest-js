@@ -33,7 +33,7 @@ axiosInstance.interceptors.request.use((config: AxiosRequestConfig) => ({
 const keepaliveAgents = {
   http: new http.Agent({keepAlive: true}),
   https: new https.Agent({keepAlive: true}),
-}
+};
 
 /**
  * A HttpClient implementation that uses axios to send HTTP requests.
