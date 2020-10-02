@@ -154,16 +154,35 @@ export class AxiosHttpClient implements HttpClient {
         proxy: false
       };
 
-      if (httpRequest.proxySettings) {
+      if (httpRequest.agentSettings) {
+        const {http: httpAgent, https: httpsAgent} = httpRequest.agentSettings;
+        if (httpsAgent) {
+          config.httpsAgent = httpsAgent;
+        }
+        if (httpAgent) {
+          config.httpAgent = httpAgent;
+        }
+      } else if (httpRequest.proxySettings) {
         const agent = createProxyAgent(httpRequest.url, httpRequest.proxySettings, httpRequest.headers);
         if (agent.isHttps) {
           config.httpsAgent = agent.agent;
         } else {
           config.httpAgent = agent.agent;
         }
-      } else if (httpRequest.keepAlive) {
-        config.httpAgent = keepaliveAgents.http;
-        config.httpsAgent = keepaliveAgents.https;
+      }
+
+      if (httpRequest.keepAlive === true) {
+        if (config.httpAgent) {
+          config.httpAgent.keepAlive = true;
+        } else {
+          config.httpAgent = keepaliveAgents.http;
+        }
+
+        if (config.httpsAgent) {
+          config.httpsAgent.keepAlive = true;
+        } else {
+          config.httpsAgent = keepaliveAgents.https;
+        }
       }
 
       res = await axiosInstance.request(config);
