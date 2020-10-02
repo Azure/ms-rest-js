@@ -28,6 +28,7 @@ import { OperationResponse } from "./operationResponse";
 import { ServiceCallback } from "./util/utils";
 import { proxyPolicy, getDefaultProxySettings } from "./policies/proxyPolicy";
 import { throttlingRetryPolicy } from "./policies/throttlingRetryPolicy";
+import { Agent } from "http";
 
 
 /**
@@ -38,6 +39,14 @@ export interface ProxySettings {
   port: number;
   username?: string;
   password?: string;
+}
+
+/**
+ * HTTP and HTTPS agents (Node.js only)
+ */
+export interface AgentSettings {
+  http: Agent;
+  https: Agent;
 }
 
 /**
@@ -99,6 +108,10 @@ export interface ServiceClientOptions {
    * Proxy settings which will be used for every HTTP request (Node.js only).
    */
   proxySettings?: ProxySettings;
+  /**
+   * HTTP and HTTPS agents which will be used for every HTTP request (Node.js only).
+   */
+  agentSettings?: AgentSettings;
 }
 
 /**
