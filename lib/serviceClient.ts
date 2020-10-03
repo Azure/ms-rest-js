@@ -26,6 +26,7 @@ import { stringifyXML } from "./util/xml";
 import { RequestOptionsBase, RequestPrepareOptions, WebResource } from "./webResource";
 import { OperationResponse } from "./operationResponse";
 import { ServiceCallback } from "./util/utils";
+import { agentPolicy } from "./policies/agentPolicy";
 import { proxyPolicy, getDefaultProxySettings } from "./policies/proxyPolicy";
 import { throttlingRetryPolicy } from "./policies/throttlingRetryPolicy";
 import { Agent } from "http";
@@ -440,6 +441,10 @@ function createDefaultRequestPolicyFactories(credentials: ServiceClientCredentia
   const proxySettings = options.proxySettings || getDefaultProxySettings();
   if (proxySettings) {
     factories.push(proxyPolicy(proxySettings));
+  }
+
+  if (options.agentSettings) {
+    factories.push(agentPolicy(options.agentSettings));
   }
 
   return factories;
