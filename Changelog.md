@@ -1,7 +1,7 @@
 # Changelog
 ## 2.1.0 - 2020-10-08
-  - Add support for custom http/https agent (PR [#403](https://github.com/Azure/ms-rest-js/pull/403))
-  - Fix WebResource clone to include extra settings (Issue [#405](https://github.com/Azure/ms-rest-js/issue/403))
+- Add support for custom http/https agent (PR [#403](https://github.com/Azure/ms-rest-js/pull/403))
+- Fix WebResource clone to include extra settings (Issue [#405](https://github.com/Azure/ms-rest-js/issue/403))
 
 ## 2.0.8 - 2020-07-23
 - [BugFix] - Fixed loading of proxyPolicy.browser.js in the HTML files.(PR [#397](https://github.com/Azure/ms-rest-js/pull/397))
@@ -11,7 +11,7 @@
 - Replace public usage of `RequestPolicyOptions` to an interface `RequestPolicyOptionsLike` to avoid compatibility issues with private members.
 - Fix issue with null/undefined values in array and tabs/space delimiter arrays during sendOperationRequest. [PR #390](https://github.com/Azure/ms-rest-js/pull/390)
 - Fix in flattenResponse when expecting an array, checking for parsedBody to be an array before proceeding with flattening. (PR [#385](https://github.com/Azure/ms-rest-js/pull/385))
-)
+ 
 ## 2.0.6 - 2020-04-15
 - A new interface `WebResourceLike` was introduced to avoid a direct dependency on the class `WebResource` in public interfaces. `HttpHeadersLike` was also added to replace references to `HttpHeaders`.  This change was added to improve compatibility between `@azure/core-http` and `@azure/ms-rest-nodeauth`.
 
