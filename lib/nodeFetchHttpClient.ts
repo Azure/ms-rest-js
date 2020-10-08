@@ -46,7 +46,14 @@ export class NodeFetchHttpClient extends FetchHttpClient {
       httpRequest.headers.set("Cookie", cookieString);
     }
 
-    if (httpRequest.proxySettings) {
+    if (httpRequest.agentSettings) {
+      const {http: httpAgent, https: httpsAgent} = httpRequest.agentSettings;
+      if (httpsAgent && httpRequest.url.startsWith("https")) {
+        requestInit.agent = httpsAgent;
+      } else if (httpAgent) {
+        requestInit.agent = httpAgent;
+      }
+    } else if (httpRequest.proxySettings) {
       const tunnel: ProxyAgent = createProxyAgent(httpRequest.url, httpRequest.proxySettings, httpRequest.headers);
       requestInit.agent = tunnel.agent;
     }
