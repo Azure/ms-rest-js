@@ -26,8 +26,10 @@ import { stringifyXML } from "./util/xml";
 import { RequestOptionsBase, RequestPrepareOptions, WebResource } from "./webResource";
 import { OperationResponse } from "./operationResponse";
 import { ServiceCallback } from "./util/utils";
+import { agentPolicy } from "./policies/agentPolicy";
 import { proxyPolicy, getDefaultProxySettings } from "./policies/proxyPolicy";
 import { throttlingRetryPolicy } from "./policies/throttlingRetryPolicy";
+import { Agent } from "http";
 
 
 /**
@@ -38,6 +40,14 @@ export interface ProxySettings {
   port: number;
   username?: string;
   password?: string;
+}
+
+/**
+ * HTTP and HTTPS agents (Node.js only)
+ */
+export interface AgentSettings {
+  http: Agent;
+  https: Agent;
 }
 
 /**
@@ -99,6 +109,10 @@ export interface ServiceClientOptions {
    * Proxy settings which will be used for every HTTP request (Node.js only).
    */
   proxySettings?: ProxySettings;
+  /**
+   * HTTP and HTTPS agents which will be used for every HTTP request (Node.js only).
+   */
+  agentSettings?: AgentSettings;
 }
 
 /**
@@ -427,6 +441,10 @@ function createDefaultRequestPolicyFactories(credentials: ServiceClientCredentia
   const proxySettings = options.proxySettings || getDefaultProxySettings();
   if (proxySettings) {
     factories.push(proxyPolicy(proxySettings));
+  }
+
+  if (options.agentSettings) {
+    factories.push(agentPolicy(options.agentSettings));
   }
 
   return factories;

@@ -7,7 +7,7 @@ import { Mapper, Serializer } from "./serializer";
 import { generateUuid } from "./util/utils";
 import { HttpOperationResponse } from "./httpOperationResponse";
 import { OperationResponse } from "./operationResponse";
-import { ProxySettings } from "./serviceClient";
+import { AgentSettings, ProxySettings } from "./serviceClient";
 
 export type HttpMethods = "GET" | "PUT" | "POST" | "DELETE" | "PATCH" | "HEAD" | "OPTIONS" | "TRACE";
 export type HttpRequestBody = Blob | string | ArrayBuffer | ArrayBufferView | (() => NodeJS.ReadableStream);
@@ -67,6 +67,7 @@ export class WebResource {
   timeout: number;
   proxySettings?: ProxySettings;
   keepAlive?: boolean;
+  agentSettings?: AgentSettings;
 
   abortSignal?: AbortSignalLike;
 
@@ -89,7 +90,8 @@ export class WebResource {
     onUploadProgress?: (progress: TransferProgressEvent) => void,
     onDownloadProgress?: (progress: TransferProgressEvent) => void,
     proxySettings?: ProxySettings,
-    keepAlive?: boolean) {
+    keepAlive?: boolean,
+    agentSettings?: AgentSettings) {
 
     this.streamResponseBody = streamResponseBody;
     this.url = url || "";
@@ -105,6 +107,7 @@ export class WebResource {
     this.onDownloadProgress = onDownloadProgress;
     this.proxySettings = proxySettings;
     this.keepAlive = keepAlive;
+    this.agentSettings = agentSettings;
   }
 
   /**
@@ -312,7 +315,10 @@ export class WebResource {
       this.abortSignal,
       this.timeout,
       this.onUploadProgress,
-      this.onDownloadProgress);
+      this.onDownloadProgress,
+      this.proxySettings,
+      this.keepAlive,
+      this.agentSettings);
 
     if (this.formData) {
       result.formData = this.formData;
