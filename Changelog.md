@@ -1,4 +1,7 @@
 # Changelog
+## 2.1.0 - 2020-10-08
+  - Add support for custom http/https agent (PR [#403](https://github.com/Azure/ms-rest-js/pull/403))
+
 ## 2.0.8 - 2020-07-23
 - [BugFix] - Fixed loading of proxyPolicy.browser.js in the HTML files.(PR [#397](https://github.com/Azure/ms-rest-js/pull/397))
 
