@@ -44,12 +44,12 @@ jobs:
     inputs:
       pathtoPublish: $(Build.SourcesDirectory)/dist
       artifactName: dist
-- template: azure-pipelines-test.yml
-  parameters:
-    nodeVersion: '10'
-- template: azure-pipelines-test.yml
-  parameters:
-    nodeVersion: '12'
+# - template: azure-pipelines-test.yml
+#   parameters:
+#     nodeVersion: '10'
+# - template: azure-pipelines-test.yml
+#   parameters:
+#     nodeVersion: '12'
 - job: Release
   dependsOn: Build
   condition: succeeded()
