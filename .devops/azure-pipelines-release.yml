@@ -1,0 +1,21 @@
+trigger: none
+pr: none
+
+jobs:
+- job: Release
+  pool:
+    vmImage: 'Ubuntu 16.04'
+  steps:
+  - script: |
+      npm install
+      npm run build
+    displayName: Build
+
+  - script: npm run test
+    displayName: Test
+
+  - script: |
+      npm install -g npm
+      npm config set //registry.npmjs.org/:_authToken=$(azure-sdk-npm-token)
+      npm publish --access public
+    displayName: Publish
