@@ -2,60 +2,20 @@ trigger: none
 pr: none
 
 jobs:
-- job: Build
-  pool:
-    vmImage: 'Ubuntu 16.04'
-  steps:
-  - task: Npm@1
-    displayName: 'npm install'
-    inputs:
-      command: custom
-      verbose: false
-      customCommand: install
-  - task: Npm@1
-    displayName: 'npm run build'
-    inputs:
-      command: custom
-      verbose: false
-      customCommand: run build
-- job: Pack
-  pool:
-    vmImage: 'Ubuntu 16.04'
-  steps:
-  - task: NodeTool@0
-    displayName: 'Install Node 11.x'
-    inputs:
-      versionSpec: 11.x
-  - task: Npm@1
-    displayName: 'npm pack'
-    inputs:
-      command: custom
-      verbose: false
-      customCommand: pack
-  - task: CopyFiles@2
-    displayName: 'Copy Files to: drop'
-    inputs:
-      Contents: '*.tgz'
-      TargetFolder: drop
-  - task: PublishBuildArtifacts@1
-    inputs:
-      pathtoPublish: $(Build.SourcesDirectory)/drop
-  - task: PublishBuildArtifacts@1
-    inputs:
-      pathtoPublish: $(Build.SourcesDirectory)/dist
-      artifactName: dist
-# - template: azure-pipelines-test.yml
-#   parameters:
-#     nodeVersion: '10'
-# - template: azure-pipelines-test.yml
-#   parameters:
-#     nodeVersion: '12'
 - job: Release
-  dependsOn: Build
-  condition: succeeded()
+  pool:
+    vmImage: 'Ubuntu 16.04'
   steps:
-  - task: DownloadBuildArtifacts@0
-    inputs:
-      artifactname: dist
-  - script: ls -al
-    displayName: "TEST"
+  - script: |
+      npm install
+      npm run build
+    displayName: Build
+
+  - script: npm run test
+    displayName: Test
+
+  - script: |
+      npm install -g npm
+      npm config set //registry.npmjs.org/:_authToken=$(azure-sdk-npm-token)
+      npm publish --access public --dry-run
+    displayName: Publish
