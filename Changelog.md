@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.9.1 - UNRELEASED
+- Upgrade axios dependency to fix vulnerability (PR [#407](https://github.com/Azure/ms-rest-js/pull/407))
+
 ## 1.9.0 - 2020-10-08
 - Add support for custom http/https agent (PR [#404](https://github.com/Azure/ms-rest-js/pull/404))
 - Fix WebResource clone to include extra settings (Issue [#405](https://github.com/Azure/ms-rest-js/issue/403))
