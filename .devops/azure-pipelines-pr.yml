@@ -1,3 +1,6 @@
+trigger:
+- 1.x
+
 jobs:
 - job: Build
   pool:
