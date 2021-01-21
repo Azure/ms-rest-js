@@ -97,11 +97,37 @@ describe("URLQuery", () => {
     });
 
     it(`with "A=="`, () => {
-      assert.strictEqual(URLQuery.parse("A==").toString(), "");
+      assert.strictEqual(URLQuery.parse("A==").toString(), "A==");
     });
 
     it(`with "A=&B=C"`, () => {
       assert.strictEqual(URLQuery.parse("A=&B=C").toString(), "A=&B=C");
+    });
+
+    it(`with "A=&B=C====&D=P"`, () => {
+      assert.strictEqual(URLQuery.parse("A=&B=C====&D=P").toString(), "A=&B=C====&D=P");
+    });
+
+    it(`parse with base64 token as last parameter`, () => {
+      const expectedValue = "ODIzZnNkdi01YXNjLTEzc2EtMTI1NS1jYTNhc2QxMmRhMyEvU3Vic2NyaXB0aW9ucy8xMTExMTEtMTExMS0xMTExLTExMTEtMTExMTExMTExL1Jlc291cmNlR3JvdXBzL0FFLVdPUktFUlMvVk1TY2FsZVNldHMvQUUtV09SS0VSUy1TQ0FMRS0xMDAwL1ZNcy8xNDMz==";
+      const parsedURL = URLQuery.parse("?api-version=2020-06-01&bas64Value=ODIzZnNkdi01YXNjLTEzc2EtMTI1NS1jYTNhc2QxMmRhMyEvU3Vic2NyaXB0aW9ucy8xMTExMTEtMTExMS0xMTExLTExMTEtMTExMTExMTExL1Jlc291cmNlR3JvdXBzL0FFLVdPUktFUlMvVk1TY2FsZVNldHMvQUUtV09SS0VSUy1TQ0FMRS0xMDAwL1ZNcy8xNDMz==");
+      assert.strictEqual(parsedURL.get("bas64Value"), expectedValue);
+      assert.strictEqual(parsedURL.get("api-version"), "2020-06-01");
+    });
+
+    it(`parse with base64 token as middle parameter`, () => {
+      const expectedValue = "ODIzZnNkdi01YXNjLTEzc2EtMTI1NS1jYTNhc2QxMmRhMyEvU3Vic2NyaXB0aW9ucy8xMTExMTEtMTExMS0xMTExLTExMTEtMTExMTExMTExL1Jlc291cmNlR3JvdXBzL0FFLVdPUktFUlMvVk1TY2FsZVNldHMvQUUtV09SS0VSUy1TQ0FMRS0xMDAwL1ZNcy8xNDMz==";
+      const parsedURL = URLQuery.parse("?api-version=2020-06-01&bas64Value=ODIzZnNkdi01YXNjLTEzc2EtMTI1NS1jYTNhc2QxMmRhMyEvU3Vic2NyaXB0aW9ucy8xMTExMTEtMTExMS0xMTExLTExMTEtMTExMTExMTExL1Jlc291cmNlR3JvdXBzL0FFLVdPUktFUlMvVk1TY2FsZVNldHMvQUUtV09SS0VSUy1TQ0FMRS0xMDAwL1ZNcy8xNDMz==&extraParam=foo");
+      assert.strictEqual(parsedURL.get("bas64Value"), expectedValue);
+      assert.strictEqual(parsedURL.get("api-version"), "2020-06-01");
+      assert.strictEqual(parsedURL.get("extraParam"), "foo");
+    });
+
+    it(`parse with base64 token as first parameter`, () => {
+      const expectedValue = "ODIzZnNkdi01YXNjLTEzc2EtMTI1NS1jYTNhc2QxMmRhMyEvU3Vic2NyaXB0aW9ucy8xMTExMTEtMTExMS0xMTExLTExMTEtMTExMTExMTExL1Jlc291cmNlR3JvdXBzL0FFLVdPUktFUlMvVk1TY2FsZVNldHMvQUUtV09SS0VSUy1TQ0FMRS0xMDAwL1ZNcy8xNDMz==";
+      const parsedURL = URLQuery.parse("?bas64Value=ODIzZnNkdi01YXNjLTEzc2EtMTI1NS1jYTNhc2QxMmRhMyEvU3Vic2NyaXB0aW9ucy8xMTExMTEtMTExMS0xMTExLTExMTEtMTExMTExMTExL1Jlc291cmNlR3JvdXBzL0FFLVdPUktFUlMvVk1TY2FsZVNldHMvQUUtV09SS0VSUy1TQ0FMRS0xMDAwL1ZNcy8xNDMz==&api-version=1");
+      assert.strictEqual(parsedURL.get("bas64Value"), expectedValue);
+      assert.strictEqual(parsedURL.get("api-version"), "2020-06-01");
     });
   });
 });
