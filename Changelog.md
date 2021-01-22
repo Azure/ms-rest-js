@@ -1,5 +1,5 @@
 # Changelog
-## 2.1.1 - 2021-01-22
+## 2.2.0 - 2021-01-22
 - Add support for @azure/core-auth's TokenCredential (PR [#410](https://github.com/Azure/ms-rest-js/pull/410))
 
 ## 2.1.0 - 2020-10-08
