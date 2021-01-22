@@ -1,4 +1,7 @@
 # Changelog
+## 2.1.1 - 2021-01-22
+- Add support for @azure/core-auth's TokenCredential (PR [#410](https://github.com/Azure/ms-rest-js/pull/410))
+
 ## 2.1.0 - 2020-10-08
 - Add support for custom http/https agent (PR [#403](https://github.com/Azure/ms-rest-js/pull/403))
 - Fix WebResource clone to include extra settings (Issue [#405](https://github.com/Azure/ms-rest-js/issue/403))
