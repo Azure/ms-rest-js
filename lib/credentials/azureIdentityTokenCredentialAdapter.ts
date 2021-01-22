@@ -6,7 +6,7 @@ import { Constants as MSRestConstants } from "../util/constants";
 import { WebResource } from "../webResource";
 
 import { TokenCredential } from "@azure/core-auth";
-import { TokenResponse } from "@azure/ms-rest-nodeauth/dist/lib/credentials/tokenClientCredentials";
+import { TokenResponse } from "./tokenResponse";
 
 const DEFAULT_AUTHORIZATION_SCHEME = "Bearer";
 
