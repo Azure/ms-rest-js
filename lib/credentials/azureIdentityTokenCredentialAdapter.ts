@@ -11,7 +11,7 @@ import { TokenResponse } from "@azure/ms-rest-nodeauth/dist/lib/credentials/toke
 const DEFAULT_AUTHORIZATION_SCHEME = "Bearer";
 
 /**
- * This class provides a simple extension to use {@link TokenCredential} from com.azure:azure-identity library to
+ * This class provides a simple extension to use {@link TokenCredential} from `@azure/identity` library to
  * use with legacy Azure SDKs that accept {@link ServiceClientCredentials} family of credentials for authentication.
  */
 export class AzureIdentityCredentialAdapter
