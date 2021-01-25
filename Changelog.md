@@ -1,4 +1,8 @@
 # Changelog
+
+## 2.2.0 - 2021-01-22
+- Allow = character in parameter value (PR [#408](https://github.com/Azure/ms-rest-js/pull/408))
+
 ## 2.1.0 - 2020-10-08
 - Add support for custom http/https agent (PR [#403](https://github.com/Azure/ms-rest-js/pull/403))
 - Fix WebResource clone to include extra settings (Issue [#405](https://github.com/Azure/ms-rest-js/issue/403))
