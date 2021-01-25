@@ -125,7 +125,7 @@ describe("URLQuery", () => {
 
     it(`parse with base64 token as first parameter`, () => {
       const expectedValue = "ODIzZnNkdi01YXNjLTEzc2EtMTI1NS1jYTNhc2QxMmRhMyEvU3Vic2NyaXB0aW9ucy8xMTExMTEtMTExMS0xMTExLTExMTEtMTExMTExMTExL1Jlc291cmNlR3JvdXBzL0FFLVdPUktFUlMvVk1TY2FsZVNldHMvQUUtV09SS0VSUy1TQ0FMRS0xMDAwL1ZNcy8xNDMz==";
-      const parsedURL = URLQuery.parse("?bas64Value=ODIzZnNkdi01YXNjLTEzc2EtMTI1NS1jYTNhc2QxMmRhMyEvU3Vic2NyaXB0aW9ucy8xMTExMTEtMTExMS0xMTExLTExMTEtMTExMTExMTExL1Jlc291cmNlR3JvdXBzL0FFLVdPUktFUlMvVk1TY2FsZVNldHMvQUUtV09SS0VSUy1TQ0FMRS0xMDAwL1ZNcy8xNDMz==&api-version=1");
+      const parsedURL = URLQuery.parse("?bas64Value=ODIzZnNkdi01YXNjLTEzc2EtMTI1NS1jYTNhc2QxMmRhMyEvU3Vic2NyaXB0aW9ucy8xMTExMTEtMTExMS0xMTExLTExMTEtMTExMTExMTExL1Jlc291cmNlR3JvdXBzL0FFLVdPUktFUlMvVk1TY2FsZVNldHMvQUUtV09SS0VSUy1TQ0FMRS0xMDAwL1ZNcy8xNDMz==&api-version=2020-06-01");
       assert.strictEqual(parsedURL.get("bas64Value"), expectedValue);
       assert.strictEqual(parsedURL.get("api-version"), "2020-06-01");
     });
