@@ -36,7 +36,7 @@ export class AzureIdentityCredentialAdapter
       };
       return result;
     } else {
-        throw new Error("Could find token for scope");
+      throw new Error("Could find token for scope");
     }
   }
 

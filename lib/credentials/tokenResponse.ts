@@ -6,7 +6,7 @@
  * add an unnecessary dependency.
  */
 export interface TokenResponse {
-    readonly tokenType: string;
-    readonly accessToken: string;
-    readonly [x: string]: any;
-  }
+  readonly tokenType: string;
+  readonly accessToken: string;
+  readonly [x: string]: any;
+}
