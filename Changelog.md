@@ -1,6 +1,8 @@
 # Changelog
-## 2.2.0 - 2021-01-22
+
+## 2.2.0 - 2021-01-26
 - Add support for @azure/core-auth's TokenCredential (PR [#410](https://github.com/Azure/ms-rest-js/pull/410))
+- Allow = character in parameter value (PR [#408](https://github.com/Azure/ms-rest-js/pull/408))
 
 ## 2.1.0 - 2020-10-08
 - Add support for custom http/https agent (PR [#403](https://github.com/Azure/ms-rest-js/pull/403))
