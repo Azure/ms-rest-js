@@ -15,9 +15,10 @@ Runtime for isomorphic javascript libraries (that work in the browser and node.j
 
 ### node.js
 - Set the subscriptionId and token
-- Run `node samples/node-sample.js`
+- Run `npx ts-node samples/node-sample.js`
 
 ### In the browser
+- Run `npm run build`
 - Set the subscriptionId and token and then run
 - Open index.html file in the browser. It should show the response from GET request on the storage account. From Chrome type Ctrl + Shift + I and you can see the logs in console.
 
