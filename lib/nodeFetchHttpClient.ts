@@ -4,29 +4,18 @@
 import * as tough from "tough-cookie";
 import * as http from "http";
 import * as https from "https";
-import "node-fetch";
+import node_fetch from "node-fetch";
 
-import { FetchHttpClient } from "./fetchHttpClient";
+import { CommonRequestInfo, CommonRequestInit, CommonResponse, FetchHttpClient } from "./fetchHttpClient";
 import { HttpOperationResponse } from "./httpOperationResponse";
 import { WebResourceLike } from "./webResource";
 import { createProxyAgent, ProxyAgent } from "./proxyAgent";
 
-interface GlobalWithFetch extends NodeJS.Global {
-  fetch: (input: RequestInfo, init?: RequestInit) => Promise<Response>;
-}
-
-const globalWithFetch = global as GlobalWithFetch;
-if (typeof globalWithFetch.fetch !== "function") {
-  const fetch = require("node-fetch").default;
-  globalWithFetch.fetch = fetch;
-}
-
-
 export class NodeFetchHttpClient extends FetchHttpClient {
   private readonly cookieJar = new tough.CookieJar(undefined, { looseMode: true });
 
-  async fetch(input: RequestInfo, init?: RequestInit): Promise<Response> {
-    return fetch(input, init);
+  async fetch(input: CommonRequestInfo, init?: CommonRequestInit): Promise<CommonResponse> {
+    return node_fetch(input, init) as unknown as Promise<CommonResponse>;
   }
 
   async prepareRequest(httpRequest: WebResourceLike): Promise<Partial<RequestInit>> {

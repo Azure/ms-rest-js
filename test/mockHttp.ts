@@ -5,6 +5,7 @@ import xhrMock, { proxy } from "xhr-mock";
 import { isNode, HttpMethods } from "../lib/msRest";
 import fetchMock, * as fetch from "fetch-mock";
 import { Readable } from "stream";
+import node_fetch from "node-fetch";
 
 export type UrlFilter = string | RegExp;
 
@@ -27,6 +28,7 @@ export interface HttpMockFacade {
   get(url: UrlFilter, response: MockResponse): void;
   post(url: UrlFilter, response: MockResponse): void;
   put(url: UrlFilter, response: MockResponse): void;
+  getFetch(): typeof node_fetch | undefined;
 }
 
 export function getHttpMock(): HttpMockFacade {
@@ -34,16 +36,26 @@ export function getHttpMock(): HttpMockFacade {
 }
 
 class FetchHttpMock implements HttpMockFacade {
+  private _fetch: fetchMock.FetchMockSandbox;
+
+  constructor() {
+    this._fetch = fetchMock.sandbox();
+  }
+
+  getFetch(): typeof node_fetch {
+    return this._fetch as unknown as typeof node_fetch;
+  }
+
   setup(): void {
-    fetchMock.resetHistory();
+    this._fetch.resetHistory();
   }
 
   teardown(): void {
-    fetchMock.resetHistory();
+    this._fetch.resetHistory();
   }
 
   passThrough(_url?: string | RegExp | undefined): void {
-    fetchMock.reset();
+    this._fetch.reset();
   }
 
   timeout(_method: HttpMethods, url: UrlFilter): void {
@@ -51,7 +63,7 @@ class FetchHttpMock implements HttpMockFacade {
       setTimeout(() => resolve({$uri: url, delay: 500}), 2500);
     });
 
-    fetchMock.mock(url, delay);
+    this._fetch.mock(url, delay);
   }
 
   convertStreamToBuffer(stream: Readable): Promise<any> {
@@ -83,7 +95,7 @@ class FetchHttpMock implements HttpMockFacade {
     }
 
     const matcher = (_url: string, opts: fetch.MockRequest) => (url === _url) && (opts.method === method);
-    fetchMock.mock(matcher, mockResponse);
+    this._fetch.mock(matcher, mockResponse);
   }
 
   get(url: UrlFilter, response: MockResponse): void {
@@ -144,6 +156,10 @@ export class BrowserHttpMock implements HttpMockFacade {
 
   timeout(method: HttpMethods, url: UrlFilter): void {
     return this.mockHttpMethod(method, url, () => new Promise(() => { }));
+  }
+
+  getFetch(): undefined {
+    return undefined;
   }
 }
 

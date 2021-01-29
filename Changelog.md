@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.2.1 - (Unreleased)
+
+- The global `fetch()` is no longer overridden by node-fetch. Fixes (Issue [#383](https://github.com/Azure/ms-rest-js/issues/383))
+
 ## 2.2.0 - 2021-01-26
 - Add support for @azure/core-auth's TokenCredential (PR [#410](https://github.com/Azure/ms-rest-js/pull/410))
 - Allow = character in parameter value (PR [#408](https://github.com/Azure/ms-rest-js/pull/408))

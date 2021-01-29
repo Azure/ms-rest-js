@@ -17,6 +17,20 @@ interface FetchError extends Error {
   type?: string;
 }
 
+export type CommonRequestInfo = string; // we only call fetch() on string urls.
+
+export type CommonRequestInit = Omit<RequestInit, "body" | "headers" | "signal"> & {
+  body?: any;
+  headers?: any;
+  signal?: any;
+};
+
+export type CommonResponse = Omit<Response, "body" | "trailer" | "formData"> & {
+  body: any;
+  trailer: any;
+  formData: any;
+};
+
 export abstract class FetchHttpClient implements HttpClient {
   async sendRequest(httpRequest: WebResourceLike): Promise<HttpOperationResponse> {
     if (!httpRequest && typeof httpRequest !== "object") {
@@ -166,7 +180,7 @@ export abstract class FetchHttpClient implements HttpClient {
 
   abstract async prepareRequest(httpRequest: WebResourceLike): Promise<Partial<RequestInit>>;
   abstract async processRequest(operationResponse: HttpOperationResponse): Promise<void>;
-  abstract async fetch(input: RequestInfo, init?: RequestInit): Promise<Response>;
+  abstract async fetch(input: CommonRequestInfo, init?: CommonRequestInit): Promise<CommonResponse>;
 }
 
 function isReadableStream(body: any): body is Readable {
