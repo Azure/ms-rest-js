@@ -2,7 +2,8 @@
 
 import * as msRest from "../lib/msRest";
 const clientOptions: msRest.ServiceClientOptions = {
-  requestPolicyFactories: [msRest.logPolicy()]
+  // add log policy to list of default factories.
+  requestPolicyFactories: (factories) => factories.concat([msRest.logPolicy()])
 };
 
 const subscriptionId = process.env["AZURE_SUBSCRIPTION_ID"] || "subscriptionId";
