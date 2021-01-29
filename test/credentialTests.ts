@@ -20,7 +20,9 @@ describe("Token credentials", () => {
 
       creds.signRequest(request).then((signedRequest: msRest.WebResourceLike) => {
         signedRequest.headers.get("authorization")!.should.exist;
-        signedRequest.headers.get("authorization")!.should.match(new RegExp("^Bearer\\s+" + dummyToken + "$"));
+        signedRequest.headers
+          .get("authorization")!
+          .should.match(new RegExp("^Bearer\\s+" + dummyToken + "$"));
         done();
       });
     });
@@ -30,14 +32,15 @@ describe("Token credentials", () => {
       const request = new msRest.WebResource();
       creds.signRequest(request).then((signedRequest: msRest.WebResourceLike) => {
         signedRequest.headers.get("authorization")!.should.exist;
-        signedRequest.headers.get("authorization")!.should.match(new RegExp("^" + fakeScheme + "\\s+" + dummyToken + "$"));
+        signedRequest.headers
+          .get("authorization")!
+          .should.match(new RegExp("^" + fakeScheme + "\\s+" + dummyToken + "$"));
         done();
       });
     });
   });
 
   describe("construction", () => {
-
     it("should succeed with token", () => {
       (() => {
         new TokenCredentials(dummyToken);
@@ -66,7 +69,9 @@ describe("Basic Authentication credentials", () => {
       const request = new msRest.WebResource();
       creds.signRequest(request).then((signedRequest: msRest.WebResourceLike) => {
         signedRequest.headers.get("authorization")!.should.exist;
-        signedRequest.headers.get("authorization")!.should.match(new RegExp("^Basic\\s+" + encodedCredentials + "$"));
+        signedRequest.headers
+          .get("authorization")!
+          .should.match(new RegExp("^Basic\\s+" + encodedCredentials + "$"));
         done();
       });
     });
@@ -77,7 +82,9 @@ describe("Basic Authentication credentials", () => {
 
       creds.signRequest(request).then((signedRequest: msRest.WebResourceLike) => {
         signedRequest.headers.get("authorization")!.should.exist;
-        signedRequest.headers.get("authorization")!.should.match(new RegExp("^" + fakeScheme + "\\s+" + encodedCredentials + "$"));
+        signedRequest.headers
+          .get("authorization")!
+          .should.match(new RegExp("^" + fakeScheme + "\\s+" + encodedCredentials + "$"));
         done();
       });
     });
@@ -94,7 +101,7 @@ describe("Basic Authentication credentials", () => {
   describe("ApiKey credentials", () => {
     describe("usage", function () {
       it("should set header parameters properly in request", async function () {
-        const creds = new ApiKeyCredentials({inHeader: {"key1": "value1", "key2": "value2"}});
+        const creds = new ApiKeyCredentials({ inHeader: { key1: "value1", key2: "value2" } });
         const request = new msRest.WebResource();
         request.headers = new msRest.HttpHeaders();
 
@@ -107,10 +114,10 @@ describe("Basic Authentication credentials", () => {
       });
 
       it("should set query parameters properly in the request url without any query parameters", async function () {
-        const creds = new ApiKeyCredentials({inQuery: {"key1": "value1", "key2": "value2"}});
+        const creds = new ApiKeyCredentials({ inQuery: { key1: "value1", key2: "value2" } });
         const request = {
           headers: {},
-          url: "https://example.com"
+          url: "https://example.com",
         } as msRest.WebResource;
 
         await creds.signRequest(request);
@@ -118,10 +125,10 @@ describe("Basic Authentication credentials", () => {
       });
 
       it("should set query parameters properly in the request url with existing query parameters", async function () {
-        const creds = new ApiKeyCredentials({inQuery: {"key1": "value1", "key2": "value2"}});
+        const creds = new ApiKeyCredentials({ inQuery: { key1: "value1", key2: "value2" } });
         const request = {
           headers: {},
-          url: "https://example.com?q1=v2"
+          url: "https://example.com?q1=v2",
         } as msRest.WebResource;
 
         await creds.signRequest(request);
@@ -130,25 +137,24 @@ describe("Basic Authentication credentials", () => {
     });
 
     describe("construction", function () {
-
       it("should fail with options.inHeader and options.inQuery set to null or undefined", function (done) {
         (function () {
           new ApiKeyCredentials({ inHeader: undefined, inQuery: undefined } as any);
-        }).should.throw();
+        }.should.throw());
         done();
       });
 
       it("should fail without options", function (done) {
         (function () {
           new (ApiKeyCredentials as any)();
-        }).should.throw();
+        }.should.throw());
         done();
       });
 
       it("should fail with empty options", function (done) {
         (function () {
           new ApiKeyCredentials({});
-        }).should.throw();
+        }.should.throw());
         done();
       });
     });
