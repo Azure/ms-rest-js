@@ -52,7 +52,6 @@
   "dependencies": {
     "@azure/core-auth": "^1.1.4",
     "@types/node-fetch": "^2.3.7",
-    "@types/tunnel": "0.0.1",
     "abort-controller": "^3.0.0",
     "form-data": "^2.5.0",
     "node-fetch": "^2.6.0",
@@ -76,6 +75,7 @@
     "@types/semver": "^6.0.1",
     "@types/sinon": "^7.0.13",
     "@types/tough-cookie": "^2.3.5",
+    "@types/tunnel": "0.0.1",
     "@types/uuid": "^3.4.5",
     "@types/webpack": "^4.4.34",
     "@types/webpack-dev-middleware": "^2.0.3",
