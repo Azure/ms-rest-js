@@ -7,13 +7,23 @@ import { HttpOperationResponse } from "../httpOperationResponse";
 import { Constants } from "../util/constants";
 import { delay } from "../util/utils";
 
-type ResponseHandler = (httpRequest: WebResourceLike, response: HttpOperationResponse) => Promise<HttpOperationResponse>;
 const StatusCodes = Constants.HttpConstants.StatusCodes;
+const DEFAULT_RETRY_COUNT = 10;
 
-export function throttlingRetryPolicy(): RequestPolicyFactory {
+/**
+ * Options that control how to retry on response status code 429.
+ */
+export interface ThrottlingRetryOptions {
+  /**
+   * The maximum number of retry attempts.  Defaults to 10.
+   */
+  maxRetries?: number;
+}
+
+export function throttlingRetryPolicy(maxRetries: number = DEFAULT_RETRY_COUNT): RequestPolicyFactory {
   return {
     create: (nextPolicy: RequestPolicy, options: RequestPolicyOptionsLike) => {
-      return new ThrottlingRetryPolicy(nextPolicy, options);
+      return new ThrottlingRetryPolicy(nextPolicy, options, maxRetries);
     }
   };
 }
@@ -25,30 +35,32 @@ export function throttlingRetryPolicy(): RequestPolicyFactory {
  * https://docs.microsoft.com/en-us/azure/virtual-machines/troubleshooting/troubleshooting-throttling-errors
  */
 export class ThrottlingRetryPolicy extends BaseRequestPolicy {
-  private _handleResponse: ResponseHandler;
+  private retryLimit: number;
 
-  constructor(nextPolicy: RequestPolicy, options: RequestPolicyOptionsLike, _handleResponse?: ResponseHandler) {
+  constructor(nextPolicy: RequestPolicy, options: RequestPolicyOptionsLike, retryLimit: number) {
     super(nextPolicy, options);
-    this._handleResponse = _handleResponse || this._defaultResponseHandler;
+    this.retryLimit = retryLimit;
   }
 
   public async sendRequest(httpRequest: WebResourceLike): Promise<HttpOperationResponse> {
     return this._nextPolicy.sendRequest(httpRequest.clone()).then(response => {
-      if (response.status !== StatusCodes.TooManyRequests) {
-        return response;
-      } else {
-        return this._handleResponse(httpRequest, response);
-      }
+      return this.retry(httpRequest, response, 0);
     });
   }
 
-  private async _defaultResponseHandler(httpRequest: WebResourceLike, httpResponse: HttpOperationResponse): Promise<HttpOperationResponse> {
+  private async retry(httpRequest: WebResourceLike, httpResponse: HttpOperationResponse, retryCount: number): Promise<HttpOperationResponse> {
+    if (httpResponse.status !== StatusCodes.TooManyRequests) {
+      return httpResponse;
+    }
+
     const retryAfterHeader: string | undefined = httpResponse.headers.get(Constants.HeaderConstants.RETRY_AFTER);
 
-    if (retryAfterHeader) {
+    if (retryAfterHeader && retryCount < this.retryLimit) {
       const delayInMs: number | undefined = ThrottlingRetryPolicy.parseRetryAfterHeader(retryAfterHeader);
       if (delayInMs) {
-        return delay(delayInMs).then((_: any) => this._nextPolicy.sendRequest(httpRequest));
+        await delay(delayInMs);
+        const res = await this._nextPolicy.sendRequest(httpRequest);
+        return this.retry(httpRequest, res, retryCount + 1);
       }
     }
 

@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.2.1 (Unreleased)
+
+- `ThrottlingRetryPolicy` now keep retrying on 429 responses up to a limit. Fixes (Issue [#394](https://github.com/Azure/ms-rest-js/issues/394))
+
 ## 2.2.0 - 2021-01-26
 - Add support for @azure/core-auth's TokenCredential (PR [#410](https://github.com/Azure/ms-rest-js/pull/410))
 - Allow = character in parameter value (PR [#408](https://github.com/Azure/ms-rest-js/pull/408))
