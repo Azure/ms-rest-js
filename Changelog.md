@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.2.1 - UNRELEASED
+- Moving @types dependencies into devdependencies
+
 ## 2.2.0 - 2021-01-26
 - Add support for @azure/core-auth's TokenCredential (PR [#410](https://github.com/Azure/ms-rest-js/pull/410))
 - Allow = character in parameter value (PR [#408](https://github.com/Azure/ms-rest-js/pull/408))
