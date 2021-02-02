@@ -141,7 +141,7 @@ export abstract class FetchHttpClient implements HttpClient {
     };
 
     try {
-      const response: Response = await this.fetch(httpRequest.url, requestInit);
+      const response: CommonResponse = await this.fetch(httpRequest.url, requestInit);
 
       const headers = parseHeaders(response.headers);
       const operationResponse: HttpOperationResponse = {

@@ -16,8 +16,6 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "lib": [
-      "dom",
-      "dom.iterable",
       "es5",
       "es6",
       "es7",

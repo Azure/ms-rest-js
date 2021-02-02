@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.2.3 - UNRELEASED
+
+- Rework the use of `lib: ["dom"]` so consumers of this package don't need it in their tsconfig. Fixes (Issue [#367](https://github.com/Azure/ms-rest-js/issues/367))
+
 ## 2.2.2 - 2021-02-02
 
 - The global `fetch()` is no longer overridden by node-fetch. Fixes (Issue [#383](https://github.com/Azure/ms-rest-js/issues/383))
