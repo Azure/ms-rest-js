@@ -1,6 +1,6 @@
 # Changelog
 
-## 2.2.1 (Unreleased)
+## 2.2.1 - 2021-02-02
 
 - Fix issue of `SystemErrorRetryPolicy` didn't retry on errors (Issue [#412](https://github.com/Azure/ms-rest-js/issues/412))
 
