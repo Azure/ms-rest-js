@@ -37,7 +37,7 @@ const nodeConfig = {
     file: "./dist/msRest.node.js",
     format: "cjs",
     sourcemap: true,
-    banner
+    banner,
   },
   plugins: [
     nodeResolve({
@@ -48,9 +48,9 @@ const nodeConfig = {
     json(),
     visualizer({
       filename: "dist/node-stats.html",
-      sourcemap: true
-    })
-  ]
+      sourcemap: true,
+    }),
+  ],
 };
 
 /**
@@ -64,19 +64,19 @@ const browserConfig = {
     format: "umd",
     name: "msRest",
     sourcemap: true,
-    banner
+    banner,
   },
   plugins: [
     nodeResolve({
-      mainFields: ["module", "main", "browser"]
+      mainFields: ["module", "main", "browser"],
     }),
     commonjs(),
     sourcemaps(),
     visualizer({
       filename: "dist/browser-stats.html",
-      sourcemap: true
-    })
-  ]
+      sourcemap: true,
+    }),
+  ],
 };
 
 export default [nodeConfig, browserConfig];

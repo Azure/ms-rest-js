@@ -14,8 +14,7 @@ const DEFAULT_AUTHORIZATION_SCHEME = "Bearer";
  * This class provides a simple extension to use {@link TokenCredential} from `@azure/identity` library to
  * use with legacy Azure SDKs that accept {@link ServiceClientCredentials} family of credentials for authentication.
  */
-export class AzureIdentityCredentialAdapter
-  implements ServiceClientCredentials {
+export class AzureIdentityCredentialAdapter implements ServiceClientCredentials {
   private azureTokenCredential: TokenCredential;
   private scopes: string | string[];
   constructor(

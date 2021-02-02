@@ -1,8 +1,12 @@
 # Changelog
 
-## 2.2.1 - (Unreleased)
+## 2.2.2 - 2021-02-02
 
 - The global `fetch()` is no longer overridden by node-fetch. Fixes (Issue [#383](https://github.com/Azure/ms-rest-js/issues/383))
+
+## 2.2.1 - 2021-02-02
+
+- Fix issue of `SystemErrorRetryPolicy` didn't retry on errors (Issue [#412](https://github.com/Azure/ms-rest-js/issues/412))
 
 ## 2.2.0 - 2021-01-26
 - Add support for @azure/core-auth's TokenCredential (PR [#410](https://github.com/Azure/ms-rest-js/pull/410))

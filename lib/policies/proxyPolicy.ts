@@ -1,7 +1,12 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-import { BaseRequestPolicy, RequestPolicy, RequestPolicyFactory, RequestPolicyOptionsLike } from "./requestPolicy";
+import {
+  BaseRequestPolicy,
+  RequestPolicy,
+  RequestPolicyFactory,
+  RequestPolicyOptionsLike,
+} from "./requestPolicy";
 import { HttpOperationResponse } from "../httpOperationResponse";
 import { ProxySettings } from "../serviceClient";
 import { WebResourceLike } from "../webResource";
@@ -37,23 +42,26 @@ export function getDefaultProxySettings(proxyUrl?: string): ProxySettings | unde
   const parsedUrl = URLBuilder.parse(proxyUrl);
   return {
     host: parsedUrl.getScheme() + "://" + parsedUrl.getHost(),
-    port: Number.parseInt(parsedUrl.getPort() || "80")
+    port: Number.parseInt(parsedUrl.getPort() || "80"),
   };
 }
-
 
 export function proxyPolicy(proxySettings?: ProxySettings): RequestPolicyFactory {
   return {
     create: (nextPolicy: RequestPolicy, options: RequestPolicyOptionsLike) => {
       return new ProxyPolicy(nextPolicy, options, proxySettings!);
-    }
+    },
   };
 }
 
 export class ProxyPolicy extends BaseRequestPolicy {
   proxySettings: ProxySettings;
 
-  constructor(nextPolicy: RequestPolicy, options: RequestPolicyOptionsLike, proxySettings: ProxySettings) {
+  constructor(
+    nextPolicy: RequestPolicy,
+    options: RequestPolicyOptionsLike,
+    proxySettings: ProxySettings
+  ) {
     super(nextPolicy, options);
     this.proxySettings = proxySettings;
   }
