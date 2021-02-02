@@ -6,7 +6,13 @@
         "class-name": true,
         "comment-format": [true, "check-space"],
         "indent": [true, "spaces"],
-        "ter-indent": [true, 2],
+        "ter-indent": [
+            true,
+            2,
+            {
+                "SwitchCase": 1
+            }
+        ],
         "linebreak-style": [true, "LF"],
         "one-line": [true,
             "check-open-brace",

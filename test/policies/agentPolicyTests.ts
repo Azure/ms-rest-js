@@ -33,30 +33,19 @@ describe("AgentPolicy", function () {
     it("factory passes correct agent settings", function () {
       const factory = agentPolicy(agentSettings);
 
-      const policy = factory.create(
-        emptyRequestPolicy,
-        emptyPolicyOptions
-      ) as AgentPolicy;
+      const policy = factory.create(emptyRequestPolicy, emptyPolicyOptions) as AgentPolicy;
 
       policy.agentSettings.should.be.deep.equal(agentSettings);
     });
 
     it("sets correct agent settings through constructor", function () {
-      const policy = new AgentPolicy(
-        emptyRequestPolicy,
-        emptyPolicyOptions,
-        agentSettings
-      );
+      const policy = new AgentPolicy(emptyRequestPolicy, emptyPolicyOptions, agentSettings);
 
       policy.agentSettings.should.be.deep.equal(agentSettings);
     });
 
     it("should assign agent settings to the web request", async function () {
-      const policy = new AgentPolicy(
-        emptyRequestPolicy,
-        emptyPolicyOptions,
-        agentSettings
-      );
+      const policy = new AgentPolicy(emptyRequestPolicy, emptyPolicyOptions, agentSettings);
       const request = new WebResource();
 
       await policy.sendRequest(request);
@@ -65,16 +54,12 @@ describe("AgentPolicy", function () {
     });
 
     it("should not override agent settings to the web request", async function () {
-      const policy = new AgentPolicy(
-        emptyRequestPolicy,
-        emptyPolicyOptions,
-        agentSettings
-      );
+      const policy = new AgentPolicy(emptyRequestPolicy, emptyPolicyOptions, agentSettings);
 
       const request = new WebResource();
       const requestSpecificAgentSettings = {
-        http: new http.Agent({keepAlive: true}),
-        https: new http.Agent({keepAlive: true}),
+        http: new http.Agent({ keepAlive: true }),
+        https: new http.Agent({ keepAlive: true }),
       };
       request.agentSettings = requestSpecificAgentSettings;
 

@@ -21,7 +21,6 @@ if (typeof globalWithFetch.fetch !== "function") {
   globalWithFetch.fetch = fetch;
 }
 
-
 export class NodeFetchHttpClient extends FetchHttpClient {
   private readonly cookieJar = new tough.CookieJar(undefined, { looseMode: true });
 
@@ -47,14 +46,18 @@ export class NodeFetchHttpClient extends FetchHttpClient {
     }
 
     if (httpRequest.agentSettings) {
-      const {http: httpAgent, https: httpsAgent} = httpRequest.agentSettings;
+      const { http: httpAgent, https: httpsAgent } = httpRequest.agentSettings;
       if (httpsAgent && httpRequest.url.startsWith("https")) {
         requestInit.agent = httpsAgent;
       } else if (httpAgent) {
         requestInit.agent = httpAgent;
       }
     } else if (httpRequest.proxySettings) {
-      const tunnel: ProxyAgent = createProxyAgent(httpRequest.url, httpRequest.proxySettings, httpRequest.headers);
+      const tunnel: ProxyAgent = createProxyAgent(
+        httpRequest.url,
+        httpRequest.proxySettings,
+        httpRequest.headers
+      );
       requestInit.agent = tunnel.agent;
     }
 
@@ -63,7 +66,9 @@ export class NodeFetchHttpClient extends FetchHttpClient {
         requestInit.agent.keepAlive = true;
       } else {
         const options: http.AgentOptions | https.AgentOptions = { keepAlive: true };
-        const agent = httpRequest.url.startsWith("https") ? new https.Agent(options) : new http.Agent(options);
+        const agent = httpRequest.url.startsWith("https")
+          ? new https.Agent(options)
+          : new http.Agent(options);
         requestInit.agent = agent;
       }
     }
@@ -80,13 +85,14 @@ export class NodeFetchHttpClient extends FetchHttpClient {
             setCookieHeader,
             operationResponse.request.url,
             { ignoreError: true },
-            err => {
+            (err) => {
               if (err) {
                 reject(err);
               } else {
                 resolve();
               }
-            });
+            }
+          );
         });
       }
     }
