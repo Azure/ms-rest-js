@@ -88,7 +88,7 @@ export class SystemErrorRetryPolicy extends BaseRequestPolicy {
   public sendRequest(request: WebResourceLike): Promise<HttpOperationResponse> {
     return this._nextPolicy
       .sendRequest(request.clone())
-      .then((response) => retry(this, request, response));
+      .catch((error) => retry(this, request, error.response, error));
   }
 }
 
@@ -141,8 +141,7 @@ function updateRetryData(
   // Adjust retry interval
   let incrementDelta = Math.pow(2, retryData.retryCount) - 1;
   const boundedRandDelta =
-    policy.retryInterval * 0.8 +
-    Math.floor(Math.random() * (policy.retryInterval * 1.2 - policy.retryInterval * 0.8));
+    policy.retryInterval * 0.8 + Math.floor(Math.random() * (policy.retryInterval * 0.4));
   incrementDelta *= boundedRandDelta;
 
   retryData.retryInterval = Math.min(
@@ -153,12 +152,12 @@ function updateRetryData(
   return retryData;
 }
 
-function retry(
+async function retry(
   policy: SystemErrorRetryPolicy,
   request: WebResourceLike,
   operationResponse: HttpOperationResponse,
-  retryData?: RetryData,
-  err?: RetryError
+  err?: RetryError,
+  retryData?: RetryData
 ): Promise<HttpOperationResponse> {
   retryData = updateRetryData(policy, retryData, err);
   if (
@@ -172,17 +171,17 @@ function retry(
       err.code === "ENOENT")
   ) {
     // If previous operation ended with an error and the policy allows a retry, do that
-    return utils
-      .delay(retryData.retryInterval)
-      .then(() => policy._nextPolicy.sendRequest(request.clone()))
-      .then((res) => retry(policy, request, res, retryData, err))
-      .catch((err) => retry(policy, request, operationResponse, retryData, err));
-  } else {
-    if (err != undefined) {
-      // If the operation failed in the end, return all errors instead of just the last one
-      err = retryData.error;
-      return Promise.reject(err);
+    try {
+      await utils.delay(retryData.retryInterval);
+      return policy._nextPolicy.sendRequest(request.clone());
+    } catch (error) {
+      return retry(policy, request, operationResponse, error, retryData);
     }
-    return Promise.resolve(operationResponse);
+  } else {
+    if (err) {
+      // If the operation failed in the end, return all errors instead of just the last one
+      return Promise.reject(retryData.error);
+    }
+    return operationResponse;
   }
 }
