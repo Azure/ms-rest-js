@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.2.2 - 2021-02-02
+
+- The global `fetch()` is no longer overridden by node-fetch. Fixes (Issue [#383](https://github.com/Azure/ms-rest-js/issues/383))
+
 ## 2.2.1 - 2021-02-02
 
 - Fix issue of `SystemErrorRetryPolicy` didn't retry on errors (Issue [#412](https://github.com/Azure/ms-rest-js/issues/412))

@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 import { assert, AssertionError } from "chai";
+import * as sinon from "sinon";
 import "chai/register-should";
 import { createReadStream } from "fs";
 
@@ -11,6 +12,7 @@ import { isNode } from "../lib/util/utils";
 import { WebResource, HttpRequestBody, TransferProgressEvent } from "../lib/webResource";
 import { getHttpMock, HttpMockFacade } from "./mockHttp";
 import { TestFunction } from "mocha";
+import { CommonResponse } from "../lib/fetchHttpClient";
 
 const nodeIt = (isNode ? it : it.skip) as TestFunction;
 
@@ -39,6 +41,19 @@ describe("defaultHttpClient", function () {
   afterEach(() => httpMock.teardown());
   after(() => httpMock.teardown());
 
+  function getMockedHttpClient(): DefaultHttpClient {
+    const httpClient = new DefaultHttpClient();
+    const fetchMock = httpMock.getFetch();
+    if (fetchMock) {
+      sinon.stub(httpClient, "fetch").callsFake(async (input, init) => {
+        const response = await fetchMock(input, init);
+        return (response as unknown) as CommonResponse;
+      });
+    }
+
+    return httpClient;
+  }
+
   it("should return a response instead of throwing for awaited 404", async function () {
     const resourceUrl = "/nonexistent";
 
@@ -47,7 +62,7 @@ describe("defaultHttpClient", function () {
     });
 
     const request = new WebResource(resourceUrl, "GET");
-    const httpClient = new DefaultHttpClient();
+    const httpClient = getMockedHttpClient();
 
     const response = await httpClient.sendRequest(request);
     response.status.should.equal(404);
@@ -72,7 +87,7 @@ describe("defaultHttpClient", function () {
       undefined,
       controller.signal
     );
-    const client = new DefaultHttpClient();
+    const client = getMockedHttpClient();
     const promise = client.sendRequest(request);
     controller.abort();
     try {
@@ -99,7 +114,7 @@ describe("defaultHttpClient", function () {
       };
     });
 
-    const client = new DefaultHttpClient();
+    const client = getMockedHttpClient();
 
     const request1 = new WebResource("http://my.fake.domain/set-cookie");
     const response1 = await client.sendRequest(request1);
@@ -147,7 +162,7 @@ describe("defaultHttpClient", function () {
         controller.signal
       ),
     ];
-    const client = new DefaultHttpClient();
+    const client = getMockedHttpClient();
     const promises = requests.map((r) => client.sendRequest(r));
     controller.abort();
     // Ensure each promise is individually rejected
@@ -198,7 +213,7 @@ describe("defaultHttpClient", function () {
         (ev) => listener(download, ev)
       );
 
-      const client = new DefaultHttpClient();
+      const client = getMockedHttpClient();
       const response = await client.sendRequest(request);
       response.should.exist;
       response.status.should.equal(251);
@@ -241,7 +256,7 @@ describe("defaultHttpClient", function () {
         (ev) => listener(download, ev)
       );
 
-      const client = new DefaultHttpClient();
+      const client = getMockedHttpClient();
       const response = await client.sendRequest(request);
       response.status.should.equal(250);
       if (response.blobBody) {
@@ -274,7 +289,7 @@ describe("defaultHttpClient", function () {
       undefined,
       100
     );
-    const client = new DefaultHttpClient();
+    const client = getMockedHttpClient();
     try {
       await client.sendRequest(request);
       throw new Error("request did not fail as expected");
@@ -285,8 +300,9 @@ describe("defaultHttpClient", function () {
 
   it("should give a graceful error for nonexistent hosts", async function () {
     const requestUrl = "http://fake.domain";
-    httpMock.passThrough();
     const request = new WebResource(requestUrl, "GET");
+    httpMock.passThrough();
+    // testing the unstubbed behavior so not using local mock
     const client = new DefaultHttpClient();
     try {
       await client.sendRequest(request);
@@ -313,17 +329,18 @@ describe("defaultHttpClient", function () {
     });
 
     const request = new WebResource(requestUrl, "PUT");
-    const client = new DefaultHttpClient();
+    const client = getMockedHttpClient();
     const response = await client.sendRequest(request);
     response.status.should.equal(200, response.bodyAsText!);
   });
 
   it("should send HTTP requests", async function () {
-    httpMock.passThrough();
     const request = new WebResource("https://example.com", "GET");
     request.headers.set("Access-Control-Allow-Headers", "Content-Type");
     request.headers.set("Access-Control-Allow-Methods", "GET");
     request.headers.set("Access-Control-Allow-Origin", "https://example.com");
+    httpMock.passThrough();
+    // testing the unstubbed behavior so not using local mock
     const httpClient = new DefaultHttpClient();
 
     const response = await httpClient.sendRequest(request);
