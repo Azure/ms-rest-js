@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
+import { TokenCredential, isTokenCredential } from "@azure/core-auth";
 import { ServiceClientCredentials } from "./credentials/serviceClientCredentials";
 import { DefaultHttpClient } from "./defaultHttpClient";
 import { HttpClient } from "./httpClient";
@@ -29,6 +30,7 @@ import { ServiceCallback } from "./util/utils";
 import { agentPolicy } from "./policies/agentPolicy";
 import { proxyPolicy, getDefaultProxySettings } from "./policies/proxyPolicy";
 import { throttlingRetryPolicy } from "./policies/throttlingRetryPolicy";
+import { AzureIdentityCredentialAdapter } from "./credentials/azureIdentityTokenCredentialAdapter";
 import { Agent } from "http";
 
 
@@ -148,12 +150,20 @@ export class ServiceClient {
    * @param {ServiceClientCredentials} [credentials] The credentials object used for authentication.
    * @param {ServiceClientOptions} [options] The service client options that govern the behavior of the client.
    */
-  constructor(credentials?: ServiceClientCredentials, options?: ServiceClientOptions) {
+  constructor(credentials?: ServiceClientCredentials | TokenCredential, options?: ServiceClientOptions) {
     if (!options) {
       options = {};
     }
 
-    if (credentials && !credentials.signRequest) {
+    let serviceClientCredentials: ServiceClientCredentials | undefined;
+    if (isTokenCredential(credentials)) {
+      serviceClientCredentials = new AzureIdentityCredentialAdapter(credentials);
+    } else {
+      serviceClientCredentials = credentials;
+    }
+
+
+    if (serviceClientCredentials && !serviceClientCredentials.signRequest) {
       throw new Error("credentials argument needs to implement signRequest method");
     }
 
@@ -165,7 +175,7 @@ export class ServiceClient {
     if (Array.isArray(options.requestPolicyFactories)) {
       requestPolicyFactories = options.requestPolicyFactories;
     } else {
-      requestPolicyFactories = createDefaultRequestPolicyFactories(credentials, options);
+      requestPolicyFactories = createDefaultRequestPolicyFactories(serviceClientCredentials, options);
       if (options.requestPolicyFactories) {
         const newRequestPolicyFactories: void | RequestPolicyFactory[] = options.requestPolicyFactories(requestPolicyFactories);
         if (newRequestPolicyFactories) {

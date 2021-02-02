@@ -1,6 +1,9 @@
 # Changelog
 
-## 1.9.1 - UNRELEASED
+## 1.10.0 - UNRELEASED
+- Add support for @azure/core-auth's TokenCredential
+
+## 1.9.1 - 2021-01-07
 - Upgrade axios dependency to fix vulnerability (PR [#407](https://github.com/Azure/ms-rest-js/pull/407))
 
 ## 1.9.0 - 2020-10-08
