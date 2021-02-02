@@ -4,6 +4,6 @@ import { checkConstantsVersion } from "./checkConstantsVersion";
 checkEverything({
   additionalChecks: {
     name: "Constants.ts Version",
-    check: checkConstantsVersion
-  }
+    check: checkConstantsVersion,
+  },
 });

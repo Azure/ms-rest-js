@@ -4,7 +4,12 @@
 import { HttpOperationResponse } from "../httpOperationResponse";
 import * as utils from "../util/utils";
 import { WebResourceLike } from "../webResource";
-import { BaseRequestPolicy, RequestPolicy, RequestPolicyFactory, RequestPolicyOptionsLike } from "./requestPolicy";
+import {
+  BaseRequestPolicy,
+  RequestPolicy,
+  RequestPolicyFactory,
+  RequestPolicyOptionsLike,
+} from "./requestPolicy";
 
 export interface RetryData {
   retryCount: number;
@@ -18,11 +23,23 @@ export interface RetryError extends Error {
   innerError?: RetryError;
 }
 
-export function systemErrorRetryPolicy(retryCount?: number, retryInterval?: number, minRetryInterval?: number, maxRetryInterval?: number): RequestPolicyFactory {
+export function systemErrorRetryPolicy(
+  retryCount?: number,
+  retryInterval?: number,
+  minRetryInterval?: number,
+  maxRetryInterval?: number
+): RequestPolicyFactory {
   return {
     create: (nextPolicy: RequestPolicy, options: RequestPolicyOptionsLike) => {
-      return new SystemErrorRetryPolicy(nextPolicy, options, retryCount, retryInterval, minRetryInterval, maxRetryInterval);
-    }
+      return new SystemErrorRetryPolicy(
+        nextPolicy,
+        options,
+        retryCount,
+        retryInterval,
+        minRetryInterval,
+        maxRetryInterval
+      );
+    },
   };
 }
 
@@ -46,16 +63,31 @@ export class SystemErrorRetryPolicy extends BaseRequestPolicy {
   DEFAULT_CLIENT_MAX_RETRY_INTERVAL = 1000 * 90;
   DEFAULT_CLIENT_MIN_RETRY_INTERVAL = 1000 * 3;
 
-  constructor(nextPolicy: RequestPolicy, options: RequestPolicyOptionsLike, retryCount?: number, retryInterval?: number, minRetryInterval?: number, maxRetryInterval?: number) {
+  constructor(
+    nextPolicy: RequestPolicy,
+    options: RequestPolicyOptionsLike,
+    retryCount?: number,
+    retryInterval?: number,
+    minRetryInterval?: number,
+    maxRetryInterval?: number
+  ) {
     super(nextPolicy, options);
     this.retryCount = typeof retryCount === "number" ? retryCount : this.DEFAULT_CLIENT_RETRY_COUNT;
-    this.retryInterval = typeof retryInterval === "number" ? retryInterval : this.DEFAULT_CLIENT_RETRY_INTERVAL;
-    this.minRetryInterval = typeof minRetryInterval === "number" ? minRetryInterval : this.DEFAULT_CLIENT_MIN_RETRY_INTERVAL;
-    this.maxRetryInterval = typeof maxRetryInterval === "number" ? maxRetryInterval : this.DEFAULT_CLIENT_MAX_RETRY_INTERVAL;
+    this.retryInterval =
+      typeof retryInterval === "number" ? retryInterval : this.DEFAULT_CLIENT_RETRY_INTERVAL;
+    this.minRetryInterval =
+      typeof minRetryInterval === "number"
+        ? minRetryInterval
+        : this.DEFAULT_CLIENT_MIN_RETRY_INTERVAL;
+    this.maxRetryInterval =
+      typeof maxRetryInterval === "number"
+        ? maxRetryInterval
+        : this.DEFAULT_CLIENT_MAX_RETRY_INTERVAL;
   }
 
   public sendRequest(request: WebResourceLike): Promise<HttpOperationResponse> {
-    return this._nextPolicy.sendRequest(request.clone())
+    return this._nextPolicy
+      .sendRequest(request.clone())
       .catch((error) => retry(this, request, error.response, error));
   }
 }
@@ -72,9 +104,9 @@ function shouldRetry(policy: SystemErrorRetryPolicy, retryData: RetryData): bool
   if (!retryData) {
     throw new Error("retryData for the SystemErrorRetryPolicyFilter cannot be null.");
   } else {
-    currentCount = (retryData && retryData.retryCount);
+    currentCount = retryData && retryData.retryCount;
   }
-  return (currentCount < policy.retryCount);
+  return currentCount < policy.retryCount;
 }
 
 /**
@@ -83,11 +115,15 @@ function shouldRetry(policy: SystemErrorRetryPolicy, retryData: RetryData): bool
  * @param {RetryData} retryData  The retry data.
  * @param {object} err        The operation"s error, if any.
  */
-function updateRetryData(policy: SystemErrorRetryPolicy, retryData?: RetryData, err?: RetryError): RetryData {
+function updateRetryData(
+  policy: SystemErrorRetryPolicy,
+  retryData?: RetryData,
+  err?: RetryError
+): RetryData {
   if (!retryData) {
     retryData = {
       retryCount: 0,
-      retryInterval: 0
+      retryInterval: 0,
     };
   }
 
@@ -104,11 +140,14 @@ function updateRetryData(policy: SystemErrorRetryPolicy, retryData?: RetryData, 
 
   // Adjust retry interval
   let incrementDelta = Math.pow(2, retryData.retryCount) - 1;
-  const boundedRandDelta = policy.retryInterval * 0.8 +
-    Math.floor(Math.random() * (policy.retryInterval * 0.4));
+  const boundedRandDelta =
+    policy.retryInterval * 0.8 + Math.floor(Math.random() * (policy.retryInterval * 0.4));
   incrementDelta *= boundedRandDelta;
 
-  retryData.retryInterval = Math.min(policy.minRetryInterval + incrementDelta, policy.maxRetryInterval);
+  retryData.retryInterval = Math.min(
+    policy.minRetryInterval + incrementDelta,
+    policy.maxRetryInterval
+  );
 
   return retryData;
 }
@@ -121,15 +160,21 @@ async function retry(
   retryData?: RetryData
 ): Promise<HttpOperationResponse> {
   retryData = updateRetryData(policy, retryData, err);
-  if (err && err.code && shouldRetry(policy, retryData) &&
-    (err.code === "ETIMEDOUT" || err.code === "ESOCKETTIMEDOUT" || err.code === "ECONNREFUSED" ||
-      err.code === "ECONNRESET" || err.code === "ENOENT")) {
+  if (
+    err &&
+    err.code &&
+    shouldRetry(policy, retryData) &&
+    (err.code === "ETIMEDOUT" ||
+      err.code === "ESOCKETTIMEDOUT" ||
+      err.code === "ECONNREFUSED" ||
+      err.code === "ECONNRESET" ||
+      err.code === "ENOENT")
+  ) {
     // If previous operation ended with an error and the policy allows a retry, do that
     try {
       await utils.delay(retryData.retryInterval);
       return policy._nextPolicy.sendRequest(request.clone());
-    }
-    catch (error) {
+    } catch (error) {
       return retry(policy, request, operationResponse, error, retryData);
     }
   } else {

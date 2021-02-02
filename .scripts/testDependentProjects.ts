@@ -1,5 +1,11 @@
 import path from "path";
-import { run, RunResult, RunOptions, Command, commandToString } from "@ts-common/azure-js-dev-tools";
+import {
+  run,
+  RunResult,
+  RunOptions,
+  Command,
+  commandToString,
+} from "@ts-common/azure-js-dev-tools";
 
 async function execAndLog(executable: string, args?: string[], options?: RunOptions): Promise<any> {
   const command: Command = {
@@ -16,7 +22,11 @@ async function execAndLog(executable: string, args?: string[], options?: RunOpti
     showResult: true,
   });
 
-  console.log(`\nResult of "${commandToString(command)}" [Exit code: ${result.exitCode}]:\n` + result.stdout + "\n");
+  console.log(
+    `\nResult of "${commandToString(command)}" [Exit code: ${result.exitCode}]:\n` +
+      result.stdout +
+      "\n"
+  );
 
   if (result.exitCode) {
     console.error(`Error while running "${commandToString(command)}": ${result.error}`);
@@ -29,19 +39,21 @@ async function execAndLog(executable: string, args?: string[], options?: RunOpti
 async function cloneRepository(projectName: string, projectDirectory: string) {
   const gitHubUrl = `https://github.com/Azure/${projectName}.git`;
   await execAndLog(`git`, ["clone", gitHubUrl, projectDirectory, "--recursive"]);
-  await execAndLog(`npm`, [ "install" ], { executionFolderPath: projectDirectory });
+  await execAndLog(`npm`, ["install"], { executionFolderPath: projectDirectory });
 }
 
 async function buildAndTest(projectDirectory: string) {
-  await execAndLog(`npm`, [ "run", "build" ], { executionFolderPath: projectDirectory });
-  await execAndLog(`npm`, [ "run", "test" ], { executionFolderPath: projectDirectory });
+  await execAndLog(`npm`, ["run", "build"], { executionFolderPath: projectDirectory });
+  await execAndLog(`npm`, ["run", "test"], { executionFolderPath: projectDirectory });
 }
 
 async function cloneAndRunTest(msRestJsDirectory: string, projectName: string) {
   const projectDirectory = path.join(msRestJsDirectory, `../.tmp/${projectName}`);
   await cloneRepository(projectName, projectDirectory);
 
-  await execAndLog(`npm`, [ "install", msRestJsDirectory ], { executionFolderPath: projectDirectory });
+  await execAndLog(`npm`, ["install", msRestJsDirectory], {
+    executionFolderPath: projectDirectory,
+  });
 
   const additionalCommands: string[] = process.argv.slice(3);
   for (const command of additionalCommands) {
@@ -49,7 +61,7 @@ async function cloneAndRunTest(msRestJsDirectory: string, projectName: string) {
   }
 
   await buildAndTest(projectDirectory);
-  await execAndLog(`rm`, [ "-rf", projectDirectory ]);
+  await execAndLog(`rm`, ["-rf", projectDirectory]);
 }
 
 (async () => {

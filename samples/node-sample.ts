@@ -3,7 +3,7 @@
 import * as msRest from "../lib/msRest";
 const clientOptions: msRest.ServiceClientOptions = {
   // add log policy to list of default factories.
-  requestPolicyFactories: (factories) => factories.concat([msRest.logPolicy()])
+  requestPolicyFactories: (factories) => factories.concat([msRest.logPolicy()]),
 };
 
 const subscriptionId = process.env["AZURE_SUBSCRIPTION_ID"] || "subscriptionId";
@@ -17,10 +17,9 @@ const creds = new msRest.TokenCredentials(token);
 const client = new msRest.ServiceClient(creds, clientOptions);
 const req: msRest.RequestPrepareOptions = {
   url: `https://management.azure.com/subscriptions/${subscriptionId}/providers/Microsoft.Storage/storageAccounts?api-version=2015-06-15`,
-  method: "GET"
+  method: "GET",
 };
 
 client.sendRequest(req).then(function (res: msRest.HttpOperationResponse) {
   console.log(res.bodyAsText);
 });
-

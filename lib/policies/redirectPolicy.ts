@@ -4,33 +4,49 @@
 import { HttpOperationResponse } from "../httpOperationResponse";
 import { URLBuilder } from "../url";
 import { WebResourceLike } from "../webResource";
-import { BaseRequestPolicy, RequestPolicy, RequestPolicyFactory, RequestPolicyOptionsLike } from "./requestPolicy";
+import {
+  BaseRequestPolicy,
+  RequestPolicy,
+  RequestPolicyFactory,
+  RequestPolicyOptionsLike,
+} from "./requestPolicy";
 
 export function redirectPolicy(maximumRetries = 20): RequestPolicyFactory {
   return {
     create: (nextPolicy: RequestPolicy, options: RequestPolicyOptionsLike) => {
       return new RedirectPolicy(nextPolicy, options, maximumRetries);
-    }
+    },
   };
 }
 
 export class RedirectPolicy extends BaseRequestPolicy {
-  constructor(nextPolicy: RequestPolicy, options: RequestPolicyOptionsLike, readonly maxRetries = 20) {
+  constructor(
+    nextPolicy: RequestPolicy,
+    options: RequestPolicyOptionsLike,
+    readonly maxRetries = 20
+  ) {
     super(nextPolicy, options);
   }
 
   public sendRequest(request: WebResourceLike): Promise<HttpOperationResponse> {
-    return this._nextPolicy.sendRequest(request).then(response => handleRedirect(this, response, 0));
+    return this._nextPolicy
+      .sendRequest(request)
+      .then((response) => handleRedirect(this, response, 0));
   }
 }
 
-function handleRedirect(policy: RedirectPolicy, response: HttpOperationResponse, currentRetries: number): Promise<HttpOperationResponse> {
+function handleRedirect(
+  policy: RedirectPolicy,
+  response: HttpOperationResponse,
+  currentRetries: number
+): Promise<HttpOperationResponse> {
   const { request, status } = response;
   const locationHeader = response.headers.get("location");
-  if (locationHeader &&
+  if (
+    locationHeader &&
     (status === 300 || status === 307 || (status === 303 && request.method === "POST")) &&
-    (!policy.maxRetries || currentRetries < policy.maxRetries)) {
-
+    (!policy.maxRetries || currentRetries < policy.maxRetries)
+  ) {
     const builder = URLBuilder.parse(request.url);
     builder.setPath(locationHeader);
     request.url = builder.toString();
@@ -41,8 +57,9 @@ function handleRedirect(policy: RedirectPolicy, response: HttpOperationResponse,
       request.method = "GET";
     }
 
-    return policy._nextPolicy.sendRequest(request)
-      .then(res => handleRedirect(policy, res, currentRetries + 1));
+    return policy._nextPolicy
+      .sendRequest(request)
+      .then((res) => handleRedirect(policy, res, currentRetries + 1));
   }
 
   return Promise.resolve(response);
