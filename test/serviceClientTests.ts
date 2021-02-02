@@ -145,8 +145,8 @@ describe("ServiceClient", function () {
       false,
       "?q=1%2C2,,5"
     );
-    /* tslint:disable-next-line:no-null-keyword */
     await testSendOperationRequest(
+      /* tslint:disable-next-line:no-null-keyword */
       ["1,2", null, "5"],
       QueryCollectionFormat.Csv,
       false,
@@ -161,8 +161,8 @@ describe("ServiceClient", function () {
       false,
       "?q=1%2C2%09%095"
     );
-    /* tslint:disable-next-line:no-null-keyword */
     await testSendOperationRequest(
+      /* tslint:disable-next-line:no-null-keyword */
       ["1,2", null, "5"],
       QueryCollectionFormat.Tsv,
       false,
@@ -183,8 +183,8 @@ describe("ServiceClient", function () {
       false,
       "?q=1%2C2%20%205"
     );
-    /* tslint:disable-next-line:no-null-keyword */
     await testSendOperationRequest(
+      /* tslint:disable-next-line:no-null-keyword */
       ["1,2", null, "5"],
       QueryCollectionFormat.Ssv,
       false,

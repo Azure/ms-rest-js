@@ -827,8 +827,8 @@ describe("msrest", function () {
         },
       };
 
-      // tslint:disable-next-line
       (function () {
+        /* tslint:disable-next-line:no-null-keyword */
         Serializer.serialize(mapper, null, "testobj");
       }.should.throw("testobj cannot be null."));
     });
