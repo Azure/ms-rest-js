@@ -1,8 +1,12 @@
 # Changelog
 
-## 2.2.3 - UNRELEASED
+## 2.2.4 - UNRELEASED
 
 - Rework the use of `lib: ["dom"]` so consumers of this package don't need it in their tsconfig. Fixes (Issue [#367](https://github.com/Azure/ms-rest-js/issues/367))
+
+## 2.2.3 (Unreleased)
+
+- `ThrottlingRetryPolicy` now keep retrying on 429 responses up to a limit. Fixes (Issue [#394](https://github.com/Azure/ms-rest-js/issues/394))
 
 ## 2.2.2 - 2021-02-02
 
