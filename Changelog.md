@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.2.3 (Unreleased)
+
+- `ThrottlingRetryPolicy` now keep retrying on 429 responses up to a limit. Fixes (Issue [#394](https://github.com/Azure/ms-rest-js/issues/394))
+
 ## 2.2.2 - 2021-02-02
 
 - The global `fetch()` is no longer overridden by node-fetch. Fixes (Issue [#383](https://github.com/Azure/ms-rest-js/issues/383))
