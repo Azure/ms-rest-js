@@ -1,7 +1,12 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-import { BaseRequestPolicy, RequestPolicy, RequestPolicyOptionsLike, RequestPolicyFactory } from "./requestPolicy";
+import {
+  BaseRequestPolicy,
+  RequestPolicy,
+  RequestPolicyOptionsLike,
+  RequestPolicyFactory,
+} from "./requestPolicy";
 import { WebResourceLike } from "../webResource";
 import { HttpOperationResponse } from "../httpOperationResponse";
 import { Constants } from "../util/constants";
@@ -20,11 +25,13 @@ export interface ThrottlingRetryOptions {
   maxRetries?: number;
 }
 
-export function throttlingRetryPolicy(maxRetries: number = DEFAULT_RETRY_COUNT): RequestPolicyFactory {
+export function throttlingRetryPolicy(
+  maxRetries: number = DEFAULT_RETRY_COUNT
+): RequestPolicyFactory {
   return {
     create: (nextPolicy: RequestPolicy, options: RequestPolicyOptionsLike) => {
       return new ThrottlingRetryPolicy(nextPolicy, options, maxRetries);
-    }
+    },
   };
 }
 
@@ -43,20 +50,28 @@ export class ThrottlingRetryPolicy extends BaseRequestPolicy {
   }
 
   public async sendRequest(httpRequest: WebResourceLike): Promise<HttpOperationResponse> {
-    return this._nextPolicy.sendRequest(httpRequest.clone()).then(response => {
+    return this._nextPolicy.sendRequest(httpRequest.clone()).then((response) => {
       return this.retry(httpRequest, response, 0);
     });
   }
 
-  private async retry(httpRequest: WebResourceLike, httpResponse: HttpOperationResponse, retryCount: number): Promise<HttpOperationResponse> {
+  private async retry(
+    httpRequest: WebResourceLike,
+    httpResponse: HttpOperationResponse,
+    retryCount: number
+  ): Promise<HttpOperationResponse> {
     if (httpResponse.status !== StatusCodes.TooManyRequests) {
       return httpResponse;
     }
 
-    const retryAfterHeader: string | undefined = httpResponse.headers.get(Constants.HeaderConstants.RETRY_AFTER);
+    const retryAfterHeader: string | undefined = httpResponse.headers.get(
+      Constants.HeaderConstants.RETRY_AFTER
+    );
 
     if (retryAfterHeader && retryCount < this.retryLimit) {
-      const delayInMs: number | undefined = ThrottlingRetryPolicy.parseRetryAfterHeader(retryAfterHeader);
+      const delayInMs: number | undefined = ThrottlingRetryPolicy.parseRetryAfterHeader(
+        retryAfterHeader
+      );
       if (delayInMs) {
         await delay(delayInMs);
         const res = await this._nextPolicy.sendRequest(httpRequest);

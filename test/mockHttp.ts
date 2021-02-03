@@ -5,6 +5,7 @@ import xhrMock, { proxy } from "xhr-mock";
 import { isNode, HttpMethods } from "../lib/msRest";
 import fetchMock, * as fetch from "fetch-mock";
 import { Readable } from "stream";
+import node_fetch from "node-fetch";
 
 export type UrlFilter = string | RegExp;
 
@@ -14,7 +15,12 @@ export type MockResponseData = {
   headers?: any;
 };
 
-export type MockResponseFunction = (url?: string, method?: string, body?: any, headers?: any) => Promise<MockResponseData>;
+export type MockResponseFunction = (
+  url?: string,
+  method?: string,
+  body?: any,
+  headers?: any
+) => Promise<MockResponseData>;
 
 export type MockResponse = MockResponseData | MockResponseFunction;
 
@@ -27,31 +33,42 @@ export interface HttpMockFacade {
   get(url: UrlFilter, response: MockResponse): void;
   post(url: UrlFilter, response: MockResponse): void;
   put(url: UrlFilter, response: MockResponse): void;
+  getFetch(): typeof node_fetch | undefined;
 }
 
 export function getHttpMock(): HttpMockFacade {
-  return (isNode ? new FetchHttpMock() : new BrowserHttpMock());
+  return isNode ? new FetchHttpMock() : new BrowserHttpMock();
 }
 
 class FetchHttpMock implements HttpMockFacade {
+  private _fetch: fetchMock.FetchMockSandbox;
+
+  constructor() {
+    this._fetch = fetchMock.sandbox();
+  }
+
+  getFetch(): typeof node_fetch {
+    return (this._fetch as unknown) as typeof node_fetch;
+  }
+
   setup(): void {
-    fetchMock.resetHistory();
+    this._fetch.resetHistory();
   }
 
   teardown(): void {
-    fetchMock.resetHistory();
+    this._fetch.resetHistory();
   }
 
   passThrough(_url?: string | RegExp | undefined): void {
-    fetchMock.reset();
+    this._fetch.reset();
   }
 
   timeout(_method: HttpMethods, url: UrlFilter): void {
     const delay = new Promise((resolve) => {
-      setTimeout(() => resolve({$uri: url, delay: 500}), 2500);
+      setTimeout(() => resolve({ $uri: url, delay: 500 }), 2500);
     });
 
-    fetchMock.mock(url, delay);
+    this._fetch.mock(url, delay);
   }
 
   convertStreamToBuffer(stream: Readable): Promise<any> {
@@ -82,8 +99,9 @@ class FetchHttpMock implements HttpMockFacade {
       }) as fetch.MockResponseFunction;
     }
 
-    const matcher = (_url: string, opts: fetch.MockRequest) => (url === _url) && (opts.method === method);
-    fetchMock.mock(matcher, mockResponse);
+    const matcher = (_url: string, opts: fetch.MockRequest) =>
+      url === _url && opts.method === method;
+    this._fetch.mock(matcher, mockResponse);
   }
 
   get(url: UrlFilter, response: MockResponse): void {
@@ -111,13 +129,21 @@ export class BrowserHttpMock implements HttpMockFacade {
   mockHttpMethod(method: HttpMethods, url: UrlFilter, response: MockResponse): void {
     if (typeof response === "function") {
       xhrMock.use(method, url, async (req, res) => {
-        const result = await response(req.url().toString(), req.method().toString(), req.body(), req.headers());
-        return res.status(result.status || 200).body(result.body || {}).headers(result.headers || {});
+        const result = await response(
+          req.url().toString(),
+          req.method().toString(),
+          req.body(),
+          req.headers()
+        );
+        return res
+          .status(result.status || 200)
+          .body(result.body || {})
+          .headers(result.headers || {});
       });
     } else {
       xhrMock.use(method, url, {
         status: response.status,
-        body: response.body
+        body: response.body,
       });
     }
   }
@@ -143,7 +169,10 @@ export class BrowserHttpMock implements HttpMockFacade {
   }
 
   timeout(method: HttpMethods, url: UrlFilter): void {
-    return this.mockHttpMethod(method, url, () => new Promise(() => { }));
+    return this.mockHttpMethod(method, url, () => new Promise(() => {}));
+  }
+
+  getFetch(): undefined {
+    return undefined;
   }
 }
-

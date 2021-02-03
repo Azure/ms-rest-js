@@ -10,11 +10,11 @@ import { HttpHeaders, RequestPolicyOptions } from "../../lib/msRest";
 
 describe("ThrottlingRetryPolicy", () => {
   class PassThroughPolicy {
-    constructor(private _response: HttpOperationResponse) { }
+    constructor(private _response: HttpOperationResponse) {}
     public sendRequest(request: WebResourceLike): Promise<HttpOperationResponse> {
       const response = {
         ...this._response,
-        request: request
+        request: request,
       };
 
       return Promise.resolve(response);
@@ -24,7 +24,7 @@ describe("ThrottlingRetryPolicy", () => {
   const defaultResponse = {
     status: 200,
     request: new WebResource(),
-    headers: new HttpHeaders()
+    headers: new HttpHeaders(),
   };
 
   // Inject 429 responses on first numberRetryAfter sendRequest() calls
@@ -38,15 +38,15 @@ describe("ThrottlingRetryPolicy", () => {
         return Promise.resolve({
           status: 429,
           headers: new HttpHeaders({
-            "Retry-After": "1"
+            "Retry-After": "1",
           }),
-          request
+          request,
         });
       }
 
       return Promise.resolve({
         ...this._response,
-        request
+        request,
       });
     }
   }
@@ -67,7 +67,7 @@ describe("ThrottlingRetryPolicy", () => {
         sendRequest: (requestToSend: WebResourceLike): Promise<HttpOperationResponse> => {
           assert(request !== requestToSend);
           return Promise.resolve(defaultResponse);
-        }
+        },
       };
       const policy = new ThrottlingRetryPolicy(nextPolicy, new RequestPolicyOptions(), 3);
       await policy.sendRequest(request);
@@ -78,7 +78,7 @@ describe("ThrottlingRetryPolicy", () => {
       request.url = "http://url";
       request.method = "PATCH";
       request.body = { someProperty: "someValue" };
-      request.headers = new HttpHeaders({ "header": "abc" });
+      request.headers = new HttpHeaders({ header: "abc" });
       request.query = { q: "param" };
 
       const policy = createDefaultThrottlingRetryPolicy();
@@ -92,9 +92,9 @@ describe("ThrottlingRetryPolicy", () => {
       const mockResponse = {
         status: 400,
         headers: new HttpHeaders({
-          "Retry-After": "100"
+          "Retry-After": "100",
         }),
-        request: request
+        request: request,
       };
       const faultyPolicy = new RetryFirstNRequestsPolicy(mockResponse, 0);
       const policy = new ThrottlingRetryPolicy(faultyPolicy, new RequestPolicyOptions(), 3);
@@ -115,7 +115,6 @@ describe("ThrottlingRetryPolicy", () => {
       assert.deepEqual(response, defaultResponse);
       assert.strictEqual(spy.callCount, 2); // last retry returns directly for 200 response
     });
-
 
     it("should give up on 429 after retry limit", async () => {
       const request = new WebResource();
@@ -143,7 +142,9 @@ describe("ThrottlingRetryPolicy", () => {
 
     it("should return sleep interval value in milliseconds for full date format", function (done) {
       const clock = sinon.useFakeTimers(new Date("Fri, 31 Dec 1999 23:00:00 GMT").getTime());
-      const retryAfter = ThrottlingRetryPolicy.parseRetryAfterHeader("Fri, 31 Dec 1999 23:02:00 GMT");
+      const retryAfter = ThrottlingRetryPolicy.parseRetryAfterHeader(
+        "Fri, 31 Dec 1999 23:02:00 GMT"
+      );
 
       assert.equal(retryAfter, 2 * 60 * 1000);
 
