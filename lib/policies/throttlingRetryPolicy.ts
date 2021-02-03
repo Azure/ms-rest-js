@@ -8,14 +8,14 @@ import { Constants } from "../util/constants";
 import { delay } from "../util/utils";
 
 const StatusCodes = Constants.HttpConstants.StatusCodes;
-const DEFAULT_RETRY_COUNT = 10;
+const DEFAULT_RETRY_COUNT = 3;
 
 /**
  * Options that control how to retry on response status code 429.
  */
 export interface ThrottlingRetryOptions {
   /**
-   * The maximum number of retry attempts.  Defaults to 10.
+   * The maximum number of retry attempts.  Defaults to 3.
    */
   maxRetries?: number;
 }

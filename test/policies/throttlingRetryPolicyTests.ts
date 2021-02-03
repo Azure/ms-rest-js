@@ -126,7 +126,7 @@ describe("ThrottlingRetryPolicy", () => {
       const response = await policy.sendRequest(request);
       assert.deepEqual(response.status, 429);
       assert.strictEqual(spy.callCount, 4); // last retry returns directly after reaching retry limit
-    });
+    }).timeout(5000);
   });
 
   describe("parseRetryAfterHeader", () => {
