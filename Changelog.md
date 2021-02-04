@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.11.0 - UNRELEASED
+- Moving @types/tunnel dependencies into devDependencies to avoid pulling in @types/node indirectly. Developers should install @types/node based on the platform they are targeting.
+
 ## 1.10.0 - 2021-02-02
 - Add support for @azure/core-auth's TokenCredential (PR [#418](https://github.com/Azure/ms-rest-js/pull/418))
 
