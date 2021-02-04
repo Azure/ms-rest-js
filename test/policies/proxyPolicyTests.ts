@@ -16,15 +16,16 @@ describe("ProxyPolicy", function () {
     host: "https://example.com",
     port: 3030,
     username: "admin",
-    password: "_password"
+    password: "_password",
   };
 
   const emptyRequestPolicy = {
-    sendRequest: (_: WebResourceLike) => Promise.resolve({
-      request: new WebResource(),
-      status: 404,
-      headers: new HttpHeaders(undefined)
-    })
+    sendRequest: (_: WebResourceLike) =>
+      Promise.resolve({
+        request: new WebResource(),
+        status: 404,
+        headers: new HttpHeaders(undefined),
+      }),
   };
 
   const emptyPolicyOptions = new RequestPolicyOptions();
@@ -37,7 +38,6 @@ describe("ProxyPolicy", function () {
       policy.proxySettings.should.be.deep.equal(proxySettings);
       done();
     });
-
 
     it("sets correct proxy settings through constructor", function (done) {
       const policy = new ProxyPolicy(emptyRequestPolicy, emptyPolicyOptions, proxySettings);
@@ -68,7 +68,8 @@ describe("ProxyPolicy", function () {
 
   browserDescribe("for browser", () => {
     it("should throw an Error while constructing object", () => {
-      const construct = () => new ProxyPolicy(emptyRequestPolicy, emptyPolicyOptions, proxySettings);
+      const construct = () =>
+        new ProxyPolicy(emptyRequestPolicy, emptyPolicyOptions, proxySettings);
       construct.should.throw();
     });
   });
@@ -122,9 +123,9 @@ describe("getDefaultProxySettings", () => {
 
       describe("should prefer HTTPS proxy over HTTP proxy", () => {
         [
-                    { name: "lower case", func: (envVar: string) => envVar.toLowerCase() },
-                    { name: "upper case", func: (envVar: string) => envVar.toUpperCase() }
-        ].forEach(testCase => {
+          { name: "lower case", func: (envVar: string) => envVar.toLowerCase() },
+          { name: "upper case", func: (envVar: string) => envVar.toUpperCase() },
+        ].forEach((testCase) => {
           it(`with ${testCase.name}`, () => {
             const httpProxy = "http://proxy.microsoft.com";
             const httpsProxy = "https://proxy.azure.com";
@@ -149,7 +150,7 @@ describe("getDefaultProxySettings", () => {
         });
       });
 
-      ["HTTP_PROXY", "HTTPS_PROXY", "http_proxy", "https_proxy"].forEach(envVariableName => {
+      ["HTTP_PROXY", "HTTPS_PROXY", "http_proxy", "https_proxy"].forEach((envVariableName) => {
         it(`should should load setting from "${envVariableName}" environmental variable`, () => {
           process.env[envVariableName] = proxyUrl;
           const proxySettings: ProxySettings = getDefaultProxySettings()!;
@@ -162,11 +163,13 @@ describe("getDefaultProxySettings", () => {
   });
 
   browserDescribe("for browser", () => {
-    [undefined, "http://proxy.microsoft.com", "https://proxy.azure.com:8080"].forEach(proxyUrl => {
-      it(`should return undefined for ${proxyUrl}`, () => {
-        const proxySettings = getDefaultProxySettings(proxyUrl);
-        should().not.exist(proxySettings);
-      });
-    });
+    [undefined, "http://proxy.microsoft.com", "https://proxy.azure.com:8080"].forEach(
+      (proxyUrl) => {
+        it(`should return undefined for ${proxyUrl}`, () => {
+          const proxySettings = getDefaultProxySettings(proxyUrl);
+          should().not.exist(proxySettings);
+        });
+      }
+    );
   });
 });

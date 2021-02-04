@@ -1,4 +1,11 @@
-import { findPackageJsonFileSync, PackageJson, readPackageJsonFileSync, getParentFolderPath, joinPath, fileExistsSync } from "@ts-common/azure-js-dev-tools";
+import {
+  findPackageJsonFileSync,
+  PackageJson,
+  readPackageJsonFileSync,
+  getParentFolderPath,
+  joinPath,
+  fileExistsSync,
+} from "@ts-common/azure-js-dev-tools";
 import { readFileSync } from "fs";
 import { Logger, getDefaultLogger } from "@azure/logger-js";
 
@@ -21,20 +28,29 @@ export function checkConstantsVersion(): number {
       error(`Could not find a version property in ${packageJsonFilePath}.`);
     } else {
       const repositoryRootFolderPath: string = getParentFolderPath(packageJsonFilePath);
-      const constantsTsFilePath: string = joinPath(repositoryRootFolderPath, "lib/util/constants.ts");
+      const constantsTsFilePath: string = joinPath(
+        repositoryRootFolderPath,
+        "lib/util/constants.ts"
+      );
       if (!fileExistsSync(constantsTsFilePath)) {
         error(`${constantsTsFilePath} doesn't exist anymore. Where'd it go?`);
       } else {
-        const constantsTsFileContents: string = readFileSync(constantsTsFilePath, { encoding: "utf8" });
+        const constantsTsFileContents: string = readFileSync(constantsTsFilePath, {
+          encoding: "utf8",
+        });
         const regularExpressionString = `msRestVersion: "(.*)"`;
         const regularExpression = new RegExp(regularExpressionString);
         const match: RegExpMatchArray | null = constantsTsFileContents.match(regularExpression);
         if (!match) {
           error(`${constantsTsFilePath} doesn't contain a match for ${regularExpressionString}.`);
         } else if (match[1] !== packageVersion) {
-          error(`Expected ${constantsTsFilePath} to contain an msRestVersion property with the value "${packageVersion}", but it was "${match[1]}" instead.`);
+          error(
+            `Expected ${constantsTsFilePath} to contain an msRestVersion property with the value "${packageVersion}", but it was "${match[1]}" instead.`
+          );
         } else {
-          logger.logInfo(`${constantsTsFilePath} contained the correct value for msRestVersion ("${packageVersion}").`);
+          logger.logInfo(
+            `${constantsTsFilePath} contained the correct value for msRestVersion ("${packageVersion}").`
+          );
         }
       }
     }

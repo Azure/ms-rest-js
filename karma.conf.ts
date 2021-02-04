@@ -1,14 +1,10 @@
 const defaults = {
-  port: 9876
+  port: 9876,
 };
 
 module.exports = function (config: any) {
   config.set({
-    plugins: [
-      "karma-mocha",
-      "karma-chrome-launcher",
-      "karma-firefox-launcher"
-    ],
+    plugins: ["karma-mocha", "karma-chrome-launcher", "karma-firefox-launcher"],
 
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
@@ -19,7 +15,7 @@ module.exports = function (config: any) {
       { pattern: "dist/msRest.browser.js" },
       { pattern: "dist/msRest.browser.js.map", included: false },
       { pattern: "test/msRest.browser.test.js" },
-      { pattern: "test/msRest.browser.test.js.map", included: false }
+      { pattern: "test/msRest.browser.test.js.map", included: false },
     ],
 
     // test results reporter to use
@@ -52,16 +48,20 @@ module.exports = function (config: any) {
     customLaunchers: {
       ChromeNoSecurity: {
         base: "ChromeHeadless",
-        flags: ["--disable-web-security"]
+        flags: ["--disable-web-security"],
       },
       ChromeDebugging: {
         base: "Chrome",
-        flags: [`http://localhost:${defaults.port}/debug.html`, "--auto-open-devtools-for-tabs", "--disable-web-security"]
+        flags: [
+          `http://localhost:${defaults.port}/debug.html`,
+          "--auto-open-devtools-for-tabs",
+          "--disable-web-security",
+        ],
       },
       FirefoxDebugging: {
         base: "Firefox",
-        flags: ["-url", `http://localhost:${defaults.port}/debug.html`, "-devtools"]
-      }
+        flags: ["-url", `http://localhost:${defaults.port}/debug.html`, "-devtools"],
+      },
     },
   });
 };

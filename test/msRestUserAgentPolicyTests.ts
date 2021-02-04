@@ -16,7 +16,7 @@ const emptyRequestPolicy: RequestPolicy = {
   sendRequest(request: WebResource): Promise<HttpOperationResponse> {
     request.should.exist;
     return Promise.resolve({ request: request, status: 200, headers: request.headers });
-  }
+  },
 };
 
 const getPlainUserAgentPolicy = (headerValue?: string): RequestPolicy => {
@@ -96,18 +96,18 @@ describe("MsRestUserAgentPolicy", () => {
     });
   });
 
-  browserDescribe("for browser", function() {
+  browserDescribe("for browser", function () {
     const userAgentHeaderKey = "x-ms-command-name";
 
     const emptyRequestPolicy: RequestPolicy = {
       sendRequest(request: WebResource): Promise<HttpOperationResponse> {
         request.should.exist;
         return Promise.resolve({ request: request, status: 200, headers: request.headers });
-      }
+      },
     };
 
     const getUserAgent = async (headerValue?: string): Promise<string> => {
-      const factory = userAgentPolicy({ value: headerValue});
+      const factory = userAgentPolicy({ value: headerValue });
       const policy = factory.create(emptyRequestPolicy, new RequestPolicyOptions());
       const resource = new WebResource();
       await policy.sendRequest(resource);
@@ -118,7 +118,10 @@ describe("MsRestUserAgentPolicy", () => {
     describe("MsRestUserAgentPolicy (Browser)", () => {
       it("should not modify user agent header if already present", async () => {
         const factory = userAgentPolicy();
-        const browserUserAgentPolicy = factory.create(emptyRequestPolicy, new RequestPolicyOptions());
+        const browserUserAgentPolicy = factory.create(
+          emptyRequestPolicy,
+          new RequestPolicyOptions()
+        );
         const customUserAgent = "my custom user agent";
         const resource = new WebResource();
         resource.headers.set(userAgentHeaderKey, customUserAgent);
@@ -132,7 +135,10 @@ describe("MsRestUserAgentPolicy", () => {
       it("should use injected user agent string if provided", async () => {
         const customUserAgent = "my custom user agent";
         const factory = userAgentPolicy({ value: customUserAgent });
-        const browserUserAgentPolicy = factory.create(emptyRequestPolicy, new RequestPolicyOptions());
+        const browserUserAgentPolicy = factory.create(
+          emptyRequestPolicy,
+          new RequestPolicyOptions()
+        );
         const resource = new WebResource();
         await browserUserAgentPolicy.sendRequest(resource);
 
