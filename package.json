@@ -35,7 +35,7 @@
     "es/lib/**/*.js.map",
     "es/lib/**/*.d.ts",
     "es/lib/**/*.d.ts.map",
-    "lib/**/*.ts",
+    "lib/**/!(dom.d).ts",
     "dom-shim.d.ts",
     "LICENSE",
     "README.md",
