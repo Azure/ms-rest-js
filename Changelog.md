@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.11.0 - UNRELEASED
+## 1.11.0 - 2021-02-05
 - Moving @types/tunnel dependencies into devDependencies to avoid pulling in @types/node indirectly. Developers should install @types/node based on the platform they are targeting.
 
 ## 1.10.0 - 2021-02-02
