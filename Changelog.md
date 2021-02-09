@@ -1,6 +1,7 @@
 # Changelog
 
-## 2.2.2 - UNRELEASED
+## 2.2.2 - 2021-02-09
+- Port fix for nextLink issue from core-http (PR [#426](https://github.com/Azure/ms-rest-js/pull/426))
 - Fix abort signal event handler memory leak (PR [#425](https://github.com/Azure/ms-rest-js/pull/425))
 
 ## 2.2.1 - 2021-02-05
