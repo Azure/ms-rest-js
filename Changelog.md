@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.2.2 - UNRELEASED
+- Fix abort signal event handler memory leak (PR [#425](https://github.com/Azure/ms-rest-js/pull/425))
+
 ## 2.2.1 - 2021-02-05
 - Fix issue of `SystemErrorRetryPolicy` didn't retry on errors (Issue [#412](https://github.com/Azure/ms-rest-js/issues/412))
 - `ThrottlingRetryPolicy` now keep retrying on 429 responses up to a limit. Fixes (Issue [#394](https://github.com/Azure/ms-rest-js/issues/394))
