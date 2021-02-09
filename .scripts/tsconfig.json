@@ -2,7 +2,16 @@
   "extends": "../tsconfig.json",
   "compilerOptions": {
     "noEmit": true,
-    "strict": true
+    "strict": true,
+    "lib": [
+      "dom",
+      "es5",
+      "es6",
+      "es7",
+      "esnext",
+      "esnext.asynciterable",
+      "es2015.iterable"
+    ]
   },
   "include": [
     "*.ts",

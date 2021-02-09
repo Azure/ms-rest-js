@@ -144,7 +144,7 @@ export abstract class FetchHttpClient implements HttpClient {
 
     let operationResponse: HttpOperationResponse | undefined;
     try {
-      const response: Response = await this.fetch(httpRequest.url, requestInit);
+      const response: CommonResponse = await this.fetch(httpRequest.url, requestInit);
 
       const headers = parseHeaders(response.headers);
       operationResponse = {
@@ -220,8 +220,7 @@ export abstract class FetchHttpClient implements HttpClient {
             httpRequest.abortSignal?.removeEventListener("abort", abortListener!);
             return;
           })
-          .catch((_e) => {
-          });
+          .catch((_e) => {});
       }
     }
   }
