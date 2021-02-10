@@ -1,5 +1,9 @@
 # Changelog
 
+
+## 1.12.0 - 2021-02-05
+- Revert moving @types/tunnel dependencies into devDependencies. It breaks dependent projects (Issue [#431](https://github.com/Azure/ms-rest-js/issues/431)).
+
 ## 1.11.0 - 2021-02-05
 - Moving @types/tunnel dependencies into devDependencies to avoid pulling in @types/node indirectly. Developers should install @types/node based on the platform they are targeting.
 
