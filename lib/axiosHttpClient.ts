@@ -282,7 +282,40 @@ export function createProxyAgent(requestUrl: string, proxySettings: ProxySetting
   return proxyAgent;
 }
 
-export function createTunnel(isRequestHttps: boolean, isProxyHttps: boolean, tunnelOptions: tunnel.HttpsOverHttpsOptions): http.Agent | https.Agent {
+
+// Duplicate tunnel.HttpsOverHttpsOptions to avoid exporting createTunnel() with dependency on @types/tunnel
+// createIunnel() is only imported by tests.
+interface ProxyOptions {
+  host?: string;
+  port?: number;
+  localAddress?: string;
+  proxyAuth?: string;
+  headers: { [key: string]: any };
+}
+
+interface HttpOptions {
+  maxSockets?: number;
+  proxy?: ProxyOptions;
+}
+
+interface HttpsOverHttpOptions extends HttpOptions {
+  ca?: Buffer[];
+  key?: Buffer;
+  cert?: Buffer;
+}
+
+export interface HttpsProxyOptions extends ProxyOptions {
+  ca?: Buffer[];
+  servername?: string;
+  key?: Buffer;
+  cert?: Buffer;
+}
+
+interface HttpsOverHttpsOptions extends HttpsOverHttpOptions {
+  proxy?: HttpsProxyOptions;
+}
+
+export function createTunnel(isRequestHttps: boolean, isProxyHttps: boolean, tunnelOptions: HttpsOverHttpsOptions): http.Agent | https.Agent {
   if (isRequestHttps && isProxyHttps) {
     return tunnel.httpsOverHttps(tunnelOptions);
   } else if (isRequestHttps && !isProxyHttps) {
