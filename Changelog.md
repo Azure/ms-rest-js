@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.11.2 - 2021-02-10
+- Move @azure/core-auth into dependencies. Fix (Issue [#428](https://github.com/Azure/ms-rest-js/issues/428))
+
 ## 1.11.1 - 2021-02-10
 - Dependent projects of @azure/ms-rest-js no longer need to have a dev dependency on @types/tunnel. (Issue [#431](https://github.com/Azure/ms-rest-js/issues/431))
 
