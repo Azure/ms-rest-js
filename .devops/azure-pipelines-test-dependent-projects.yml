@@ -43,7 +43,10 @@ jobs:
     displayName: 'npm pack'
   - script: 'npm install $(Build.SourcesDirectory)/$(msRestJsPackageName)'
     workingDirectory: $(repoDir)
-    displayName: 'npm install @azure/ms-rest-js'
+    displayName: 'npm install @azure/ms-rest-js from artifacts'
+  - script: 'npm run build'
+    workingDirectory: $(repoDir)
+    displayName: 'npm run build'
   - script: 'npm run test'
     workingDirectory: $(repoDir)
     displayName: "npm run test"
