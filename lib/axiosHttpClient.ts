@@ -285,33 +285,23 @@ export function createProxyAgent(requestUrl: string, proxySettings: ProxySetting
 
 // Duplicate tunnel.HttpsOverHttpsOptions to avoid exporting createTunnel() with dependency on @types/tunnel
 // createIunnel() is only imported by tests.
-interface ProxyOptions {
+export interface HttpsProxyOptions {
   host?: string;
   port?: number;
   localAddress?: string;
   proxyAuth?: string;
   headers: { [key: string]: any };
-}
-
-interface HttpOptions {
-  maxSockets?: number;
-  proxy?: ProxyOptions;
-}
-
-interface HttpsOverHttpOptions extends HttpOptions {
-  ca?: Buffer[];
-  key?: Buffer;
-  cert?: Buffer;
-}
-
-export interface HttpsProxyOptions extends ProxyOptions {
   ca?: Buffer[];
   servername?: string;
   key?: Buffer;
   cert?: Buffer;
 }
 
-interface HttpsOverHttpsOptions extends HttpsOverHttpOptions {
+interface HttpsOverHttpsOptions {
+  maxSockets?: number;
+  ca?: Buffer[];
+  key?: Buffer;
+  cert?: Buffer;
   proxy?: HttpsProxyOptions;
 }
 
