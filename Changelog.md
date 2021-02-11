@@ -3,6 +3,9 @@
 ## 2.3.0 - UNRELEASED
 - Moving @types dependencies into devdependencies
 
+## 2.2.3 - 2021-02-10
+- Dependent projects of @azure/ms-rest-js no longer need to have a dev dependency on @types/tunnel.
+
 ## 2.2.2 - 2021-02-09
 - Port fix for nextLink issue from core-http (PR [#426](https://github.com/Azure/ms-rest-js/pull/426))
 - Fix abort signal event handler memory leak (PR [#425](https://github.com/Azure/ms-rest-js/pull/425))
