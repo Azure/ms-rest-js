@@ -94,3 +94,4 @@ export { ServiceClientCredentials } from "./credentials/serviceClientCredentials
 export { TopicCredentials } from "./credentials/topicCredentials";
 export { DomainCredentials } from "./credentials/domainCredentials";
 export { Authenticator } from "./credentials/credentials";
+import "@azure/core-asynciterator-polyfill";
