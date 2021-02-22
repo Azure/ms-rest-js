@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.2.4 - 2021-02-23
+- Added ```@azure/core-asynciterator-polyfill``` package as a dependency. Please refer [Issue #8764](https://github.com/Azure/azure-sdk-for-js/issues/8764) for further details.
+
 ## 2.2.3 - 2021-02-10
 - Dependent projects of @azure/ms-rest-js no longer need to have a dev dependency on @types/tunnel.
 
