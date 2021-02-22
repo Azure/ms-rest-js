@@ -1,7 +1,7 @@
 # Changelog
 
 ## 2.2.4 - 2021-02-23
-- Added ```@azure/core-asynciterator-polyfill``` package as a dependency. Please refer [Issue #8764](https://github.com/Azure/azure-sdk-for-js/issues/8764) for further details.
+- Added ```@azure/core-asynciterator-polyfill``` package as a dependency. If the SDKs (that have ```ms-rest-js``` dependency) have async iterables, AND if the SDK user uses a node version before 10.x.x, then the code will error out. This polyfill dependency enables the successful execution of such code.
 
 ## 2.2.3 - 2021-02-10
 - Dependent projects of @azure/ms-rest-js no longer need to have a dev dependency on @types/tunnel.
