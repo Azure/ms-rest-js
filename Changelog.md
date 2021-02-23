@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.3.0 - UNRELEASED
+- Moving @types dependencies into devdependencies
+
 ## 2.2.3 - 2021-02-10
 - Dependent projects of @azure/ms-rest-js no longer need to have a dev dependency on @types/tunnel.
 
