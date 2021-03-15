@@ -44,16 +44,17 @@ function handleRedirect(
   const locationHeader = response.headers.get("location");
   if (
     locationHeader &&
-    (status === 300 || status === 307 || (status === 303 && request.method === "POST")) &&
-    (!policy.maxRetries || currentRetries < policy.maxRetries)
+    (status === 300 || status === 302 || status === 307 || (status === 303 && request.method === "POST")) &&
+    (currentRetries < policy.maxRetries)
   ) {
     const builder = URLBuilder.parse(request.url);
     builder.setPath(locationHeader);
     request.url = builder.toString();
 
-    // POST request with Status code 303 should be converted into a
+    // POST request with Status code 302 and 303 should be converted into a
     // redirected GET request if the redirect url is present in the location header
-    if (status === 303) {
+    // reference: https://tools.ietf.org/html/rfc7231#page-57 && https://fetch.spec.whatwg.org/#http-redirect-fetch
+    if (status === 302 || status === 303) {
       request.method = "GET";
     }
 

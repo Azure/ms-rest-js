@@ -130,6 +130,11 @@ export abstract class FetchHttpClient implements HttpClient {
       body = uploadReportStream;
     }
 
+    const redirectInit: Partial<RequestInit> = {};
+    if (httpRequest.redirectLimit !== undefined) {
+      redirectInit.redirect = "manual";
+    }
+
     const platformSpecificRequestInit: Partial<RequestInit> = await this.prepareRequest(
       httpRequest
     );
@@ -139,6 +144,7 @@ export abstract class FetchHttpClient implements HttpClient {
       headers: httpRequest.headers.rawHeaders(),
       method: httpRequest.method,
       signal: abortController.signal,
+      ...redirectInit,
       ...platformSpecificRequestInit,
     };
 
