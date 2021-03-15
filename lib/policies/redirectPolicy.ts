@@ -60,8 +60,19 @@ function handleRedirect(
 
     return policy._nextPolicy
       .sendRequest(request)
-      .then((res) => handleRedirect(policy, res, currentRetries + 1));
+      .then((res) => handleRedirect(policy, res, currentRetries + 1))
+      .then((res) => recordRedirect(res, request.url));
   }
 
   return Promise.resolve(response);
 }
+
+function recordRedirect(response: HttpOperationResponse, redirect: string): HttpOperationResponse {
+  // only record the deepest/last redirect
+  if (!response.redirected) {
+    response.redirected = true;
+    response.url = redirect;
+  }
+  return response;
+}
+

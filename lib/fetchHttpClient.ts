@@ -161,6 +161,8 @@ export abstract class FetchHttpClient implements HttpClient {
           ? ((response.body as unknown) as NodeJS.ReadableStream)
           : undefined,
         bodyAsText: !httpRequest.streamResponseBody ? await response.text() : undefined,
+        redirected: response.redirected,
+        url: response.url,
       };
 
       const onDownloadProgress = httpRequest.onDownloadProgress;
