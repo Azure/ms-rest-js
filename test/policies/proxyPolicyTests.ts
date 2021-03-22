@@ -7,7 +7,13 @@ import { ProxySettings } from "../../lib/serviceClient";
 import { RequestPolicyOptions } from "../../lib/policies/requestPolicy";
 import { WebResource, WebResourceLike } from "../../lib/webResource";
 import { HttpHeaders } from "../../lib/httpHeaders";
-import { proxyPolicy, ProxyPolicy, getDefaultProxySettings } from "../../lib/policies/proxyPolicy";
+import {
+  proxyPolicy,
+  ProxyPolicy,
+  getDefaultProxySettings,
+  noProxyList,
+  loadNoProxy,
+} from "../../lib/policies/proxyPolicy";
 import { Constants } from "../../lib/msRest";
 import { nodeDescribe, browserDescribe } from "../msAssert";
 
@@ -64,6 +70,54 @@ describe("ProxyPolicy", function () {
 
       request.proxySettings!.should.be.deep.equal(requestSpecificProxySettings);
     });
+
+    it("should not assign proxy settings to the web request when noProxyList contain request url", async () => {
+      const saved = process.env["NO_PROXY"];
+      try {
+        process.env[Constants.NO_PROXY] = ".foo.com, test.com";
+        noProxyList.splice(0, noProxyList.length);
+        noProxyList.push(...loadNoProxy());
+
+        const request = new WebResource();
+        const policy = new ProxyPolicy(emptyRequestPolicy, emptyPolicyOptions, proxySettings);
+        request.url = "http://foo.com";
+        await policy.sendRequest(request);
+        should().not.exist(request.proxySettings);
+
+        request.url = "https://www.foo.com";
+        await policy.sendRequest(request);
+        should().not.exist(request.proxySettings);
+
+        request.url = "http://test.foo.com";
+        await policy.sendRequest(request);
+        should().not.exist(request.proxySettings);
+
+        request.url = "http://test.foo.com/path1";
+        await policy.sendRequest(request);
+        should().not.exist(request.proxySettings);
+
+        request.url = "http://test.foo.com/path2";
+        await policy.sendRequest(request);
+        should().not.exist(request.proxySettings);
+
+        request.url = "http://abcfoo.com";
+        await policy.sendRequest(request);
+        request.proxySettings!.should.be.deep.equal(proxySettings);
+
+        request.proxySettings = undefined;
+        request.url = "http://test.com";
+        await policy.sendRequest(request);
+        should().not.exist(request.proxySettings);
+
+        request.url = "http://www.test.com";
+        await policy.sendRequest(request);
+        request.proxySettings!.should.be.deep.equal(proxySettings);
+      } finally {
+        process.env["NO_PROXY"] = saved;
+        noProxyList.splice(0, noProxyList.length);
+        noProxyList.push(...loadNoProxy());
+      }
+    });
   });
 
   browserDescribe("for browser", () => {
@@ -97,6 +151,56 @@ describe("getDefaultProxySettings", () => {
       const proxySettings: ProxySettings = getDefaultProxySettings(proxyUrlWithPort)!;
       proxySettings.host.should.equal(proxyUrl);
       proxySettings.port.should.equal(port);
+    });
+
+    [
+      {
+        proxyUrl: "prot://user:pass@proxy.microsoft.com",
+        proxyUrlWithoutAuth: "prot://proxy.microsoft.com",
+        username: "user",
+        password: "pass",
+      },
+      {
+        proxyUrl: "prot://user@proxy.microsoft.com",
+        proxyUrlWithoutAuth: "prot://proxy.microsoft.com",
+        username: "user",
+        password: undefined,
+      },
+      {
+        proxyUrl: "prot://:pass@proxy.microsoft.com",
+        proxyUrlWithoutAuth: "prot://proxy.microsoft.com",
+        username: undefined,
+        password: "pass",
+      },
+      {
+        proxyUrl: "prot://proxy.microsoft.com",
+        proxyUrlWithoutAuth: "prot://proxy.microsoft.com",
+        username: undefined,
+        password: undefined,
+      },
+      {
+        proxyUrl: "user:pass@proxy.microsoft.com",
+        proxyUrlWithoutAuth: "proxy.microsoft.com",
+        username: "user",
+        password: "pass",
+      },
+      {
+        proxyUrl: "proxy.microsoft.com",
+        proxyUrlWithoutAuth: "proxy.microsoft.com",
+        username: undefined,
+        password: undefined,
+      },
+    ].forEach((testCase) => {
+      it(`should return settings with passed proxyUrl : ${testCase.proxyUrl}`, () => {
+        const proxySettings: ProxySettings = getDefaultProxySettings(testCase.proxyUrl)!;
+        proxySettings.host.should.equal(testCase.proxyUrlWithoutAuth);
+        if (testCase.username) {
+          proxySettings.username!.should.equal(testCase.username);
+        }
+        if (testCase.password) {
+          proxySettings.password!.should.equal(testCase.password);
+        }
+      });
     });
 
     describe("with loadEnvironmentProxyValue", () => {

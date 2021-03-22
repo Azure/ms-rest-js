@@ -2,6 +2,8 @@
 
 ## 2.3.0 - UNRELEASED
 - Moving @types dependencies into devdependencies
+- Port NO_PROXY and ALL_PROXY support.
+- Port username/password support in proxy url string.
 
 ## 2.2.3 - 2021-02-10
 - Dependent projects of @azure/ms-rest-js no longer need to have a dev dependency on @types/tunnel.
