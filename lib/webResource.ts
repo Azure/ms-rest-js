@@ -471,6 +471,7 @@ export class WebResource {
     this.abortSignal = options.abortSignal;
     this.onDownloadProgress = options.onDownloadProgress;
     this.onUploadProgress = options.onUploadProgress;
+    this.streamResponseBody = options.streamResponseBody;
 
     return this;
   }
@@ -605,6 +606,7 @@ export interface RequestPrepareOptions {
   abortSignal?: AbortSignalLike;
   onUploadProgress?: (progress: TransferProgressEvent) => void;
   onDownloadProgress?: (progress: TransferProgressEvent) => void;
+  streamResponseBody?: boolean;
 }
 
 /**
