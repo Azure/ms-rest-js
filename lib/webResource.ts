@@ -471,6 +471,7 @@ export class WebResource {
     this.abortSignal = options.abortSignal;
     this.onDownloadProgress = options.onDownloadProgress;
     this.onUploadProgress = options.onUploadProgress;
+    this.streamResponseBody = options.streamResponseBody;
 
     return this;
   }
