@@ -606,6 +606,7 @@ export interface RequestPrepareOptions {
   abortSignal?: AbortSignalLike;
   onUploadProgress?: (progress: TransferProgressEvent) => void;
   onDownloadProgress?: (progress: TransferProgressEvent) => void;
+  streamResponseBody?: boolean;
 }
 
 /**
