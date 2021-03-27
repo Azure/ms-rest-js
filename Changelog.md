@@ -1,6 +1,6 @@
 # Changelog
 
-## 2.3.0 - 2021-03-26
+## 2.3.0 - 2021-03-29
 - Moving @types dependencies into devdependencies
 - Add NO_PROXY and ALL_PROXY support.
 - Add username/password support in proxy url string.
