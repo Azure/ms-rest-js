@@ -1,9 +1,10 @@
 # Changelog
 
-## 2.3.0 - UNRELEASED
+## 2.3.0 - 2021-03-29
 - Moving @types dependencies into devdependencies
 - Add NO_PROXY and ALL_PROXY support.
 - Add username/password support in proxy url string.
+- Update `WebResource.prepare()` to also copy `streamResponseBody`.
 
 ## 2.2.3 - 2021-02-10
 - Dependent projects of @azure/ms-rest-js no longer need to have a dev dependency on @types/tunnel.
