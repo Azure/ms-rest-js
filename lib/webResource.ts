@@ -480,6 +480,7 @@ export class WebResource {
     this.onDownloadProgress = options.onDownloadProgress;
     this.onUploadProgress = options.onUploadProgress;
     this.redirectLimit = options.redirectLimit;
+    this.streamResponseBody = options.streamResponseBody;
 
     return this;
   }
@@ -621,6 +622,7 @@ export interface RequestPrepareOptions {
 
   onUploadProgress?: (progress: TransferProgressEvent) => void;
   onDownloadProgress?: (progress: TransferProgressEvent) => void;
+  streamResponseBody?: boolean;
 }
 
 /**
