@@ -1,4 +1,6 @@
 # Changelog
+## 2.3.1 - UNRELEASED
+- Add WebResource.RedirectLimit: Limit the number of redirects followed for this request. If set to 0, redirects will not be followed
 
 ## 2.3.0 - 2021-03-29
 - Moving @types dependencies into devdependencies
