@@ -90,8 +90,7 @@ describe("redirectLimit", function () {
     configureMockRedirectResponses();
 
     const client = new ServiceClient(undefined, {
-      httpClient: getMockedHttpClient(),
-      requestPolicyFactories: [],
+      httpClient: getMockedHttpClient()
     });
 
     // Act
@@ -106,8 +105,7 @@ describe("redirectLimit", function () {
     configureMockRedirectResponses();
 
     const client = new ServiceClient(undefined, {
-      httpClient: getMockedHttpClient(),
-      requestPolicyFactories: [],
+      httpClient: getMockedHttpClient()
     });
 
     // Act
@@ -123,8 +121,7 @@ describe("redirectLimit", function () {
     configureMockRedirectResponses();
 
     const client = new ServiceClient(undefined, {
-      httpClient: getMockedHttpClient(),
-      requestPolicyFactories: [],
+      httpClient: getMockedHttpClient()
     });
 
     // Act

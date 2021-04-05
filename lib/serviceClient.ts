@@ -26,7 +26,7 @@ import {
   getDefaultUserAgentHeaderName,
   getDefaultUserAgentValue,
 } from "./policies/userAgentPolicy";
-import { RedirectPolicy } from "./policies/redirectPolicy";
+import { redirectPolicy } from "./policies/redirectPolicy";
 import {
   RequestPolicy,
   RequestPolicyFactory,
@@ -240,24 +240,12 @@ export class ServiceClient {
     let httpPipeline: RequestPolicy = this._httpClient;
     if (this._requestPolicyFactories && this._requestPolicyFactories.length > 0) {
       for (let i = this._requestPolicyFactories.length - 1; i >= 0; --i) {
-        const nextPolicyPipeline = this._requestPolicyFactories[i].create(
+        httpPipeline = this._requestPolicyFactories[i].create(
           httpPipeline,
           this._requestPolicyOptions
         );
-
-        if (httpRequest.redirectLimit !== undefined && nextPolicyPipeline instanceof RedirectPolicy) {
-          // if redirect behaviour is specified on the request, we don't want the client's default redirectPolicy to apply
-          continue;
-        }
-
-        httpPipeline = nextPolicyPipeline;
       }
     }
-
-    if (httpRequest.redirectLimit !== undefined) {
-      httpPipeline = new RedirectPolicy(httpPipeline, this._requestPolicyOptions, httpRequest.redirectLimit);
-    }
-
     return httpPipeline.sendRequest(httpRequest);
   }
 
@@ -593,6 +581,7 @@ function createDefaultRequestPolicyFactories(
   if (userAgentHeaderName && userAgentHeaderValue) {
     factories.push(userAgentPolicy({ key: userAgentHeaderName, value: userAgentHeaderValue }));
   }
+  factories.push(redirectPolicy());
   factories.push(rpRegistrationPolicy(options.rpRegistrationRetryTimeout));
 
   if (!options.noRetryPolicy) {
