@@ -45,7 +45,11 @@ function handleRedirect(
   if (
     locationHeader &&
     (status === 300 || status === 302 || status === 307 || (status === 303 && request.method === "POST")) &&
-    (request.redirectLimit && currentRetries < request.redirectLimit)) {
+    (
+      (request.redirectLimit !== undefined && currentRetries < request.redirectLimit)
+      ||
+      (request.redirectLimit === undefined && currentRetries < policy.maxRetries)
+    )) {
     const builder = URLBuilder.parse(request.url);
     builder.setPath(locationHeader);
     request.url = builder.toString();

@@ -11,6 +11,7 @@ import { CommonResponse } from "../lib/fetchHttpClient";
 import { ServiceClient } from "../lib/serviceClient";
 import { isNode } from "../lib/msRest";
 import { TestFunction } from "mocha";
+import { redirectPolicy } from "../lib/policies/redirectPolicy";
 
 const nodeIt = (isNode ? it : it.skip) as TestFunction;
 
@@ -126,6 +127,38 @@ describe("redirectLimit", function () {
 
     // Act
     const response = await client.sendRequest({ url: resourceUrl, method: "GET", redirectLimit: 1});
+
+    expect(response.status).to.equal(300);
+    expect(response.headers.get("location")).to.equal(redirectedUrl_2);
+    expect(response.redirected).to.be.true;
+    expect(response.url).to.equal(redirectedUrl_1);
+  });
+
+  nodeIt("of undefined should follow redirects and return last visited url in response.url", async function () {
+    configureMockRedirectResponses();
+
+    const client = new ServiceClient(undefined, {
+      httpClient: getMockedHttpClient()
+    });
+
+    // Act
+    const response = await client.sendRequest({ url: resourceUrl, method: "GET" });
+
+    expect(response.status).to.equal(200);
+    expect(response.redirected).to.be.true;
+    expect(response.url).to.equal(redirectedUrl_2);
+  });
+
+  nodeIt("of undefinded with policy limit of 1 should follow 1 redirect and return last visited url in response.url", async function () {
+    configureMockRedirectResponses();
+
+    const client = new ServiceClient(undefined, {
+      httpClient: getMockedHttpClient(),
+      requestPolicyFactories: [redirectPolicy(1)],
+    });
+
+    // Act
+    const response = await client.sendRequest({ url: resourceUrl, method: "GET" });
 
     expect(response.status).to.equal(300);
     expect(response.headers.get("location")).to.equal(redirectedUrl_2);
