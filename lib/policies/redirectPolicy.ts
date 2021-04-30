@@ -11,6 +11,27 @@ import {
   RequestPolicyOptionsLike,
 } from "./requestPolicy";
 
+/**
+ * Options for how redirect responses are handled.
+ */
+export interface RedirectOptions {
+  /*
+   * When true, redirect responses are followed.  Defaults to true.
+   */
+  handleRedirects: boolean;
+
+  /*
+   * The maximum number of times the redirect URL will be tried before
+   * failing.  Defaults to 20.
+   */
+  maxRetries?: number;
+}
+
+export const DefaultRedirectOptions: RedirectOptions = {
+  handleRedirects: true,
+  maxRetries: 20,
+};
+
 export function redirectPolicy(maximumRetries = 20): RequestPolicyFactory {
   return {
     create: (nextPolicy: RequestPolicy, options: RequestPolicyOptionsLike) => {
@@ -44,12 +65,14 @@ function handleRedirect(
   const locationHeader = response.headers.get("location");
   if (
     locationHeader &&
-    (status === 300 || status === 302 || status === 307 || (status === 303 && request.method === "POST")) &&
-    (
-      (request.redirectLimit !== undefined && currentRetries < request.redirectLimit)
-      ||
-      (request.redirectLimit === undefined && currentRetries < policy.maxRetries)
-    )) {
+    (status === 300 ||
+      (status === 301 && ["GET", "HEAD"].includes(request.method)) ||
+      (status === 302 && ["GET", "POST", "HEAD"].includes(request.method)) ||
+      (status === 303 && "POST" === request.method) ||
+      status === 307) &&
+    ((request.redirectLimit !== undefined && currentRetries < request.redirectLimit) ||
+      (request.redirectLimit === undefined && currentRetries < policy.maxRetries))
+  ) {
     const builder = URLBuilder.parse(request.url);
     builder.setPath(locationHeader);
     request.url = builder.toString();
@@ -57,8 +80,9 @@ function handleRedirect(
     // POST request with Status code 302 and 303 should be converted into a
     // redirected GET request if the redirect url is present in the location header
     // reference: https://tools.ietf.org/html/rfc7231#page-57 && https://fetch.spec.whatwg.org/#http-redirect-fetch
-    if (status === 302 || status === 303) {
+    if ((status === 302 || status === 303) && request.method === "POST") {
       request.method = "GET";
+      delete request.body;
     }
 
     return policy._nextPolicy
@@ -78,4 +102,3 @@ function recordRedirect(response: HttpOperationResponse, redirect: string): Http
   }
   return response;
 }
-

@@ -1,6 +1,8 @@
 # Changelog
-## 2.3.1 - UNRELEASED
+## 2.5.0 - UNRELEASED
+
 - Add WebResource.redirectLimit: Limit the number of redirects followed for this request. If set to 0, redirects will not be followed.
+- Port changes to redirect policy from [azure-sdk-for-js](https://github.com/Azure/azure-sdk-for-js/pull/11863/files]
 
 ## 2.4.0 - 2021-04-19
 
