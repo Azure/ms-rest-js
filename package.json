@@ -52,6 +52,7 @@
   "license": "MIT",
   "dependencies": {
     "@azure/core-auth": "^1.1.4",
+    "@types/xmldom": "^0.1.30",
     "abort-controller": "^3.0.0",
     "form-data": "^2.5.0",
     "node-fetch": "^2.6.0",
@@ -59,7 +60,8 @@
     "tslib": "^1.10.0",
     "tunnel": "0.0.6",
     "uuid": "^3.3.2",
-    "xml2js": "^0.4.19"
+    "xml2js": "^0.4.19",
+    "xmldom": "^0.6.0"
   },
   "devDependencies": {
     "@azure/logger-js": "^1.1.0",
