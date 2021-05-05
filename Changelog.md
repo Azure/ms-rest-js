@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.4.1 - (unreleased)
+
+- Use `self` instead of `window` in order to support web workers.
+
 ## 2.4.0 - 2021-04-19
 
 - Expose `AzureIdentityCredentialAdapter` in the public API to enable users of this package make use of credentials from `@azure/identity`.
