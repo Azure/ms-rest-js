@@ -1,6 +1,6 @@
 # Changelog
 
-## 2.4.1 - (unreleased)
+## 2.4.1 - (2021-05-05)
 
 - Use `self` instead of `window` in order to support web workers.
 
