@@ -95,6 +95,7 @@ function handleRedirect(
 }
 
 function recordRedirect(response: HttpOperationResponse, redirect: string): HttpOperationResponse {
+  // This is called as the recursive calls to handleRedirect() unwind,
   // only record the deepest/last redirect
   if (!response.redirected) {
     response.redirected = true;
