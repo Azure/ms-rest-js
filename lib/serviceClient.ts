@@ -26,7 +26,7 @@ import {
   getDefaultUserAgentHeaderName,
   getDefaultUserAgentValue,
 } from "./policies/userAgentPolicy";
-import { redirectPolicy } from "./policies/redirectPolicy";
+import { DefaultRedirectOptions, RedirectOptions, redirectPolicy } from "./policies/redirectPolicy";
 import {
   RequestPolicy,
   RequestPolicyFactory,
@@ -135,6 +135,10 @@ export interface ServiceClientOptions {
    * Proxy settings which will be used for every HTTP request (Node.js only).
    */
   proxySettings?: ProxySettings;
+  /**
+   * Options for how redirect responses are handled.
+   */
+  redirectOptions?: RedirectOptions;
   /**
    * HTTP and HTTPS agents which will be used for every HTTP request (Node.js only).
    */
@@ -581,7 +585,15 @@ function createDefaultRequestPolicyFactories(
   if (userAgentHeaderName && userAgentHeaderValue) {
     factories.push(userAgentPolicy({ key: userAgentHeaderName, value: userAgentHeaderValue }));
   }
-  factories.push(redirectPolicy());
+
+  const redirectOptions = {
+    ...DefaultRedirectOptions,
+    ...options.redirectOptions,
+  };
+  if (redirectOptions.handleRedirects) {
+    factories.push(redirectPolicy(redirectOptions.maxRetries));
+  }
+
   factories.push(rpRegistrationPolicy(options.rpRegistrationRetryTimeout));
 
   if (!options.noRetryPolicy) {
