@@ -743,7 +743,7 @@ function deserializeCompositeType(
             arrayInstance[key] = value;
           }
         });
-        instance = arrayInstance
+        instance = arrayInstance;
       } else if (propertyInstance !== undefined || propertyMapper.defaultValue !== undefined) {
         serializedValue = serializer.deserialize(
           propertyMapper,
