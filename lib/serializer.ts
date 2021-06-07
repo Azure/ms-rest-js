@@ -738,11 +738,11 @@ function deserializeCompositeType(
         const arrayInstance = serializer.deserialize(propertyMapper, propertyInstance, propertyObjectName);
         // Copy over any properties that have already been added into the instance, where they do
         // not exist on the newly de-serialized array
-        Object.entries(instance).forEach(([key, value]) => {
+        for (const [key, value] of Object.entries(instance)) {
           if (!arrayInstance.hasOwnProperty(key)) {
             arrayInstance[key] = value;
           }
-        });
+        }
         instance = arrayInstance;
       } else if (propertyInstance !== undefined || propertyMapper.defaultValue !== undefined) {
         serializedValue = serializer.deserialize(
