@@ -1,4 +1,7 @@
 # Changelog
+## 2.5.1 - (2021-06-07)
+- [BugFix] Array flattening in deserializer loses previously de-serialized attributes (PR [#451](https://github.com/Azure/ms-rest-js/pull/451))
+
 ## 2.5.0 - (2021-05-10)
 
 - Add WebResource.redirectLimit: Limit the number of redirects followed for this request. If set to 0, redirects will not be followed.

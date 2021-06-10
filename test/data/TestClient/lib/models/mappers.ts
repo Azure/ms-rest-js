@@ -473,6 +473,36 @@ internalMappers.ProductListResultNextLink = {
     },
   },
 };
+internalMappers.ProductListResultNextLinkFirst = {
+  required: false,
+  serializedName: "ProductListResultNextLinkFirst",
+  type: {
+    name: "Composite",
+    className: "ProductListResultNextLinkFirst",
+    modelProperties: {
+      nextLink: {
+        serializedName: "nextLink",
+        required: false,
+        type: {
+          name: "String",
+        },
+      },
+      value: {
+        serializedName: "",
+        required: false,
+        type: {
+          name: "Sequence",
+          element: {
+            type: {
+              name: "Composite",
+              className: "Product",
+            },
+          },
+        },
+      },
+    },
+  },
+};
 internalMappers.SawShark = {
   required: false,
   serializedName: "sawshark",
