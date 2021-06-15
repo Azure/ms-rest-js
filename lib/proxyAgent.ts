@@ -25,6 +25,8 @@ export function createProxyAgent(
 
   if (proxySettings.username && proxySettings.password) {
     tunnelOptions.proxy!.proxyAuth = `${proxySettings.username}:${proxySettings.password}`;
+  } else if (proxySettings.username) {
+    tunnelOptions.proxy!.proxyAuth = `${proxySettings.username}`;
   }
 
   const requestScheme = URLBuilder.parse(requestUrl).getScheme() || "";
