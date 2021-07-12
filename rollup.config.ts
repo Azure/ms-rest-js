@@ -30,7 +30,7 @@ const nodeConfig = {
     "tough-cookie",
     "tslib",
     "tunnel",
-    "uuid/v4",
+    "uuid",
     "xml2js",
   ],
   output: {
