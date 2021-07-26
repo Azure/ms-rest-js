@@ -25,8 +25,15 @@ export class AzureIdentityCredentialAdapter implements ServiceClientCredentials 
     this.scopes = scopes;
   }
 
+  private _scopesSetter: () => string | undefined = () => undefined;
+  public scopesSetter(setter: () => string | undefined): void {
+    this._scopesSetter = setter;
+  }
+
   public async getToken(): Promise<TokenResponse> {
-    const accessToken = await this.azureTokenCredential.getToken(this.scopes);
+    const accessToken = await this.azureTokenCredential.getToken(
+      this._scopesSetter() ?? this.scopes
+    );
     if (accessToken !== null) {
       const result: TokenResponse = {
         accessToken: accessToken.token,

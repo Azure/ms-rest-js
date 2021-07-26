@@ -187,7 +187,11 @@ export class ServiceClient {
 
     let serviceClientCredentials: ServiceClientCredentials | undefined;
     if (isTokenCredential(credentials)) {
-      serviceClientCredentials = new AzureIdentityCredentialAdapter(credentials);
+      const adapter = new AzureIdentityCredentialAdapter(credentials);
+      adapter.scopesSetter(() => {
+        return this.baseUri ? `${this.baseUri}/.default` : undefined;
+      });
+      serviceClientCredentials = adapter;
     } else {
       serviceClientCredentials = credentials;
     }
