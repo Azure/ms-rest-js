@@ -1,7 +1,8 @@
 # Changelog
 
 ## 2.5.4 - (2021-07-29)
-- When a `TokenCredential` is sent to `ServiceClient`, it now automatically sets the scope of future token requests based on the `baseUri` property.
+
+- Added a new property `baseUri` on the `ServiceClientOptions`, so that when a `TokenCredential` is sent to `ServiceClient`, it now automatically sets the scope of future token requests based on the `options.baseUri` property.
 
 ## 2.5.3 - (2021-07-12)
 - Updated the dependency on the uuid package to v8 (PR [456](https://github.com/Azure/ms-rest-js/pull/456))

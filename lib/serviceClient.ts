@@ -143,6 +143,11 @@ export interface ServiceClientOptions {
    * HTTP and HTTPS agents which will be used for every HTTP request (Node.js only).
    */
   agentSettings?: AgentSettings;
+  /**
+   * If specified, this is the base URI that requests will be made against for this ServiceClient.
+   * If it is not specified, then all OperationSpecs must contain a baseUrl property.
+   */
+  baseUri?: string;
 }
 
 /**
@@ -187,11 +192,10 @@ export class ServiceClient {
 
     let serviceClientCredentials: ServiceClientCredentials | undefined;
     if (isTokenCredential(credentials)) {
-      const adapter = new AzureIdentityCredentialAdapter(credentials);
-      adapter.scopesSetter(() => {
-        return this.baseUri ? `${this.baseUri}/.default` : undefined;
-      });
-      serviceClientCredentials = adapter;
+      serviceClientCredentials = new AzureIdentityCredentialAdapter(
+        credentials,
+        options?.baseUri ? `${options.baseUri}/.default` : undefined
+      );
     } else {
       serviceClientCredentials = credentials;
     }
