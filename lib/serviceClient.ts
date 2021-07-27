@@ -190,6 +190,10 @@ export class ServiceClient {
       options = {};
     }
 
+    if (options.baseUri) {
+      this.baseUri = options.baseUri;
+    }
+
     let serviceClientCredentials: ServiceClientCredentials | undefined;
     if (isTokenCredential(credentials)) {
       serviceClientCredentials = new AzureIdentityCredentialAdapter(
