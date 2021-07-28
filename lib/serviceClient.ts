@@ -144,8 +144,13 @@ export interface ServiceClientOptions {
    */
   agentSettings?: AgentSettings;
   /**
-   * If specified, this is the base URI that requests will be made against for this ServiceClient.
-   * If it is not specified, then all OperationSpecs must contain a baseUrl property.
+   * If specified:
+   * - This `baseUri` becomes the base URI that requests will be made against for this ServiceClient.
+   * - If a `TokenCredential` was passed through the constructor, this `baseUri` defines the `getToken` scope to be `${options.baseUri}/.default`.
+   *
+   * If it is not specified:
+   * - All OperationSpecs must contain a baseUrl property.
+   * - If a `TokenCredential` was passed through the constructor, the `getToken` scope is set to be "https://management.azure.com/.default".
    */
   baseUri?: string;
 }
@@ -156,8 +161,13 @@ export interface ServiceClientOptions {
  */
 export class ServiceClient {
   /**
-   * If specified, this is the base URI that requests will be made against for this ServiceClient.
-   * If it is not specified, then all OperationSpecs must contain a baseUrl property.
+   * If specified:
+   * - This `baseUri` becomes the base URI that requests will be made against for this ServiceClient.
+   * - If a `TokenCredential` was passed through the constructor, this `baseUri` defines the `getToken` scope to be `${options.baseUri}/.default`.
+   *
+   * If it is not specified:
+   * - All OperationSpecs must contain a baseUrl property.
+   * - If a `TokenCredential` was passed through the constructor, the `getToken` scope is set to be "https://management.azure.com/.default".
    */
   protected baseUri?: string;
 

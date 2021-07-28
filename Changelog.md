@@ -1,6 +1,6 @@
 # Changelog
 
-## 2.5.4 - (2021-07-29)
+## 2.6.0 - (2021-07-29)
 
 - Added a new property `baseUri` on the `ServiceClientOptions`, so that when a `TokenCredential` is sent to `ServiceClient`, it now automatically sets the scope of future token requests based on the `options.baseUri` property.
 
