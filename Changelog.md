@@ -2,7 +2,7 @@
 
 ## 2.6.0 - (2021-07-29)
 
-- Added a new property `baseUri` on the `ServiceClientOptions`, so that when a `TokenCredential` is sent to `ServiceClient`, it now automatically sets the scope of future token requests based on the `options.baseUri` property.
+- Added a new property `baseUri` on the `ServiceClientOptions` that is then used to initialize the corresponding `baseUri` protected property on the `ServiceClient`. This allows the instantiating of the `AzureIdentityCredentialAdapter` class with the right scope when a user constructs a `ServiceClient` with a `TokenCredential`. Resolves https://github.com/Azure/azure-sdk-for-js/issues/15945
 
 ## 2.5.3 - (2021-07-12)
 - Updated the dependency on the uuid package to v8 (PR [456](https://github.com/Azure/ms-rest-js/pull/456))
