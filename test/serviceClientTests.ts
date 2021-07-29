@@ -1,7 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-import { TokenCredential } from "@azure/core-auth";
 import { assert } from "chai";
 import { HttpClient } from "../lib/httpClient";
 import { QueryCollectionFormat } from "../lib/queryCollectionFormat";
@@ -10,7 +9,6 @@ import {
   serializeRequestBody,
   ServiceClient,
   getOperationArgumentValueFromParameterPath,
-  ServiceClientOptions,
 } from "../lib/serviceClient";
 import { WebResourceLike, WebResource } from "../lib/webResource";
 import {
@@ -270,18 +268,17 @@ describe("ServiceClient", function () {
       },
     };
 
-    const scopes: string[] = ["https://original-scope.xyz", "https://updated-scope.xyz"];
+    const scope = "https://original-scope.xyz";
 
     class ServiceClientChildren extends ServiceClient {
-      constructor(tokenCredential: TokenCredential, options: ServiceClientOptions) {
-        super(tokenCredential, options);
-        this.baseUri = scopes[1];
+      getBaseUri(): string | undefined {
+        return this.baseUri;
       }
     }
 
     let receivedScope: string | string[] = "";
 
-    const client1 = new ServiceClientChildren(
+    const client = new ServiceClientChildren(
       {
         async getToken(_receivedScope) {
           receivedScope = _receivedScope;
@@ -293,11 +290,11 @@ describe("ServiceClient", function () {
       },
       {
         httpClient,
-        baseUri: scopes[0],
+        baseUri: scope,
       }
     );
 
-    const res = await client1.sendOperationRequest(
+    const res = await client.sendOperationRequest(
       {},
       {
         serializer: new Serializer(),
@@ -322,9 +319,16 @@ describe("ServiceClient", function () {
 
     assert.strictEqual(res._response.status, 200);
 
-    // Only the scope assigned at the time the ServiceClient class super is called is going to be used
-    // by the TokenCredential's getToken method.
-    assert.strictEqual(receivedScope, `${scopes[0]}/.default`);
+    assert.strictEqual(
+      receivedScope,
+      `${scope}/.default`,
+      "The baseUri passed through the options should determine the scope used on getToken"
+    );
+    assert.strictEqual(
+      client.getBaseUri(),
+      scope,
+      "The baseUri passed through the options should be assigned as the protected baseUri"
+    );
   });
 
   it("should deserialize response bodies", async function () {
