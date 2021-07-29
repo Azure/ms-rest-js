@@ -161,13 +161,12 @@ export interface ServiceClientOptions {
  */
 export class ServiceClient {
   /**
-   * If specified:
-   * - This `baseUri` becomes the base URI that requests will be made against for this ServiceClient.
-   * - If a `TokenCredential` was passed through the constructor, this `baseUri` defines the `getToken` scope to be `${options.baseUri}/.default`.
+   * The base URI against which requests will be made when using this ServiceClient instance.
    *
-   * If it is not specified:
-   * - All OperationSpecs must contain a baseUrl property.
-   * - If a `TokenCredential` was passed through the constructor, the `getToken` scope is set to be "https://management.azure.com/.default".
+   * This can be set either by setting the `baseUri` in the `options` parameter to the ServiceClient constructor or directly after constructing the ServiceClient.
+   * If set via the ServiceClient constructor when using the overload that takes the `TokenCredential`, this base URI sets the scope used to get the AAD token to `${baseUri}/.default` instead of the default "https://management.azure.com/.default"
+   *
+   * If it is not specified, all OperationSpecs must contain a baseUrl property.
    */
   protected baseUri?: string;
 
