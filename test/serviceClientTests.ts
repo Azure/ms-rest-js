@@ -331,6 +331,77 @@ describe("ServiceClient", function () {
     );
   });
 
+  it("The behavior of baseUri on ServiceClient children classes should remain the same if the baseUri is not a management endpoint", async function () {
+    const httpClient: HttpClient = {
+      sendRequest: (request) => {
+        return Promise.resolve({ request, status: 200, headers: new HttpHeaders() });
+      },
+    };
+
+    const baseUri = "https://original-scope.xyz";
+    const expectedReceivedScope = "https://management.azure.com/.default";
+
+    class ServiceClientChildren extends ServiceClient {
+      getBaseUri(): string | undefined {
+        return this.baseUri;
+      }
+    }
+
+    let receivedScope: string | string[] = "";
+
+    const client = new ServiceClientChildren(
+      {
+        async getToken(_receivedScope) {
+          receivedScope = _receivedScope;
+          return {
+            token: "token",
+            expiresOnTimestamp: Date.now(),
+          };
+        },
+      },
+      {
+        httpClient,
+        baseUri,
+      }
+    );
+
+    const res = await client.sendOperationRequest(
+      {},
+      {
+        serializer: new Serializer(),
+        httpMethod: "GET",
+        baseUrl: "httpbin.org",
+        responses: {
+          200: {
+            bodyMapper: {
+              type: {
+                name: "Sequence",
+                element: {
+                  type: {
+                    name: "Number",
+                  },
+                },
+              },
+            },
+          },
+        },
+      }
+    );
+
+    assert.strictEqual(res._response.status, 200);
+
+    assert.strictEqual(
+      receivedScope,
+      expectedReceivedScope,
+      "The baseUri passed through the options should determine the scope used on getToken"
+    );
+    assert.strictEqual(
+      client.getBaseUri(),
+      baseUri,
+      "The baseUri passed through the options should be assigned as the protected baseUri"
+    );
+  });
+
   it("should deserialize response bodies", async function () {
     let request: WebResourceLike;
     const httpClient: HttpClient = {
