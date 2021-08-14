@@ -261,14 +261,14 @@ describe("ServiceClient", function () {
     assert.strictEqual(request!.withCredentials, true);
   });
 
-  it("The behavior of baseUri on ServiceClient children classes should be predictable", async function () {
+  it("The behavior of baseUri on ServiceClient children classes should be predictable on management clouds", async function () {
     const httpClient: HttpClient = {
       sendRequest: (request) => {
         return Promise.resolve({ request, status: 200, headers: new HttpHeaders() });
       },
     };
 
-    const scope = "https://original-scope.xyz";
+    const scope = "https://management.core.chinacloudapi.cn";
 
     class ServiceClientChildren extends ServiceClient {
       getBaseUri(): string | undefined {
