@@ -205,10 +205,20 @@ export class ServiceClient {
 
     let serviceClientCredentials: ServiceClientCredentials | undefined;
     if (isTokenCredential(credentials)) {
-      serviceClientCredentials = new AzureIdentityCredentialAdapter(
-        credentials,
-        options?.baseUri ? `${options.baseUri}/.default` : undefined
-      );
+      let scope: string | undefined = undefined;
+      const azureManagementClouds = [
+        "https://management.core.windows.net",
+        "https://management.core.chinacloudapi.cn",
+        "https://management.core.usgovcloudapi.net",
+        "https://management.core.cloudapi.de",
+      ];
+      if (
+        options?.baseUri &&
+        azureManagementClouds.find((cloud) => options!.baseUri!.indexOf(cloud) > -1)
+      ) {
+        scope = `${options.baseUri}/.default`;
+      }
+      serviceClientCredentials = new AzureIdentityCredentialAdapter(credentials, scope);
     } else {
       serviceClientCredentials = credentials;
     }
