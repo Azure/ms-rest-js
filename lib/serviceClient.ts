@@ -207,10 +207,10 @@ export class ServiceClient {
     if (isTokenCredential(credentials)) {
       let scope: string | undefined = undefined;
       const azureManagementClouds = [
-        "https://management.core.windows.net",
-        "https://management.core.chinacloudapi.cn",
-        "https://management.core.usgovcloudapi.net",
-        "https://management.core.cloudapi.de",
+        "https://management.windows.net",
+        "https://management.chinacloudapi.cn",
+        "https://management.usgovcloudapi.net",
+        "https://management.cloudapi.de",
       ];
       if (
         options?.baseUri &&

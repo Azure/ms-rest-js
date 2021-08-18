@@ -268,7 +268,7 @@ describe("ServiceClient", function () {
       },
     };
 
-    const scope = "https://management.core.chinacloudapi.cn";
+    const scope = "https://management.chinacloudapi.cn";
 
     class ServiceClientChildren extends ServiceClient {
       getBaseUri(): string | undefined {
