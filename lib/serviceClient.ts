@@ -147,11 +147,11 @@ export interface ServiceClientOptions {
    */
   agentSettings?: AgentSettings;
   /**
-   * If specified, and if the value matches a known resource manager endpoint:
+   * If specified:
    * - This `baseUri` becomes the base URI that requests will be made against for this ServiceClient.
-   * - If a `TokenCredential` was passed through the constructor, this `baseUri` defines the `getToken` scope to be `${options.baseUri}/.default`.
+   * - If the `baseUri` matches a known resource manager endpoint and if a `TokenCredential` was passed through the constructor, this `baseUri` defines the `getToken` scope to be `${options.baseUri}/.default`. Otherwise, the scope would default to "https://management.azure.com/.default".
    *
-   * If it is not specified, or if it doesn't match a known resource manager endpoint:
+   * If it is not specified:
    * - All OperationSpecs must contain a baseUrl property.
    * - If a `TokenCredential` was passed through the constructor, the `getToken` scope is set to be "https://management.azure.com/.default".
    */
