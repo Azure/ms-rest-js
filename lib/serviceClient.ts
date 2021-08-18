@@ -54,7 +54,10 @@ import { agentPolicy } from "./policies/agentPolicy";
 import { proxyPolicy, getDefaultProxySettings } from "./policies/proxyPolicy";
 import { throttlingRetryPolicy } from "./policies/throttlingRetryPolicy";
 import { Agent } from "http";
-import { AzureIdentityCredentialAdapter } from "./credentials/azureIdentityTokenCredentialAdapter";
+import {
+  AzureIdentityCredentialAdapter,
+  azureResourceManagerEndpoints,
+} from "./credentials/azureIdentityTokenCredentialAdapter";
 
 /**
  * HTTP proxy settings (Node.js only)
@@ -144,11 +147,11 @@ export interface ServiceClientOptions {
    */
   agentSettings?: AgentSettings;
   /**
-   * If specified, and if the value matches a known resource management endpoint:
+   * If specified, and if the value matches a known resource manager endpoint:
    * - This `baseUri` becomes the base URI that requests will be made against for this ServiceClient.
    * - If a `TokenCredential` was passed through the constructor, this `baseUri` defines the `getToken` scope to be `${options.baseUri}/.default`.
    *
-   * If it is not specified, or if it doesn't match a known resource management endpoint:
+   * If it is not specified, or if it doesn't match a known resource manager endpoint:
    * - All OperationSpecs must contain a baseUrl property.
    * - If a `TokenCredential` was passed through the constructor, the `getToken` scope is set to be "https://management.azure.com/.default".
    */
@@ -164,7 +167,7 @@ export class ServiceClient {
    * The base URI against which requests will be made when using this ServiceClient instance.
    *
    * This can be set either by setting the `baseUri` in the `options` parameter to the ServiceClient constructor or directly after constructing the ServiceClient.
-   * If set via the ServiceClient constructor when using the overload that takes the `TokenCredential`, and if it matches a known resource management endpoint, this base URI sets the scope used to get the AAD token to `${baseUri}/.default` instead of the default "https://management.azure.com/.default"
+   * If set via the ServiceClient constructor when using the overload that takes the `TokenCredential`, and if it matches a known resource manager endpoint, this base URI sets the scope used to get the AAD token to `${baseUri}/.default` instead of the default "https://management.azure.com/.default"
    *
    * If it is not specified, all OperationSpecs must contain a baseUrl property.
    */
@@ -206,16 +209,7 @@ export class ServiceClient {
     let serviceClientCredentials: ServiceClientCredentials | undefined;
     if (isTokenCredential(credentials)) {
       let scope: string | undefined = undefined;
-      const azureManagementClouds = [
-        "https://management.windows.net",
-        "https://management.chinacloudapi.cn",
-        "https://management.usgovcloudapi.net",
-        "https://management.cloudapi.de",
-      ];
-      if (
-        options?.baseUri &&
-        azureManagementClouds.find((cloud) => options!.baseUri!.indexOf(cloud) > -1)
-      ) {
+      if (options?.baseUri && azureResourceManagerEndpoints.includes(options?.baseUri)) {
         scope = `${options.baseUri}/.default`;
       }
       serviceClientCredentials = new AzureIdentityCredentialAdapter(credentials, scope);
