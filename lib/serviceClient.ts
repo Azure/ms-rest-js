@@ -144,11 +144,11 @@ export interface ServiceClientOptions {
    */
   agentSettings?: AgentSettings;
   /**
-   * If specified, and if the value matches a resource management endpoint URI:
+   * If specified, and if the value matches a known resource management endpoint:
    * - This `baseUri` becomes the base URI that requests will be made against for this ServiceClient.
    * - If a `TokenCredential` was passed through the constructor, this `baseUri` defines the `getToken` scope to be `${options.baseUri}/.default`.
    *
-   * If it is not specified, or if it doesn't match a resource management endpoint URI:
+   * If it is not specified, or if it doesn't match a known resource management endpoint:
    * - All OperationSpecs must contain a baseUrl property.
    * - If a `TokenCredential` was passed through the constructor, the `getToken` scope is set to be "https://management.azure.com/.default".
    */
@@ -164,7 +164,7 @@ export class ServiceClient {
    * The base URI against which requests will be made when using this ServiceClient instance.
    *
    * This can be set either by setting the `baseUri` in the `options` parameter to the ServiceClient constructor or directly after constructing the ServiceClient.
-   * If set via the ServiceClient constructor when using the overload that takes the `TokenCredential`, this base URI sets the scope used to get the AAD token to `${baseUri}/.default` instead of the default "https://management.azure.com/.default"
+   * If set via the ServiceClient constructor when using the overload that takes the `TokenCredential`, and if it matches a known resource management endpoint, this base URI sets the scope used to get the AAD token to `${baseUri}/.default` instead of the default "https://management.azure.com/.default"
    *
    * If it is not specified, all OperationSpecs must contain a baseUrl property.
    */
