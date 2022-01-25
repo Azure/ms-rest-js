@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.6.1 - (2022-01-25)
+
+- Fix a security issue with [CVE-2022-0235](https://github.com/advisories/GHSA-r683-j2x4-v87g) by upgrade [node-fetch](https://www.npmjs.com/package/node-fetch) (PR [459](https://github.com/Azure/ms-rest-js/pull/459))
+
 ## 2.6.0 - (2021-08-18)
 
 - Added a new property `baseUri` on the `ServiceClientOptions` that is then used to initialize the corresponding `baseUri` protected property on the `ServiceClient`.
