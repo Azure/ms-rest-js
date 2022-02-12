@@ -138,7 +138,7 @@
   "scripts": {
     "build": "run-p build:scripts build:lib",
     "build:scripts": "tsc -p ./.scripts/",
-    "build:lib": "run-s build:tsc build:rollup build:minify-browser",
+    "build:lib": "run-s build:tsc build:rollup build:minify-browser extract-api",
     "build:tsc": "tsc -p tsconfig.es.json",
     "build:rollup": "rollup -c rollup.config.ts",
     "build:minify-browser": "terser -c -m --comments --source-map \"content='./dist/msRest.browser.js.map'\" -o ./dist/msRest.browser.min.js ./dist/msRest.browser.js",

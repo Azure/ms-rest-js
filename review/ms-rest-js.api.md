@@ -23,10 +23,16 @@ export interface AbortSignalLike {
     removeEventListener: (type: "abort", listener: (this: AbortSignalLike, ev: Event) => any, options?: any) => void;
 }
 
-// Warning: (ae-forgotten-export) The symbol "AgentSettings" needs to be exported by the entry point msRest.d.ts
-//
 // @public (undocumented)
 export function agentPolicy(agentSettings?: AgentSettings): RequestPolicyFactory;
+
+// @public
+export interface AgentSettings {
+    // (undocumented)
+    http: Agent;
+    // (undocumented)
+    https: Agent;
+}
 
 // @public
 export interface ApiKeyCredentialOptions {
@@ -53,8 +59,6 @@ export type Authenticator = (challenge: object) => Promise<string>;
 // @public
 export class AzureIdentityCredentialAdapter implements ServiceClientCredentials {
     constructor(azureTokenCredential: TokenCredential, scopes?: string | string[]);
-    // Warning: (ae-forgotten-export) The symbol "TokenResponse" needs to be exported by the entry point msRest.d.ts
-    //
     // (undocumented)
     getToken(): Promise<TokenResponse>;
     // (undocumented)
@@ -115,6 +119,23 @@ export class BasicAuthenticationCredentials implements ServiceClientCredentials 
 }
 
 // @public (undocumented)
+export type CommonRequestInfo = string;
+
+// @public (undocumented)
+export type CommonRequestInit = Omit<RequestInit, "body" | "headers" | "signal"> & {
+    body?: any;
+    headers?: any;
+    signal?: any;
+};
+
+// @public (undocumented)
+export type CommonResponse = Omit<Response, "body" | "trailer" | "formData"> & {
+    body: any;
+    trailer: any;
+    formData: any;
+};
+
+// @public (undocumented)
 export interface CompositeMapper extends BaseMapper {
     // (undocumented)
     type: CompositeMapperType;
@@ -173,10 +194,6 @@ export const Constants: {
 //
 // @public (undocumented)
 export class DefaultHttpClient extends FetchHttpClient {
-    // Warning: (ae-forgotten-export) The symbol "CommonRequestInfo" needs to be exported by the entry point msRest.d.ts
-    // Warning: (ae-forgotten-export) The symbol "CommonRequestInit" needs to be exported by the entry point msRest.d.ts
-    // Warning: (ae-forgotten-export) The symbol "CommonResponse" needs to be exported by the entry point msRest.d.ts
-    //
     // (undocumented)
     fetch(input: CommonRequestInfo, init?: CommonRequestInit): Promise<CommonResponse>;
     // (undocumented)
@@ -188,8 +205,12 @@ export class DefaultHttpClient extends FetchHttpClient {
 // @public
 export function delay<T>(t: number, value?: T): Promise<T>;
 
-// Warning: (ae-forgotten-export) The symbol "DeserializationContentTypes" needs to be exported by the entry point msRest.d.ts
-//
+// @public
+export interface DeserializationContentTypes {
+    json?: string[];
+    xml?: string[];
+}
+
 // @public
 export function deserializationPolicy(deserializationContentTypes?: DeserializationContentTypes): RequestPolicyFactory;
 
@@ -249,8 +270,6 @@ export function generateClientRequestIdPolicy(requestIdHeaderName?: string): Req
 // @public
 export function generateUuid(): string;
 
-// Warning: (ae-forgotten-export) The symbol "ProxySettings" needs to be exported by the entry point msRest.d.ts
-//
 // @public (undocumented)
 export function getDefaultProxySettings(proxyUrl?: string): ProxySettings | undefined;
 
@@ -262,14 +281,18 @@ export interface HttpClient extends RequestPolicy {
 }
 
 // @public
+export interface HttpHeader {
+    name: string;
+    value: string;
+}
+
+// @public
 export class HttpHeaders {
-    // Warning: (ae-forgotten-export) The symbol "RawHttpHeaders" needs to be exported by the entry point msRest.d.ts
     constructor(rawHeaders?: RawHttpHeaders);
     clone(): HttpHeaders;
     contains(headerName: string): boolean;
     get(headerName: string): string | undefined;
     headerNames(): string[];
-    // Warning: (ae-forgotten-export) The symbol "HttpHeader" needs to be exported by the entry point msRest.d.ts
     headersArray(): HttpHeader[];
     headerValues(): string[];
     rawHeaders(): RawHttpHeaders;
@@ -406,7 +429,6 @@ export interface OperationArguments {
 // @public
 export interface OperationParameter {
     mapper: Mapper;
-    // Warning: (ae-forgotten-export) The symbol "ParameterPath" needs to be exported by the entry point msRest.d.ts
     parameterPath: ParameterPath;
 }
 
@@ -445,6 +467,11 @@ export interface OperationURLParameter extends OperationParameter {
     skipEncoding?: boolean;
 }
 
+// @public (undocumented)
+export type ParameterPath = string | string[] | {
+    [propertyName: string]: ParameterPath;
+};
+
 // @public
 export interface ParameterValue {
     // (undocumented)
@@ -475,6 +502,18 @@ export function promiseToServiceCallback<T>(promise: Promise<HttpOperationRespon
 export function proxyPolicy(proxySettings?: ProxySettings): RequestPolicyFactory;
 
 // @public
+export interface ProxySettings {
+    // (undocumented)
+    host: string;
+    // (undocumented)
+    password?: string;
+    // (undocumented)
+    port: number;
+    // (undocumented)
+    username?: string;
+}
+
+// @public
 export enum QueryCollectionFormat {
     // (undocumented)
     Csv = ",",
@@ -486,6 +525,19 @@ export enum QueryCollectionFormat {
     Ssv = " ",
     // (undocumented)
     Tsv = "\t"
+}
+
+// @public
+export type RawHttpHeaders = {
+    [headerName: string]: string;
+};
+
+// @public
+export interface RedirectOptions {
+    // (undocumented)
+    handleRedirects: boolean;
+    // (undocumented)
+    maxRetries?: number;
 }
 
 // @public (undocumented)
@@ -659,7 +711,6 @@ export interface ServiceClientOptions {
     httpPipelineLogger?: HttpPipelineLogger;
     noRetryPolicy?: boolean;
     proxySettings?: ProxySettings;
-    // Warning: (ae-forgotten-export) The symbol "RedirectOptions" needs to be exported by the entry point msRest.d.ts
     redirectOptions?: RedirectOptions;
     requestPolicyFactories?: RequestPolicyFactory[] | ((defaultRequestPolicyFactories: RequestPolicyFactory[]) => void | RequestPolicyFactory[]);
     rpRegistrationRetryTimeout?: number;
@@ -687,6 +738,12 @@ export function stripResponse(response: HttpOperationResponse): any;
 export function systemErrorRetryPolicy(retryCount?: number, retryInterval?: number, minRetryInterval?: number, maxRetryInterval?: number): RequestPolicyFactory;
 
 // @public (undocumented)
+export type TelemetryInfo = {
+    key?: string;
+    value?: string;
+};
+
+// @public (undocumented)
 export function throttlingRetryPolicy(maxRetries?: number): RequestPolicyFactory;
 
 // @public
@@ -697,6 +754,16 @@ export class TokenCredentials implements ServiceClientCredentials {
     signRequest(webResource: WebResourceLike): Promise<WebResourceLike>;
     // (undocumented)
     token: string;
+}
+
+// @public
+export interface TokenResponse {
+    // (undocumented)
+    readonly [x: string]: any;
+    // (undocumented)
+    readonly accessToken: string;
+    // (undocumented)
+    readonly tokenType: string;
 }
 
 // @public (undocumented)
@@ -748,8 +815,6 @@ export class URLQuery {
     toString(): string;
 }
 
-// Warning: (ae-forgotten-export) The symbol "TelemetryInfo" needs to be exported by the entry point msRest.d.ts
-//
 // @public (undocumented)
 export function userAgentPolicy(userAgentData?: TelemetryInfo): RequestPolicyFactory;
 
