@@ -15,22 +15,9 @@
     "importHelpers": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "lib": [
-      "es5",
-      "es6",
-      "es7",
-      "esnext",
-      "esnext.asynciterable",
-      "es2015.iterable"
-    ]
+    "lib": ["es5", "es6", "es7", "esnext", "esnext.asynciterable", "es2015.iterable"]
   },
   "compileOnSave": true,
-  "exclude": [
-    "node_modules"
-  ],
-  "include": [
-    "./lib/**/*.ts",
-    "./samples/**/*.ts",
-    "./test/**/*.ts"
-  ]
+  "exclude": ["node_modules"],
+  "include": ["./lib/**/*.ts", "./samples/**/*.ts", "./test/**/*.ts"]
 }
