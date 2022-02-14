@@ -1,15 +1,14 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-import * as http from "http";
-import * as https from "https";
 import * as tunnel from "tunnel";
+import { Agent } from "NodeJSShim";
 
 import { ProxySettings } from "./serviceClient";
 import { URLBuilder } from "./url";
 import { HttpHeadersLike } from "./httpHeaders";
 
-export type ProxyAgent = { isHttps: boolean; agent: http.Agent | https.Agent };
+export type ProxyAgent = { isHttps: boolean; agent: Agent };
 export function createProxyAgent(
   requestUrl: string,
   proxySettings: ProxySettings,
@@ -42,33 +41,11 @@ export function createProxyAgent(
   return proxyAgent;
 }
 
-// Duplicate tunnel.HttpsOverHttpsOptions to avoid exporting createTunnel() with dependency on @types/tunnel
-// createIunnel() is only imported by tests.
-export interface HttpsProxyOptions {
-  host: string;
-  port: number;
-  localAddress?: string;
-  proxyAuth?: string;
-  headers?: { [key: string]: any };
-  ca?: Buffer[];
-  servername?: string;
-  key?: Buffer;
-  cert?: Buffer;
-}
-
-interface HttpsOverHttpsOptions {
-  maxSockets?: number;
-  ca?: Buffer[];
-  key?: Buffer;
-  cert?: Buffer;
-  proxy?: HttpsProxyOptions;
-}
-
 export function createTunnel(
   isRequestHttps: boolean,
   isProxyHttps: boolean,
-  tunnelOptions: HttpsOverHttpsOptions
-): http.Agent | https.Agent {
+  tunnelOptions: tunnel.HttpsOverHttpsOptions
+): Agent {
   if (isRequestHttps && isProxyHttps) {
     return tunnel.httpsOverHttps(tunnelOptions);
   } else if (isRequestHttps && !isProxyHttps) {

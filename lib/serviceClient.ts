@@ -53,7 +53,7 @@ import { ServiceCallback } from "./util/utils";
 import { agentPolicy } from "./policies/agentPolicy";
 import { proxyPolicy, getDefaultProxySettings } from "./policies/proxyPolicy";
 import { throttlingRetryPolicy } from "./policies/throttlingRetryPolicy";
-import { Agent } from "http";
+import { Agent } from "NodeJSShim";
 import {
   AzureIdentityCredentialAdapter,
   azureResourceManagerEndpoints,

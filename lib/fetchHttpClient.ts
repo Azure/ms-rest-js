@@ -7,6 +7,7 @@ import FormData from "form-data";
 import { HttpClient } from "./httpClient";
 import { WebResourceLike } from "./webResource";
 import { HttpOperationResponse } from "./httpOperationResponse";
+import { ReadableStream } from "NodeJSShim";
 import { HttpHeaders, HttpHeadersLike } from "./httpHeaders";
 import { RestError } from "./restError";
 import { Readable, Transform } from "stream";
@@ -153,7 +154,7 @@ export abstract class FetchHttpClient implements HttpClient {
         request: httpRequest,
         status: response.status,
         readableStreamBody: httpRequest.streamResponseBody
-          ? ((response.body as unknown) as NodeJS.ReadableStream)
+          ? ((response.body as unknown) as ReadableStream)
           : undefined,
         bodyAsText: !httpRequest.streamResponseBody ? await response.text() : undefined,
         redirected: response.redirected,
@@ -162,7 +163,7 @@ export abstract class FetchHttpClient implements HttpClient {
 
       const onDownloadProgress = httpRequest.onDownloadProgress;
       if (onDownloadProgress) {
-        const responseBody: ReadableStream<Uint8Array> | undefined = response.body || undefined;
+        const responseBody: ReadableStream | undefined = response.body || undefined;
 
         if (isReadableStream(responseBody)) {
           let loadedBytes = 0;

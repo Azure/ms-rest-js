@@ -6,6 +6,7 @@ import { OperationSpec } from "./operationSpec";
 import { Mapper, Serializer } from "./serializer";
 import { generateUuid } from "./util/utils";
 import { HttpOperationResponse } from "./httpOperationResponse";
+import { ReadableStream } from "NodeJSShim";
 import { OperationResponse } from "./operationResponse";
 import { AgentSettings, ProxySettings } from "./serviceClient";
 
@@ -23,7 +24,7 @@ export type HttpRequestBody =
   | string
   | ArrayBuffer
   | ArrayBufferView
-  | (() => NodeJS.ReadableStream);
+  | (() => ReadableStream);
 
 /**
  * Fired in response to upload or download progress.

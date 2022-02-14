@@ -3,6 +3,7 @@
 
 import { WebResourceLike } from "./webResource";
 import { HttpHeadersLike } from "./httpHeaders";
+import { ReadableStream } from "NodeJSShim";
 
 /**
  * The properties on an HTTP response which will always be present.
@@ -66,7 +67,7 @@ export interface HttpOperationResponse extends HttpResponse {
    * The response body as a node.js Readable stream.
    * Always undefined in the browser.
    */
-  readableStreamBody?: NodeJS.ReadableStream;
+  readableStreamBody?: ReadableStream;
 
   /**
    * The redirected property indicates whether the response is the result of a request which was redirected.

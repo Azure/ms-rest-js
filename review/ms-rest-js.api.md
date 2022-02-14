@@ -4,9 +4,8 @@
 
 ```ts
 
-/// <reference types="node" />
-
-import { Agent } from 'http';
+import { Agent } from 'NodeJSShim';
+import { ReadableStream as ReadableStream_2 } from 'NodeJSShim';
 import { TokenCredential } from '@azure/core-auth';
 
 // @public
@@ -327,7 +326,7 @@ export interface HttpOperationResponse extends HttpResponse {
     parsedHeaders?: {
         [key: string]: any;
     };
-    readableStreamBody?: NodeJS.ReadableStream;
+    readableStreamBody?: ReadableStream_2;
     redirected?: boolean;
     url?: string;
 }
@@ -347,7 +346,7 @@ export enum HttpPipelineLogLevel {
 }
 
 // @public (undocumented)
-export type HttpRequestBody = Blob | string | ArrayBuffer | ArrayBufferView | (() => NodeJS.ReadableStream);
+export type HttpRequestBody = Blob | string | ArrayBuffer | ArrayBufferView | (() => ReadableStream_2);
 
 // @public
 export interface HttpResponse {
