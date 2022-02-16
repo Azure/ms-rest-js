@@ -22,6 +22,8 @@ export interface AbortSignalLike {
     removeEventListener: (type: "abort", listener: (this: AbortSignalLike, ev: Event) => any, options?: any) => void;
 }
 
+export { Agent }
+
 // @public (undocumented)
 export function agentPolicy(agentSettings?: AgentSettings): RequestPolicyFactory;
 
@@ -530,6 +532,8 @@ export enum QueryCollectionFormat {
 export type RawHttpHeaders = {
     [headerName: string]: string;
 };
+
+export { ReadableStream_2 as ReadableStream }
 
 // @public
 export interface RedirectOptions {
