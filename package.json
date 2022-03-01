@@ -78,7 +78,7 @@
     "@types/sinon": "^7.0.13",
     "@types/tough-cookie": "^2.3.5",
     "@types/tunnel": "0.0.1",
-    "@types/uuid": "^3.4.5",
+    "@types/uuid": "^8.3.2",
     "@types/webpack": "^4.4.34",
     "@types/webpack-dev-middleware": "^2.0.3",
     "@types/xml2js": "^0.4.4",
