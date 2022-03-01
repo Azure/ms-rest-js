@@ -72,6 +72,12 @@ jobs:
     inputs:
       artifactName: $(artifactName)
       targetPath: $(System.DefaultWorkingDirectory)
+  - task: UseDotNet@2
+    displayName: 'Use .NET Core sdk v2'
+    inputs:
+      packageType: sdk
+      version: 2.x
+      installationPath: $(Agent.ToolsDirectory)/dotnet
   - task: DownloadPipelineArtifact@0
     inputs:
       artifactName: $(msRestAzureArtifactName)
