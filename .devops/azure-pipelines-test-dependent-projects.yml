@@ -76,7 +76,7 @@ jobs:
     displayName: 'Use .NET Core sdk v2'
     inputs:
       packageType: sdk
-      version: 2.1.30
+      version: 2.x
       installationPath: $(Agent.ToolsDirectory)/dotnet
   - task: DownloadPipelineArtifact@0
     inputs:
