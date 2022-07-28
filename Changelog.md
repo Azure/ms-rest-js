@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.6.2 - (2022-07-28)
+
+- Address Trusted Types compliance issue.
+
 ## 2.6.1 - (2022-01-25)
 
 - Fix a security issue with [CVE-2022-0235](https://github.com/advisories/GHSA-r683-j2x4-v87g) by upgrade [node-fetch](https://www.npmjs.com/package/node-fetch) (PR [459](https://github.com/Azure/ms-rest-js/pull/459))
