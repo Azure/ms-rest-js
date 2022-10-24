@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.6.3 - (Unreleased)
+
+- Upgrade dev dependency `typescript` version to `~4.2.0`.
+
 ## 2.6.2 - (2022-07-28)
 
 - Address Trusted Types compliance issue.
