@@ -18,7 +18,10 @@ if (typeof self.trustedTypes !== "undefined") {
 
 export function parseXML(str: string): Promise<any> {
   try {
-    const dom = parser.parseFromString((ttPolicy?.createHTML(str) ?? str) as string, "application/xml");
+    const dom = parser.parseFromString(
+      (ttPolicy?.createHTML(str) ?? str) as string,
+      "application/xml"
+    );
     throwIfError(dom);
 
     const obj = domToObject(dom.childNodes[0]);

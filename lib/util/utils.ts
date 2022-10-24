@@ -165,8 +165,10 @@ export function mergeObjects(source: { [key: string]: any }, target: { [key: str
  * @param {T} value The value to be resolved with after a timeout of t milliseconds.
  * @returns {Promise<T>} Resolved promise
  */
-export function delay<T>(t: number, value?: T): Promise<T> {
-  return new Promise((resolve) => setTimeout(() => resolve(value), t));
+export function delay<T>(t: number, value?: T): Promise<T | void> {
+  return new Promise<T | void>((resolve) =>
+    setTimeout(() => (value === undefined ? resolve() : resolve(value)), t)
+  );
 }
 
 /**
