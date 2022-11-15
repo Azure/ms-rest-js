@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.6.4 - (2022-11-15)
+
+- Wrap Trusted Types policy-creation in a try/catch.
+
 ## 2.6.2 - (2022-07-28)
 
 - Address Trusted Types compliance issue.
