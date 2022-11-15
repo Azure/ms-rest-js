@@ -4,7 +4,7 @@ variables:
   msRestAzureArtifactName: ms-rest-azure-js
   msRestAzureJsPackageName: azure-ms-rest-azure-js.tgz
   tempDirectory: $(Pipeline.Workspace)/.tmp
-  vmImage: 'Ubuntu 18.04'
+  vmImage: 'ubuntu-22.04'
 
 jobs:
 - job: prepare_ms_rest_js

@@ -1,7 +1,7 @@
 jobs:
 - job: Build
   pool:
-    vmImage: 'Ubuntu 18.04'
+    vmImage: 'ubuntu-22.04'
   steps:
   - task: Npm@1
     displayName: 'npm install'
@@ -17,7 +17,7 @@ jobs:
       customCommand: run build
 - job: Check_Everything
   pool:
-    vmImage: 'Ubuntu 18.04'
+    vmImage: 'ubuntu-22.04'
   steps:
   - task: Npm@1
     displayName: 'npm install'
