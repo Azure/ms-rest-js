@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.6.5 - (2023-02-09)
+
+- Add Microsoft SECURITY.md
+
 ## 2.6.4 - (2022-11-15)
 
 - Wrap Trusted Types policy-creation in a try/catch.
@@ -18,12 +22,15 @@
   - For `baseUri` that happen to be known Azure resource manager endpoints, this allows the instantiating of the `AzureIdentityCredentialAdapter` class with the right scope when a user constructs a `ServiceClient` with a `TokenCredential`. Resolves https://github.com/Azure/azure-sdk-for-js/issues/15945
 
 ## 2.5.3 - (2021-07-12)
+
 - Updated the dependency on the uuid package to v8 (PR [456](https://github.com/Azure/ms-rest-js/pull/456))
 
 ## 2.5.2 - (2021-06-15)
+
 - Fixed an issue where `proxySettings` does not work when there is username but no password (PR [453](https://github.com/Azure/ms-rest-js/pull/453))
 
 ## 2.5.1 - (2021-06-07)
+
 - [BugFix] Array flattening in deserializer loses previously de-serialized attributes (PR [#451](https://github.com/Azure/ms-rest-js/pull/451))
 
 ## 2.5.0 - (2021-05-10)
