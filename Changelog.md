@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.6.6 - (2023-04-10)
+
+- Update dependency `xml2js` version to `^0.5.0`.
+
 ## 2.6.5 - (2023-02-09)
 
 - Add Microsoft SECURITY.md
