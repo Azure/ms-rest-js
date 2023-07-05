@@ -78,7 +78,7 @@
     "@types/node-fetch": "^2.3.7",
     "@types/semver": "^6.0.1",
     "@types/sinon": "^7.0.13",
-    "@types/tough-cookie": "^2.3.5",
+    "@types/tough-cookie": "^4.0.2",
     "@types/trusted-types": "^2.0.0",
     "@types/tunnel": "0.0.1",
     "@types/uuid": "^8.3.2",
