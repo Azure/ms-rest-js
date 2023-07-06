@@ -11,10 +11,7 @@ import { RestError } from "../lib/restError";
 import { isNode } from "../lib/util/utils";
 import { WebResource, HttpRequestBody, TransferProgressEvent } from "../lib/webResource";
 import { getHttpMock, HttpMockFacade } from "./mockHttp";
-import { TestFunction } from "mocha";
 import { CommonResponse } from "../lib/fetchHttpClient";
-
-const nodeIt = (isNode ? it : it.skip) as TestFunction;
 
 function getAbortController(): AbortController {
   let controller: AbortController;
@@ -96,39 +93,6 @@ describe("defaultHttpClient", function () {
     } catch (err) {
       err.should.not.be.instanceof(AssertionError);
     }
-  });
-
-  nodeIt("should not overwrite a user-provided cookie (nodejs only)", async function () {
-    // Cookie is only allowed to be set by the browser based on an actual response Set-Cookie header
-    httpMock.get("http://my.fake.domain/set-cookie", {
-      status: 200,
-      headers: {
-        "Set-Cookie": "data=123456",
-      },
-    });
-
-    httpMock.get("http://my.fake.domain/cookie", async (_url, _method, _body, headers) => {
-      return {
-        status: 200,
-        headers: headers,
-      };
-    });
-
-    const client = getMockedHttpClient();
-
-    const request1 = new WebResource("http://my.fake.domain/set-cookie");
-    const response1 = await client.sendRequest(request1);
-    response1.headers.get("Set-Cookie")!.should.equal("data=123456");
-
-    const request2 = new WebResource("http://my.fake.domain/cookie");
-    const response2 = await client.sendRequest(request2);
-    response2.headers.get("Cookie")!.should.equal("data=123456");
-
-    const request3 = new WebResource("http://my.fake.domain/cookie", "GET", undefined, undefined, {
-      Cookie: "data=abcdefg",
-    });
-    const response3 = await client.sendRequest(request3);
-    response3.headers.get("Cookie")!.should.equal("data=abcdefg");
   });
 
   it("should allow canceling multiple requests with one token", async function () {

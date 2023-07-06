@@ -199,7 +199,7 @@ export class DefaultHttpClient extends FetchHttpClient {
     // (undocumented)
     prepareRequest(httpRequest: WebResourceLike): Promise<Partial<RequestInit>>;
     // (undocumented)
-    processRequest(operationResponse: HttpOperationResponse): Promise<void>;
+    processRequest(_operationResponse: HttpOperationResponse): Promise<void>;
 }
 
 // @public
