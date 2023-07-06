@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.7.0 - (2023-07-06)
+
+- Remove cookie support from nodeFetchHttpClient to address [a security issue](https://nvd.nist.gov/vuln/detail/CVE-2023-26136) with the `tough-cookie` package.
+
 ## 2.6.6 - (2023-04-10)
 
 - Update dependency `xml2js` version to `^0.5.0`.
