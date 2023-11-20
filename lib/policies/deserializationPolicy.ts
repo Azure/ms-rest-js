@@ -95,7 +95,7 @@ function getOperationResponse(
           response: HttpOperationResponse
         ) => undefined | OperationResponse) = request.operationResponseGetter;
     if (!operationResponseGetter) {
-      result = operationSpec.responses[parsedResponse.status];
+      result = operationSpec.responses[parsedResponse.status] || operationSpec.responses.default;
     } else {
       result = operationResponseGetter(operationSpec, parsedResponse);
     }

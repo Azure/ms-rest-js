@@ -466,7 +466,7 @@ export class ServiceClient {
       }
 
       result = this.sendRequest(httpRequest).then((res) =>
-        flattenResponse(res, operationSpec.responses[res.status])
+        flattenResponse(res, operationSpec.responses[res.status] || operationSpec.responses.default)
       );
     } catch (error) {
       result = Promise.reject(error);
