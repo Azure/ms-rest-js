@@ -4,6 +4,9 @@
 
 Runtime for isomorphic javascript libraries (that work in the browser and node.js environment) generated via [Autorest](https://github.com/Azure/Autorest).
 
+> [!CAUTION]
+> This repository is not maintained. You should not be using its packages.
+
 ## Requirements
 - Node.js version > 6.x
 - `npm install -g typescript`
