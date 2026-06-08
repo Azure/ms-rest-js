@@ -1,3 +1,5 @@
+**Note:** This package has been deprecated in favor of the new Azure SDK packages from [Azure SDK for JavaScript](https://github.com/azure/azure-sdk-for-js).
+
 # ms-rest-js
 
 [![Build Status](https://dev.azure.com/azure-public/azsdk/_apis/build/status/public.Azure.ms-rest-js%20-%20CI)](https://dev.azure.com/azure-public/azsdk/_build/latest?definitionId=39)
